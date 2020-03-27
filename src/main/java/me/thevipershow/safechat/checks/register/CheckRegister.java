@@ -28,9 +28,9 @@ public final class CheckRegister implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
 
-        if (!event.getPlayer().hasPermission(SPermissions.BYPASS.getPermission()))
-            chatChecks.forEach(c -> c.result(event.getMessage(), event, this.plugin));
-
+        if (!event.getPlayer().hasPermission(SPermissions.BYPASS.getPermission())) {
+            chatChecks.forEach(c -> c.result(event.getMessage(), event, plugin));
+        }
 
     }
 
