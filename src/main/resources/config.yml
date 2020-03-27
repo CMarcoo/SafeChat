@@ -10,7 +10,7 @@ safechat:
     database: 'database'
     table: 'safechat_data'
   domains:
-    regex: "[a-z]+(\\s*)[.,]+(\\s*)[a-z]+(\\s*)[.,]+(\\s*)(com|net|org|it|uk|co|int|mil|edu|gov|info|xyz|space)"
+    regex: "[a-z]+(\\s*)[.,]+(\\s*)[a-z]+(\\s*)[.,]+(\\s*)(com|net|org|it|uk|co|int|mil|edu|eu|info|xyz|space)"
     whitelisted: 'play.hypixel.net|www.minecraft.net'
     warning:
       - " &7[&eServer&7]&f: &7Your previous message has been deleted,"
