@@ -1,18 +1,17 @@
-package me.thevipershow.safechat.config;
+package me.thevipershow.safechat.enums;
 
 import me.thevipershow.safechat.Safechat;
-import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 
 public enum EnumConfig {
 
+    ENABLED("database.enabled"),
     USERNAME("database.username"),
     PASSWORD("database.password"),
     PORT("database.port"),
     ADDRESS("database.address"),
     DATABASE("database.database"),
-    TABLE("database.table"),
     DOMAIN_REGEX("domains.regex"),
     DOMAIN_WHITELIST("domains.whitelisted"),
     DOMAIN_WARNING("domains.warning"),
@@ -22,7 +21,7 @@ public enum EnumConfig {
     IPV4_WARNING("addresses.warning"),
     IPV4_HOVER("addresses.hover-warning");
 
-    private String value;
+    private final String value;
 
     public final String getString() {
         return Safechat.getPlugin(Safechat.class).getConfig().getString("safechat.".concat(this.value));
@@ -30,6 +29,10 @@ public enum EnumConfig {
 
     public final int getInt() {
         return Safechat.getPlugin(Safechat.class).getConfig().getInt("safechat.".concat(this.value));
+    }
+
+    public final boolean getBool() {
+        return Safechat.getPlugin(Safechat.class).getConfig().getBoolean("safechat.".concat(this.value));
     }
 
     public final List<String> getStringList() {

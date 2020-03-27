@@ -1,7 +1,10 @@
 name: Safechat
 version: @version@
 main: me.thevipershow.safechat.Safechat
-api-version: 1.13
 depend: [SpigotChatLib]
 authors: [TheViperShow]
 description: Make your chat safe.
+commands:
+  safechat:
+    description: "Safechat's main command"
+    usage: "/<command> [search|top]"

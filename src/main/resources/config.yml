@@ -2,12 +2,13 @@
 #
 safechat:
   database: #PostgreSQL ONLY
-    username: "username"
-    password: "password"
+    enabled: false
+    username: 'username'
+    password: 'password'
     port: 5432
-    address: "127.0.0.1"
-    database: "database"
-    table: "safechat_data"
+    address: '127.0.0.1'
+    database: 'database'
+    table: 'safechat_data'
   domains:
     regex: "[a-z]+(\\s*)[.,]+(\\s*)[a-z]+(\\s*)[.,]+(\\s*)(com|net|org|it|uk|co|int|mil|edu|gov|info|xyz|space)"
     whitelisted: 'play.hypixel.net|www.minecraft.net'
@@ -29,9 +30,10 @@ safechat:
       - "&7It looks like you've sent a &c&nforbidden&r&7 ipv4..."
       - "&7Please don't to that again"
 
-#  ______     ______     ______   ______     ______     __  __     ______     ______
-# /\  ___\   /\  __ \   /\  ___\ /\  ___\   /\  ___\   /\ \_\ \   /\  __ \   /\__  _\
-# \ \___  \  \ \  __ \  \ \  __\ \ \  __\   \ \ \____  \ \  __ \  \ \  __ \  \/_/\ \/
-#  \/\_____\  \ \_\ \_\  \ \_\    \ \_____\  \ \_____\  \ \_\ \_\  \ \_\ \_\    \ \_\
-#   \/_____/   \/_/\/_/   \/_/     \/_____/   \/_____/   \/_/\/_/   \/_/\/_/     \/_/
-#Plugin by TheViperShow. Custom-made.
+#    ______     ______     ______   ______     ______     __  __     ______     ______
+#   /\  ___\   /\  __ \   /\  ___\ /\  ___\   /\  ___\   /\ \_\ \   /\  __ \   /\__  _\
+#   \ \___  \  \ \  __ \  \ \  __\ \ \  __\   \ \ \____  \ \  __ \  \ \  __ \  \/_/\ \/
+#    \/\_____\  \ \_\ \_\  \ \_\    \ \_____\  \ \_____\  \ \_\ \_\  \ \_\ \_\    \ \_\
+#     \/_____/   \/_/\/_/   \/_/     \/_____/   \/_____/   \/_/\/_/   \/_/\/_/     \/_/
+#
+#   Plugin by TheViperShow. Custom-made.
