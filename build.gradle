@@ -27,6 +27,10 @@ repositories {
 
 shadowJar {
     archiveName = 'SafeChat-1.0.0-BETA.jar'
+    relocate 'com.zaxxer.hikari','me.thevipershow.safechat.libs.com.zaxxer.hikari'
+    relocate 'org.postgresql','me.thevipershow.safechat.libs.org.postgresql'
+    relocate 'org.slf4j','me.thevipershow.safechat.libs.org.slf4j'
+
 }
 
 dependencies {
