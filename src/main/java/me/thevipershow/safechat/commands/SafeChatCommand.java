@@ -1,9 +1,16 @@
 package me.thevipershow.safechat.commands;
 
+import com.zaxxer.hikari.HikariDataSource;
+import java.util.LinkedHashMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import javafx.geometry.Pos;
 import me.thevipershow.safechat.enums.HoverMessages;
 import me.thevipershow.safechat.enums.SPermissions;
+import me.thevipershow.safechat.sql.PostgreSQLUtils;
 import me.thevipershow.spigotchatlib.chat.TextMessage;
 import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,9 +20,11 @@ import org.bukkit.plugin.Plugin;
 public class SafeChatCommand implements CommandExecutor {
 
     private final Plugin plugin;
+    private final HikariDataSource dataSource;
 
-    public SafeChatCommand(Plugin plugin) {
+    public SafeChatCommand(Plugin plugin, HikariDataSource dataSource) {
         this.plugin = plugin;
+        this.dataSource = dataSource;
     }
 
     private void noArguments(final CommandSender commandSender) {
@@ -66,11 +75,15 @@ public class SafeChatCommand implements CommandExecutor {
             if (length == 0) {
                 noArguments(sender);
             } else if (args[0].equalsIgnoreCase("sql")) {
-                if (length == 3) {
+                if (length >= 3) {
                     if (args[1].equalsIgnoreCase("search")) {
 
-                    } else if (args[1].equalsIgnoreCase("top")) {
-
+                    } else if (args[1].equalsIgnoreCase("top") && args[2].matches("[0-9]+") && length == 3) {
+                        sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
+                        PostgreSQLUtils.getTopData(dataSource, Integer.parseInt(args[2])).thenAccept(r -> {
+                            r.forEach((uuid, integer) -> sender.sendMessage(TextMessage.build("&7|  &e" + Bukkit.getOfflinePlayer(uuid).getName() + "  &6" + integer).color().getText()));
+                            sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
+                        });
                     } else {
                         sendWarning(sender, "'&7" + args[1] + "&f' is an invalid argument");
                     }

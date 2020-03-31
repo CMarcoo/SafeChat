@@ -1,6 +1,7 @@
 package me.thevipershow.safechat;
 
 import com.zaxxer.hikari.HikariDataSource;
+import java.util.Objects;
 import me.thevipershow.safechat.checks.register.CheckRegister;
 import me.thevipershow.safechat.commands.SafeChatCommand;
 import me.thevipershow.safechat.enums.EnumConfig;
@@ -44,7 +45,7 @@ public final class Safechat extends JavaPlugin {
 
 
         pluginManager.registerEvents(new CheckRegister(this), this);
-        getCommand("safechat").setExecutor(new SafeChatCommand(this));
+        Objects.requireNonNull(getCommand("safechat")).setExecutor(new SafeChatCommand(this, dataSource));
     }
 
 }
