@@ -135,7 +135,7 @@ public class PostgreSQLUtils {
     }
 
     public static CompletableFuture<Integer> getPlayerScore(final HikariDataSource source, final String name) {
-        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(name));
+        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
         final CompletableFuture<Integer> completableFuture = new CompletableFuture<>();
         Executors.newCachedThreadPool().submit(() -> {
             if (offlinePlayer.getName() != null) {

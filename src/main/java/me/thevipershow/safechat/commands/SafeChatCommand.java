@@ -70,6 +70,9 @@ public class SafeChatCommand implements CommandExecutor {
      */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+
+
+
         if (sender.hasPermission(SPermissions.COMMAND.getConcatPermission("main"))) {
             final int length = args.length;
             if (length == 0) {
