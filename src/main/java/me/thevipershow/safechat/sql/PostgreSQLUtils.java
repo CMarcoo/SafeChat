@@ -7,15 +7,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import me.thevipershow.safechat.Safechat;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.postgresql.Driver;
 
 public class PostgreSQLUtils {
@@ -123,13 +123,40 @@ public class PostgreSQLUtils {
                         final int flagsOfPlayer = resultSet.getInt("flags");
                         playersFlagsMap.put(uuidOfPlayer, flagsOfPlayer);
                     }
+                    connection.close();
                     completableFuture.complete(playersFlagsMap);
                 }
             } catch (SQLException sqlE) {
                 sqlE.printStackTrace();
             }
         });
+
         return completableFuture;
     }
+
+    public static CompletableFuture<Integer> getPlayerScore(final HikariDataSource source, final String name) {
+        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(name));
+        final CompletableFuture<Integer> completableFuture = new CompletableFuture<>();
+        Executors.newCachedThreadPool().submit(() -> {
+            if (offlinePlayer.getName() != null) {
+
+                try {
+                    try (final Connection con = source.getConnection(); final PreparedStatement ps = con.prepareStatement(
+                            "select flags from safechat_data where player_uuid = " + offlinePlayer.getUniqueId().toString() + ";"
+                    )) {
+                        final ResultSet resultSet = ps.executeQuery();
+                        int playerFlags = (resultSet.getInt("flags"));
+                        completableFuture.complete(playerFlags);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                completableFuture.complete(-1);
+            }
+        });
+        return completableFuture;
+    }
+
 
 }

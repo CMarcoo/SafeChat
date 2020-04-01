@@ -11,7 +11,7 @@ safechat:
     table: 'safechat_data'
   domains:
     regex: "[a-z]+(\\s*)[.,]+(\\s*)[a-z]+(\\s*)[.,]+(\\s*)(com|net|org|it|uk|co|int|mil|edu|eu|info|xyz|space)"
-    whitelisted: 'play.hypixel.net|www.minecraft.net'
+    whitelisted: "play.hypixel.net|www.minecraft.net"
     warning:
       - " &7[&eServer&7]&f: &7Your previous message has been deleted,"
       - " &7Hover here to see the reason &8[&f*&8]"
@@ -21,7 +21,7 @@ safechat:
       - "&7Please don't to that again"
   addresses:
     regex: "^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$"
-    whitelisted: '127.0.0.1|0.0.0.0'
+    whitelisted: "127.0.0.1|0.0.0.0"
     warning:
       - " &7[&eServer&7]&f: &7Your previous message has been deleted,"
       - " &7Hover here to see the reason &8[&f*&8]"

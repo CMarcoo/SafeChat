@@ -76,14 +76,24 @@ public class SafeChatCommand implements CommandExecutor {
                 noArguments(sender);
             } else if (args[0].equalsIgnoreCase("sql")) {
                 if (length >= 3) {
-                    if (args[1].equalsIgnoreCase("search")) {
+                    if (args[1].equalsIgnoreCase("search") && length == 3) {
+
+                        PostgreSQLUtils.getPlayerScore(dataSource, args[2]).thenAccept(integer -> {
+                            if (integer == -1) {
+                                sender.sendMessage(TextMessage.build("&8» &4Player &f" + args[2] + " &4not found!").color().getText());
+                            } else {
+                                sender.sendMessage(TextMessage.build("&8» &ePlayer &f" + args[2] + " &ehas &6" + integer + " &eflags.").color().getText());
+                            }
+                        });
 
                     } else if (args[1].equalsIgnoreCase("top") && args[2].matches("[0-9]+") && length == 3) {
+
                         sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
                         PostgreSQLUtils.getTopData(dataSource, Integer.parseInt(args[2])).thenAccept(r -> {
                             r.forEach((uuid, integer) -> sender.sendMessage(TextMessage.build("&7|  &e" + Bukkit.getOfflinePlayer(uuid).getName() + "  &6" + integer).color().getText()));
                             sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
                         });
+
                     } else {
                         sendWarning(sender, "'&7" + args[1] + "&f' is an invalid argument");
                     }
