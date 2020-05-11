@@ -1,10 +1,6 @@
 package me.thevipershow.safechat.commands;
 
 import com.zaxxer.hikari.HikariDataSource;
-import java.util.LinkedHashMap;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import javafx.geometry.Pos;
 import me.thevipershow.safechat.enums.HoverMessages;
 import me.thevipershow.safechat.enums.SPermissions;
 import me.thevipershow.safechat.sql.PostgreSQLUtils;
@@ -21,18 +17,20 @@ public class SafeChatCommand implements CommandExecutor {
 
     private final Plugin plugin;
     private final HikariDataSource dataSource;
+    private final boolean isOnlineMode;
 
-    public SafeChatCommand(Plugin plugin, HikariDataSource dataSource) {
+    public SafeChatCommand(Plugin plugin, HikariDataSource dataSource, boolean isOnlineMode) {
         this.plugin = plugin;
         this.dataSource = dataSource;
+        this.isOnlineMode = isOnlineMode;
     }
 
     private void noArguments(final CommandSender commandSender) {
         if (commandSender instanceof Player) {
             final Player player = (Player) commandSender;
             player.spigot().sendMessage(HoverMessageBuilder.buildHover(
-                    TextMessage.build("&7Â» &eNo arguments found &7. . .", "" +
-                            "&7Hover &nhere &r&7to view all commands &8[&f*&8]").color(),
+                    TextMessage.build("&7» &eNo arguments found &7. . .", ""
+                            + "&7Hover &nhere &r&7to view all commands &8[&f*&8]").color(),
                     TextMessage.build(HoverMessages.NO_ARGS.getMessages()).color()
             ));
         } else {
@@ -52,26 +50,20 @@ public class SafeChatCommand implements CommandExecutor {
         }
     }
 
-    private void printSQLSearch(final CommandSender commandSender, final String playerName) {
-
-    }
-
     /**
      * Executes the given command, returning its success.
      * <br>
      * If false is returned, then the "usage" plugin.yml entry for this command
      * (if defined) will be sent to the player.
      *
-     * @param sender  Source of the command
+     * @param sender Source of the command
      * @param command Command which was executed
-     * @param label   Alias of the command which was used
-     * @param args    Passed command arguments
+     * @param label Alias of the command which was used
+     * @param args Passed command arguments
      * @return true if a valid command, otherwise false
      */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
-
 
         if (sender.hasPermission(SPermissions.COMMAND.getConcatPermission("main"))) {
             final int length = args.length;
@@ -81,11 +73,11 @@ public class SafeChatCommand implements CommandExecutor {
                 if (length >= 3) {
                     if (args[1].equalsIgnoreCase("search") && length == 3) {
 
-                        PostgreSQLUtils.getPlayerScore(dataSource, args[2]).thenAccept(integer -> {
-                            if (integer == -1) {
-                                sender.sendMessage(TextMessage.build("&8Â» &4Player &f" + args[2] + " &4not found!").color().getText());
+                        PostgreSQLUtils.getPlayerScore(dataSource, args[2], isOnlineMode).thenAccept(integer -> {
+                            if (integer == -1 || integer == null) {
+                                sender.sendMessage(TextMessage.build("&8» &4Player &f" + args[2] + " &4not found!").color().getText());
                             } else {
-                                sender.sendMessage(TextMessage.build("&8Â» &ePlayer &f" + args[2] + " &ehas &6" + integer + " &eflags.").color().getText());
+                                sender.sendMessage(TextMessage.build("&8» &ePlayer &f" + args[2] + " &ehas &6" + integer + " &eflags.").color().getText());
                             }
                         });
 

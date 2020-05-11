@@ -1,8 +1,14 @@
 package me.thevipershow.safechat.sql;
 
-
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,16 +16,21 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.TimeoutException;
 import me.thevipershow.safechat.Safechat;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.postgresql.Driver;
 
-public class PostgreSQLUtils {
+public final class PostgreSQLUtils {
 
+    private static final Gson GSON = new Gson();
+    private static final String MOJANG_AUTH_URL = "https://api.mojang.com/users/profiles/minecraft/";
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
     /**
      * Create an HikariDataSource for PostgreSQL from an HikariConfig
@@ -34,7 +45,7 @@ public class PostgreSQLUtils {
     /**
      * Creates a new HikariConfig with the given parameters.
      *
-     * @param ip       the server address
+     * @param ip the server address
      * @param database the database name
      * @param username the account's username
      * @param password the account's password
@@ -51,7 +62,7 @@ public class PostgreSQLUtils {
      *
      * @param username a valid registered username
      * @param password the account password
-     * @param config   the HikariConfig that will be modified
+     * @param config the HikariConfig that will be modified
      * @return a modified version of the HikariConfig
      */
     private static HikariConfig getHikariConfig(final String username, final String password, final HikariConfig config) {
@@ -73,8 +84,7 @@ public class PostgreSQLUtils {
     }
 
     /**
-     * Create a table if it doesn't already exist
-     * Async [✓]
+     * Create a table if it doesn't already exist Async [✓]
      *
      * @param source the source
      */
@@ -83,10 +93,10 @@ public class PostgreSQLUtils {
         Bukkit.getScheduler().runTaskAsynchronously(Safechat.getPlugin(Safechat.class), () -> {
             try {
                 try (final Connection connection = source.getConnection(); final PreparedStatement preparedStatement = connection.prepareStatement(
-                        "create table if not exists safechat_data\n" +
-                                "(\n" +
-                                "\tplayer_uuid uuid not null unique primary key ,\n" +
-                                "\tflags int not null);")) {
+                        "create table if not exists safechat_data\n"
+                        + "(\n"
+                        + "\tplayer_uuid uuid not null unique primary key ,\n"
+                        + "\tflags int not null);")) {
                     preparedStatement.executeUpdate();
                 }
             } catch (SQLException exc) {
@@ -111,7 +121,7 @@ public class PostgreSQLUtils {
 
     public static CompletableFuture<LinkedHashMap<UUID, Integer>> getTopData(final HikariDataSource source, final int limit) {
         final CompletableFuture<LinkedHashMap<UUID, Integer>> completableFuture = new CompletableFuture<>();
-        Executors.newCachedThreadPool().submit(() -> {
+        EXECUTOR_SERVICE.submit(() -> {
             try {
                 try (final Connection connection = source.getConnection(); final PreparedStatement ps = connection.prepareStatement(
                         "select player_uuid, flags from safechat_data order by flags desc limit " + limit + ";"
@@ -134,15 +144,91 @@ public class PostgreSQLUtils {
         return completableFuture;
     }
 
-    public static CompletableFuture<Integer> getPlayerScore(final HikariDataSource source, final String name) {
-        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
-        final CompletableFuture<Integer> completableFuture = new CompletableFuture<>();
-        Executors.newCachedThreadPool().submit(() -> {
-            if (offlinePlayer.getName() != null) {
+    public static CompletableFuture<String> readFromURL(String urlString) {
+        final CompletableFuture<String> completableFuture = new CompletableFuture<>();
+        EXECUTOR_SERVICE.submit(() -> {
+            BufferedReader reader = null;
+            try {
+                final var url = new URL(urlString);
+                reader = new BufferedReader(new InputStreamReader(url.openStream()));
+                final StringBuffer buffer = new StringBuffer();
+                int read;
+                char[] charsRead = new char[1024];
+                while ((read = reader.read(charsRead)) != -1) {
+                    buffer.append(charsRead, 0, read);
+                }
+                completableFuture.complete(buffer.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+                completableFuture.complete(null);
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+        return completableFuture;
+    }
 
+    private static class AuthResponse {
+
+        private final String id;
+        private final String name;
+
+        public AuthResponse(String id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+    }
+
+    public static CompletableFuture<AuthResponse> getMojangAuthResponse(String playerName) {
+        final CompletableFuture<AuthResponse> completableFuture = new CompletableFuture<>();
+        EXECUTOR_SERVICE.submit(() -> {
+            try {
+                final var readJson = readFromURL(MOJANG_AUTH_URL + playerName).get(3250L, TimeUnit.MILLISECONDS);
+                if (readJson == null) {
+                    completableFuture.complete(null);
+                    return;
+                }
+                final AuthResponse obtainedResponse = GSON.fromJson(readJson, AuthResponse.class);
+                completableFuture.complete(obtainedResponse);
+            } catch (JsonSyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
+                e.printStackTrace();
+                completableFuture.complete(null);
+            }
+        });
+        return completableFuture;
+    }
+
+    public static CompletableFuture<Integer> getPlayerScore(final HikariDataSource source, final String name, final boolean onlineMode) {
+        final CompletableFuture<Integer> completableFuture = new CompletableFuture<>();
+        UUID playerUUID;
+        if (onlineMode) {
+            try {
+                final AuthResponse authResponse = getMojangAuthResponse(name).get();
+                if (authResponse == null) {
+                    completableFuture.complete(null);
+                    return completableFuture;
+                }
+                playerUUID = UUID.fromString(authResponse.id);
+            } catch (InterruptedException | ExecutionException ex) {
+                ex.printStackTrace();
+                completableFuture.complete(null);
+                return completableFuture;
+            }
+        } else {
+            playerUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
+        }
+        EXECUTOR_SERVICE.submit(() -> {
+            final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerUUID);
+            if (offlinePlayer.hasPlayedBefore()) {
                 try {
                     try (final Connection con = source.getConnection(); final PreparedStatement ps = con.prepareStatement(
-                            "select flags from safechat_data where player_uuid = " + offlinePlayer.getUniqueId().toString() + ";"
+                            "select flags from safechat_data where player_uuid = " + playerUUID.toString() + ";"
                     )) {
                         final ResultSet resultSet = ps.executeQuery();
                         int playerFlags = (resultSet.getInt("flags"));
@@ -152,11 +238,9 @@ public class PostgreSQLUtils {
                     e.printStackTrace();
                 }
             } else {
-                completableFuture.complete(-1);
+                completableFuture.complete(null);
             }
         });
         return completableFuture;
     }
-
-
 }

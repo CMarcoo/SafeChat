@@ -8,30 +8,38 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.plugin.Plugin;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public final class CheckRegister implements Listener {
 
-    private final Plugin plugin;
+    private static CheckRegister instance = null;
+    private final JavaPlugin plugin;
 
-    private final static ArrayList<ChatCheck> chatChecks = new ArrayList<>(Arrays.asList(
-            new AddressesCheck(),
-            new DomainsCheck()));
-
-    public CheckRegister(Plugin plugin) {
+    private CheckRegister(JavaPlugin plugin) {
+        this.domainsCheck = DomainsCheck.getInstance(plugin);
+        this.addressesCheck = AddressesCheck.getInstance(plugin);
+        this.chatChecks = new ChatCheck[]{addressesCheck, domainsCheck};
         this.plugin = plugin;
     }
 
+    public static CheckRegister getInstance(JavaPlugin plugin) {
+        if (instance == null) {
+            instance = new CheckRegister(plugin);
+        }
+        return instance;
+    }
+
+    final AddressesCheck addressesCheck;
+    final DomainsCheck domainsCheck;
+    final ChatCheck[] chatChecks;
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
-
         if (!event.getPlayer().hasPermission(SPermissions.BYPASS.getPermission())) {
-            chatChecks.forEach(c -> c.result(event.getMessage(), event, plugin));
+            for (ChatCheck check : chatChecks) {
+                check.result(event.getMessage(), event, this.plugin);
+            }
         }
-
     }
 
 }

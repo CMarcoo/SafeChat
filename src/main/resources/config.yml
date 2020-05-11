@@ -1,39 +1,82 @@
 # Config.yml
-#
+# Do not touch serialUID unless you know what you're doing!
+serialUID: 1
 safechat:
-  database: #PostgreSQL ONLY
-    enabled: false
+  database:
+    # Allowed types are currently:
+    # Values: [POSTRESQL | JSON]
+    # JSON database type will use json files to locally store data, so filling the database info fields,
+    # such as username, host and passwords will not be required. However if you decide to use PostgreSQL database
+    # those fields will be required in order for the plugin to properly connect to the remote\local database!
+    type: 'POSTGRESQL' 
+    # Enable database based features
+    # Values: [true|false]
+    enabled: false 
+    # The username that will be used when attempting to authenticate into the specified database
+    # Values: String
     username: 'username'
+    # The password that will be used when attempting to authenticate into the specified database
+    # Values: String
     password: 'password'
+    # The port that will be used when attempting to connect to the specified database
+    # Values: [1-65535]
     port: 5432
+    # The address that will be used when attempting to connect to the specified database
+    # Values: A valid address, either ipv4 or domain
+    # IPv4: https://en.wikipedia.org/wiki/IPv4
+    # Domain: https://en.wikipedia.org/wiki/Domain_name
     address: '127.0.0.1'
+    # This is the name of the database that the plugin will save data into
+    # NOTE: The plugin will not attempt to create a new database, you need to already have an accessible one!
+    # Values: Any string
     database: 'database'
+    # This is the name of the table we will store data into, default is recommended
+    # but if for some reasons you can't use this name, you can modify it
+    # Values: ASCII: [0-9,a-z,A-Z$_] (basic Latin letters, digits 0-9, dollar, underscore) 
+    # More here: https://dev.mysql.com/doc/refman/8.0/en/identifiers.html
     table: 'safechat_data'
+  # The configuration below uses RegEx to check user input, they are a short sequence of characters that
+  # define a search pattern. This are used in order to 'recognize' dangerous messages.
+  # You can easily modify them to your own liking, you can find more info here:
+  # RegEx: https://en.wikipedia.org/wiki/Regular_expression
   domains:
+    # This regex is used to check domains in the chat which will be blocked.
     regex: "[a-z]+(\\s*)[.,]+(\\s*)[a-z]+(\\s*)[.,]+(\\s*)(com|net|org|it|uk|co|int|mil|edu|eu|info|xyz|space)"
+    # These are the domains which will not be blocked.
     whitelisted: "play.hypixel.net|www.minecraft.net"
+    # A list of messages that will be sent to the player upon triggering the domain check
     warning:
       - " &7[&eServer&7]&f: &7Your previous message has been deleted,"
       - " &7Hover here to see the reason &8[&f*&8]"
+    # A list of messages that will be sent as hover message to the message above,
+    # leave empty if none should be generated
     hover-warning:
       - "&7  [&eServer&7]"
       - "&7It looks like you've sent a &c&nforbidden&r&7 address..."
       - "&7Please don't to that again"
   addresses:
+    # This regex is used to blacklist all domains
     regex: "^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$"
+    # These are the addresses that will not be blocked
     whitelisted: "127.0.0.1|0.0.0.0"
+    # A list of messages that will be sent to the player upon triggering the ip check
     warning:
       - " &7[&eServer&7]&f: &7Your previous message has been deleted,"
       - " &7Hover here to see the reason &8[&f*&8]"
+    # A list of messages that will be sent as hover message to the message above,
+    # leave empty if none should be generated
     hover-warning:
       - "&7  [&eServer&7]"
       - "&7It looks like you've sent a &c&nforbidden&r&7 ipv4..."
       - "&7Please don't to that again"
 
-#    ______     ______     ______   ______     ______     __  __     ______     ______
-#   /\  ___\   /\  __ \   /\  ___\ /\  ___\   /\  ___\   /\ \_\ \   /\  __ \   /\__  _\
-#   \ \___  \  \ \  __ \  \ \  __\ \ \  __\   \ \ \____  \ \  __ \  \ \  __ \  \/_/\ \/
-#    \/\_____\  \ \_\ \_\  \ \_\    \ \_____\  \ \_____\  \ \_\ \_\  \ \_\ \_\    \ \_\
-#     \/_____/   \/_/\/_/   \/_/     \/_____/   \/_____/   \/_/\/_/   \/_/\/_/     \/_/
-#
+# ------------------------------------------------------------------------------------------------------ |
+# |    ______     ______     ______   ______     ______     __  __     ______     ______       |
+# | /\  ___\   /\  __ \   /\  ___\ /\  ___\   /\  ___\   /\ \_\ \   /\  __ \   /\__  _\              |
+# |  \ \___  \  \ \  __ \  \ \  __\ \ \  __\   \ \ \____  \ \  __ \  \ \  __ \  \/_/\ \/              |
+# |   \/\_____\  \ \_\ \_\  \ \_\    \ \_____\  \ \_____\  \ \_\ \_\  \ \_\ \_\    \ \_\        |
+# |    \/_____/   \/_/\/_/   \/_/     \/_____/   \/_____/   \/_/\/_/   \/_/\/_/     \/_/       |
+#  -----------------------------------------------------------------------------------------------------|
 #   Plugin by TheViperShow. Custom-made.
+
+

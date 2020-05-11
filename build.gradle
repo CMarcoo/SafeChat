@@ -8,7 +8,6 @@ version = pluginVersion
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
-
 repositories {
     mavenCentral()
     maven {
@@ -20,8 +19,7 @@ repositories {
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
     maven {
-        name = 'spigotchatlib'
-        url = 'https://maven.jetbrains.space/vsnetwork/spigotchatlib'
+        url 'https://jitpack.io' 
     }
 }
 
@@ -30,14 +28,12 @@ shadowJar {
     relocate 'com.zaxxer.hikari','me.thevipershow.safechat.libs.com.zaxxer.hikari'
     relocate 'org.postgresql','me.thevipershow.safechat.libs.org.postgresql'
     relocate 'org.slf4j','me.thevipershow.safechat.libs.org.slf4j'
-
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compileOnly 'org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT'
-    compileOnly "me.thevipershow:spigotchatlib:1.0.3"
-    // https://mvnrepository.com/artifact/org.postgresql/postgresql
+    compile group: 'com.github.TheViperShow', name: 'SpigotChatLib', version: '9326763'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.8'
     compile group: 'com.zaxxer', name: 'HikariCP', version: '3.4.2'
 }

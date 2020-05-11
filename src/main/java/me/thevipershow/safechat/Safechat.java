@@ -4,11 +4,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.util.Objects;
 import me.thevipershow.safechat.checks.register.CheckRegister;
 import me.thevipershow.safechat.commands.SafeChatCommand;
-import me.thevipershow.safechat.enums.EnumConfig;
+import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.events.listeners.FlagListener;
 import me.thevipershow.safechat.sql.PostgreSQLUtils;
-import me.thevipershow.spigotchatlib.SpigotChatLib;
-import me.thevipershow.spigotchatlib.exceptions.MissingPluginException;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,36 +14,32 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class Safechat extends JavaPlugin {
 
     public HikariDataSource dataSource;
-
-    private static PluginManager pluginManager = Bukkit.getPluginManager();
-
+    private boolean isOnlineMode;
+    private final PluginManager pluginManager = Bukkit.getPluginManager();
+    private final Values values = Values.getInstance(this);
+    private final CheckRegister checkRegister = CheckRegister.getInstance(this);
+    private FlagListener flagListener;
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
-        try {
-            SpigotChatLib.registerDependency(this);
-        } catch (MissingPluginException e) {
-            getLogger().severe("SpigotChatLib dependency is missing on the server!");
-        }
-
+        isOnlineMode = getServer().getOnlineMode();
         saveDefaultConfig();
-
-        if (EnumConfig.ENABLED.getBool()) {
+        if (values.isEnabled()) {
             dataSource = PostgreSQLUtils.createDataSource(
-                    PostgreSQLUtils.createConfig(EnumConfig.ADDRESS.getString(),
-                            EnumConfig.PORT.getInt(),
-                            EnumConfig.DATABASE.getString(),
-                            EnumConfig.USERNAME.getString(),
-                            EnumConfig.PASSWORD.getString())
+                    PostgreSQLUtils.createConfig(
+                            values.getAddress(),
+                            values.getPort(),
+                            values.getDatabase(),
+                            values.getUsername(),
+                            values.getPassword())
             );
+            flagListener = FlagListener.getInstance(dataSource);
             PostgreSQLUtils.createTable(dataSource);
-            pluginManager.registerEvents(new FlagListener(dataSource), this);
+            pluginManager.registerEvents(flagListener, this);
         }
 
-
-        pluginManager.registerEvents(new CheckRegister(this), this);
-        Objects.requireNonNull(getCommand("safechat")).setExecutor(new SafeChatCommand(this, dataSource));
+        pluginManager.registerEvents(checkRegister, this);
+        Objects.requireNonNull(getCommand("safechat")).setExecutor(new SafeChatCommand(this, dataSource, isOnlineMode));
     }
-
 }
+
