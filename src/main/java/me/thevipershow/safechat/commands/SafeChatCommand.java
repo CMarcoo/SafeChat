@@ -24,6 +24,7 @@
 package me.thevipershow.safechat.commands;
 
 import com.zaxxer.hikari.HikariDataSource;
+import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.enums.HoverMessages;
 import me.thevipershow.safechat.enums.SPermissions;
 import me.thevipershow.safechat.sql.PostgreSQLUtils;
@@ -34,18 +35,20 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class SafeChatCommand implements CommandExecutor {
 
-    private final Plugin plugin;
+    private final JavaPlugin plugin;
     private final HikariDataSource dataSource;
     private final boolean isOnlineMode;
+    private final Values values;
 
-    public SafeChatCommand(Plugin plugin, HikariDataSource dataSource, boolean isOnlineMode) {
+    public SafeChatCommand(JavaPlugin plugin, HikariDataSource dataSource, boolean isOnlineMode) {
         this.plugin = plugin;
         this.dataSource = dataSource;
         this.isOnlineMode = isOnlineMode;
+        this.values = Values.getInstance(plugin);
     }
 
     private void noArguments(final CommandSender commandSender) {
@@ -96,7 +99,7 @@ public class SafeChatCommand implements CommandExecutor {
                 if (length >= 3) {
                     if (args[1].equalsIgnoreCase("search") && length == 3) {
 
-                        PostgreSQLUtils.getPlayerScore(dataSource, args[2], isOnlineMode).thenAccept(integer -> {
+                        PostgreSQLUtils.getPlayerScore(dataSource, args[2], isOnlineMode, values.getTable()).thenAccept(integer -> {
                             if (integer == -1 || integer == null) {
                                 sender.sendMessage(TextMessage.build("&8» &4Player &f" + args[2] + " &4not found!").color().getText());
                             } else {
@@ -107,7 +110,7 @@ public class SafeChatCommand implements CommandExecutor {
                     } else if (args[1].equalsIgnoreCase("top") && args[2].matches("[0-9]+") && length == 3) {
 
                         sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
-                        PostgreSQLUtils.getTopData(dataSource, Integer.parseInt(args[2])).thenAccept(r -> {
+                        PostgreSQLUtils.getTopData(dataSource, Integer.parseInt(args[2]), values.getTable()).thenAccept(r -> {
                             r.forEach((uuid, integer) -> sender.sendMessage(TextMessage.build("&7|  &e" + Bukkit.getOfflinePlayer(uuid).getName() + "  &6" + integer).color().getText()));
                             sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
                         });

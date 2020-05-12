@@ -28,6 +28,7 @@ import me.thevipershow.safechat.events.FlagThrownEvent;
 import me.thevipershow.spigotchatlib.chat.TextMessage;
 import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -59,8 +60,9 @@ public final class DomainsCheck implements ChatCheck {
         boolean result = stringToCheck.matches(values.getDomainRegex());
 
         if (result && !chatEvent.isCancelled()) {
+            final Player player = chatEvent.getPlayer();
             chatEvent.setCancelled(true);
-            Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, "domains", chatEvent.getPlayer().getUniqueId()));
+            Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, "domains", player.getUniqueId(), player.getName()));
             chatEvent.getPlayer().spigot().sendMessage(HoverMessageBuilder.buildHover(
                     TextMessage.build(values.getDomainWarning().toArray(String[]::new)).color(),
                     TextMessage.build(values.getDomainHover().toArray(String[]::new)).color()
@@ -68,4 +70,3 @@ public final class DomainsCheck implements ChatCheck {
         }
     }
 }
-

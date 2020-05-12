@@ -35,6 +35,7 @@ public enum EnumConfig {
     PORT("safechat.database.port"),
     ADDRESS("safechat.database.address"),
     DATABASE("safechat.database.database"),
+    TABLE("safechat.database.table"),
     DOMAIN_REGEX("safechat.domains.regex"),
     DOMAIN_WHITELIST("safechat.domains.whitelisted"),
     DOMAIN_WARNING("safechat.domains.warning"),

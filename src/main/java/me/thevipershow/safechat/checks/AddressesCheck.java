@@ -28,6 +28,7 @@ import me.thevipershow.safechat.events.FlagThrownEvent;
 import me.thevipershow.spigotchatlib.chat.TextMessage;
 import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -54,13 +55,13 @@ public final class AddressesCheck implements ChatCheck {
 
     @Override
     public void result(final String message, final AsyncPlayerChatEvent chatEvent, final Plugin plugin) {
-
         final String stringToCheck = message.replaceAll(values.getIpv4Whitelist(), "");
         boolean result = stringToCheck.matches(values.getIpv4Regex());
 
         if (result && !chatEvent.isCancelled()) {
             chatEvent.setCancelled(true);
-            Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, "addresses", chatEvent.getPlayer().getUniqueId()));
+            final Player player = chatEvent.getPlayer();
+            Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, "addresses", player.getUniqueId(), player.getName()));
             chatEvent.getPlayer().spigot().sendMessage(HoverMessageBuilder.buildHover(
                     TextMessage.build(values.getIpv4Warning().toArray(String[]::new)).color(),
                     TextMessage.build(values.getIpv4Hover().toArray(String[]::new)).color()
@@ -68,4 +69,3 @@ public final class AddressesCheck implements ChatCheck {
         }
     }
 }
-

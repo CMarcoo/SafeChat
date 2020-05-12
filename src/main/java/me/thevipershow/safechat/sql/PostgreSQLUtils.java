@@ -110,13 +110,13 @@ public final class PostgreSQLUtils {
      * Create a table if it doesn't already exist Async [✓]
      *
      * @param source the source
+     * @param tableName the name of the table that will be created
      */
-    public static void createTable(HikariDataSource source) {
-        assert source != null : "The source was found to be null!";
+    public static void createTable(final HikariDataSource source, final String tableName) {
         Bukkit.getScheduler().runTaskAsynchronously(Safechat.getPlugin(Safechat.class), () -> {
             try {
                 try (final Connection connection = source.getConnection(); final PreparedStatement preparedStatement = connection.prepareStatement(
-                        "create table if not exists safechat_data\n"
+                        "create table if not exists `" + tableName + "`\n"
                         + "(\n"
                         + "\tplayer_uuid uuid not null unique primary key ,\n"
                         + "\tflags int not null);")) {
@@ -128,11 +128,11 @@ public final class PostgreSQLUtils {
         });
     }
 
-    public static void addUniquePlayer(final HikariDataSource source, final UUID uuid, final int severity) {
+    public static void addUniquePlayer(final HikariDataSource source, final UUID uuid, final int severity, final String tableName) {
         Bukkit.getScheduler().runTaskAsynchronously(Safechat.getPlugin(Safechat.class), () -> {
             try {
                 try (final Connection connection = source.getConnection(); final PreparedStatement preparedStatement = connection.prepareStatement(
-                        "insert into safechat_data (player_uuid, flags) values ('" + uuid.toString() + "',1) on conflict (player_uuid) do update set flags = safechat_data.flags +" + severity + ";"
+                        "insert into `" + tableName + "` (player_uuid, flags) values ('" + uuid.toString() + "',1) on conflict (player_uuid) do update set flags = safechat_data.flags +" + severity + ";"
                 )) {
                     preparedStatement.executeUpdate();
                 }
@@ -142,12 +142,12 @@ public final class PostgreSQLUtils {
         });
     }
 
-    public static CompletableFuture<LinkedHashMap<UUID, Integer>> getTopData(final HikariDataSource source, final int limit) {
+    public static CompletableFuture<LinkedHashMap<UUID, Integer>> getTopData(final HikariDataSource source, final int limit, final String tableName) {
         final CompletableFuture<LinkedHashMap<UUID, Integer>> completableFuture = new CompletableFuture<>();
         EXECUTOR_SERVICE.submit(() -> {
             try {
                 try (final Connection connection = source.getConnection(); final PreparedStatement ps = connection.prepareStatement(
-                        "select player_uuid, flags from safechat_data order by flags desc limit " + limit + ";"
+                        "select player_uuid, flags from `" + tableName + "` order by flags desc limit " + limit + ";"
                 )) {
                     final LinkedHashMap<UUID, Integer> playersFlagsMap = new LinkedHashMap<>();
                     final ResultSet resultSet = ps.executeQuery();
@@ -227,7 +227,7 @@ public final class PostgreSQLUtils {
         return completableFuture;
     }
 
-    public static CompletableFuture<Integer> getPlayerScore(final HikariDataSource source, final String name, final boolean onlineMode) {
+    public static CompletableFuture<Integer> getPlayerScore(final HikariDataSource source, final String name, final boolean onlineMode, final String tableName) {
         final CompletableFuture<Integer> completableFuture = new CompletableFuture<>();
         UUID playerUUID;
         if (onlineMode) {
@@ -251,7 +251,7 @@ public final class PostgreSQLUtils {
             if (offlinePlayer.hasPlayedBefore()) {
                 try {
                     try (final Connection con = source.getConnection(); final PreparedStatement ps = con.prepareStatement(
-                            "select flags from safechat_data where player_uuid = " + playerUUID.toString() + ";"
+                            "select flags from `" + tableName + "` where player_uuid = " + playerUUID.toString() + ";"
                     )) {
                         final ResultSet resultSet = ps.executeQuery();
                         int playerFlags = (resultSet.getInt("flags"));
@@ -259,6 +259,7 @@ public final class PostgreSQLUtils {
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
+                    completableFuture.complete(null);
                 }
             } else {
                 completableFuture.complete(null);

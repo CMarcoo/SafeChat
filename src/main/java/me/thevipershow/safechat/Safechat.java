@@ -58,7 +58,7 @@ public final class Safechat extends JavaPlugin {
                                 values.getPassword())
                 );
                 postgreSQLFlagListener = PostgreSQLFlagListener.getInstance(dataSource, this);
-                PostgreSQLUtils.createTable(dataSource);
+                PostgreSQLUtils.createTable(dataSource, values.getTable());
                 pluginManager.registerEvents(postgreSQLFlagListener, this);
             } else if (values.getDbType().equalsIgnoreCase("SQLITE")) {
 

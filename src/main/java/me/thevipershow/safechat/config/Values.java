@@ -57,6 +57,7 @@ public final class Values {
         this.port = EnumConfig.PORT.getInt(configuration);
         this.address = EnumConfig.ADDRESS.getString(configuration);
         this.database = EnumConfig.DATABASE.getString(configuration);
+        this.table = EnumConfig.TABLE.getString(configuration);
         this.domainRegex = EnumConfig.DOMAIN_REGEX.getString(configuration);
         this.domainWhitelist = EnumConfig.DOMAIN_WHITELIST.getString(configuration);
         this.domainWarning = EnumConfig.DOMAIN_WARNING.getStringList(configuration);
@@ -75,6 +76,7 @@ public final class Values {
     private int port;
     private String address;
     private String database;
+    private String table;
     private String domainRegex;
     private String domainWhitelist;
     private List<String> domainWarning;
@@ -88,7 +90,7 @@ public final class Values {
         return serialUID;
     }
 
-    public String getDbType() {
+    public final String getDbType() {
         return dbType;
     }
 
@@ -114,6 +116,10 @@ public final class Values {
 
     public final String getDatabase() {
         return database;
+    }
+
+    public final String getTable() {
+        return table;
     }
 
     public final String getDomainRegex() {

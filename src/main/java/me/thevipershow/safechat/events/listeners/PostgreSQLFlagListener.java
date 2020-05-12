@@ -56,6 +56,6 @@ public final class PostgreSQLFlagListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true)
     public final void event(FlagThrownEvent event) {
-        PostgreSQLUtils.addUniquePlayer(dataSource, event.getSenderUUID(), event.getSeverity());
+        PostgreSQLUtils.addUniquePlayer(dataSource, event.getSenderUUID(), event.getSeverity(), values.getTable());
     }
 }
