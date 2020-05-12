@@ -29,7 +29,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -53,9 +52,9 @@ public final class SQLiteUtils {
         }
         return success;
     }
-
+    
     public static Connection getDatabaseConnection(File pluginDataFolderFile) throws SQLException {
-        final String url = "jdbc:sqlite:" + pluginDataFolderFile.getAbsolutePath() + "safechat";
+        final String url = "jdbc:sqlite:" + pluginDataFolderFile.getAbsolutePath() + File.separator + "safechat.sqlite";
         final Connection con = DriverManager.getConnection(url);
         if (con != null) {
             return con;
@@ -71,7 +70,7 @@ public final class SQLiteUtils {
 
     public static void createTable(final JavaPlugin plugin, final File dataFolder, final ExceptionHandler handler) {
         try (final Connection connection = getDatabaseConnection(dataFolder)) {
-            final String SQL = "CREATE TABLE IF NOT EXISTS `safechat_data`\n"
+            final String SQL = "CREATE TABLE IF NOT EXISTS safechat_data\n"
                     + "(\n"
                     + "\tplayer_uuid CHARACTER(36) NOT NULL UNIQUE PRIMARY KEY ,\n"
                     + "\tusername CHARACTER(16) NOT NULL,\n"

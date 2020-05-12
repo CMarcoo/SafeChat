@@ -11,7 +11,7 @@ safechat:
     type: 'SQLITE' 
     # Enable database based features
     # Values: [true|false]
-    enabled: false 
+    enabled: true
     # The username that will be used when attempting to authenticate into the specified database
     # Values: String
     username: 'username'

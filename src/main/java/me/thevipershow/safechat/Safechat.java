@@ -50,7 +50,7 @@ public final class Safechat extends JavaPlugin {
     private final CheckRegister checkRegister = CheckRegister.getInstance(this);
     private final Logger logger = getLogger();
     private PostgreSQLFlagListener postgreSQLFlagListener;
-    private SQLiteFlagListener SQLiteFlagListener;
+    private SQLiteFlagListener sqLiteFlagListener;
 
     @Override
     public void onEnable() {
@@ -73,17 +73,18 @@ public final class Safechat extends JavaPlugin {
             } else if (values.getDbType().equalsIgnoreCase("SQLITE")) {
                 try {
                     if (SQLiteUtils.createDatabaseFile(getDataFolder())) {
-                        logger.log(Level.INFO, "Succesfully created a new SQLITE database in\n{0}safechat.sqlite", getDataFolder().getAbsolutePath());
-                        
+                        logger.log(Level.INFO, "Succesfully created a new SQLITE database at: {0}\\safechat.sqlite", getDataFolder().getAbsolutePath());
+
                         SQLiteUtils.createTable(this, getDataFolder(), e -> {
                             logger.log(Level.WARNING, "Something went wrong when trying to create table `{0}`\n", values.getTable());
                             e.printStackTrace();
                         });
-                        
+
                     } else {
                         logger.log(Level.INFO, "The SQLITE database has been loaded correctly!");
                     }
-                    
+                    sqLiteFlagListener = SQLiteFlagListener.getInstance(this);
+                    pluginManager.registerEvents(sqLiteFlagListener, this);
                 } catch (IOException ex) {
                     logger.log(Level.WARNING, "Could not load the SQLITE database! Something went wrong: \n");
                     ex.printStackTrace();
