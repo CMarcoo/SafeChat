@@ -21,25 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package me.thevipershow.safechat.enums;
+package me.thevipershow.safechat.events.listeners;
 
-public enum HoverMessages {
+import me.thevipershow.safechat.events.FlagThrownEvent;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.java.JavaPlugin;
 
-    NO_ARGS("&eSafeChat &7syntax:",
-            "&6Open this help page&7:",
-            "- &7/safechat",
-            "&6Get stored data of a certain player&7:",
-            "- &7/safechat sql search &8<&eplayer&8>",
-            "&6Get &o&nX&r &6players with the highest flags count&7:",
-            "- &7/safechat sql top &8<&enumber&8>");
+/**
+ *
+ * @author marco
+ */
+public final class SQLiteFlagListener implements Listener {
 
-    private final String[] messages;
+    private static SQLiteFlagListener instance = null;
+    private final JavaPlugin plugin;
 
-    HoverMessages(String... messages) {
-        this.messages = messages;
+    private SQLiteFlagListener(JavaPlugin plugin) {
+        this.plugin = plugin;
     }
 
-    public String[] getMessages() {
-        return messages;
+    public static SQLiteFlagListener getInstance(JavaPlugin plugin) {
+        if (instance == null) {
+            instance = new SQLiteFlagListener(plugin);
+        }
+        return instance;
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public final void event(FlagThrownEvent event) {
+            //TODO: implement
     }
 }
