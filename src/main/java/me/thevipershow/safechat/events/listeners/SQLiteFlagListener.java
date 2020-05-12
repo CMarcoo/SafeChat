@@ -52,7 +52,7 @@ public final class SQLiteFlagListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public final void event(FlagThrownEvent event) {
-        SQLiteUtils.addUniquePlayerOrUpdate(plugin, plugin.getDataFolder(), event.getSenderUUID(), event.getPlayerName(), event.getSeverity(), e -> {
+        SQLiteUtils.addUniquePlayerOrUpdate(plugin.getDataFolder(), event.getSenderUUID(), event.getPlayerName(), event.getSeverity(), e -> {
             plugin.getLogger().log(Level.WARNING, "Something went wrong while trying to update values for {0}!\n", event.getPlayerName());
         });
     }

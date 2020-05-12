@@ -24,9 +24,7 @@
 package me.thevipershow.safechat;
 
 import com.zaxxer.hikari.HikariDataSource;
-import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -75,7 +73,7 @@ public final class Safechat extends JavaPlugin {
                     if (SQLiteUtils.createDatabaseFile(getDataFolder())) {
                         logger.log(Level.INFO, "Succesfully created a new SQLITE database at: {0}\\safechat.sqlite", getDataFolder().getAbsolutePath());
 
-                        SQLiteUtils.createTable(this, getDataFolder(), e -> {
+                        SQLiteUtils.createTable(getDataFolder(), e -> {
                             logger.log(Level.WARNING, "Something went wrong when trying to create table `{0}`\n", values.getTable());
                             e.printStackTrace();
                         });

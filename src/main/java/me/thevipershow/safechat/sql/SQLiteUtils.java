@@ -28,12 +28,14 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
 public final class SQLiteUtils {
@@ -52,7 +54,7 @@ public final class SQLiteUtils {
         }
         return success;
     }
-    
+
     public static Connection getDatabaseConnection(File pluginDataFolderFile) throws SQLException {
         final String url = "jdbc:sqlite:" + pluginDataFolderFile.getAbsolutePath() + File.separator + "safechat.sqlite";
         final Connection con = DriverManager.getConnection(url);
@@ -68,7 +70,7 @@ public final class SQLiteUtils {
         void handle(Exception exception);
     }
 
-    public static void createTable(final JavaPlugin plugin, final File dataFolder, final ExceptionHandler handler) {
+    public static void createTable(final File dataFolder, final ExceptionHandler handler) {
         try (final Connection connection = getDatabaseConnection(dataFolder)) {
             final String SQL = "CREATE TABLE IF NOT EXISTS safechat_data\n"
                     + "(\n"
@@ -78,12 +80,12 @@ public final class SQLiteUtils {
             try (final PreparedStatement statement = connection.prepareStatement(SQL)) {
                 statement.executeUpdate();
             }
-        } catch (SQLException exception) {
+        } catch (final SQLException exception) {
             handler.handle(exception);
         }
     }
 
-    public static void addUniquePlayerOrUpdate(final JavaPlugin plugin, final File dataFolder, final UUID uuid, final String name ,final int severity, final ExceptionHandler handler) {
+    public static void addUniquePlayerOrUpdate(final File dataFolder, final UUID uuid, final String name, final int severity, final ExceptionHandler handler) {
         try (final Connection connection = getDatabaseConnection(dataFolder)) {
             final String SQL = "insert into safechat_data (player_uuid, username, flags) values (?,?,1) on conflict (player_uuid) do update set flags = safechat_data.flags + ?;";
             try (final PreparedStatement statement = connection.prepareStatement(SQL)) {
@@ -92,8 +94,47 @@ public final class SQLiteUtils {
                 statement.setInt(3, severity);
                 statement.executeUpdate();
             }
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             handler.handle(ex);
+        }
+    }
+
+    public static CompletableFuture<Pair<UUID, Integer>> getPlayerData(final File dataFolder, final String searchName, final ExceptionHandler handler) {
+        final CompletableFuture<Pair<UUID, Integer>> completableFuture = new CompletableFuture<>();
+        EXECUTOR_SERVICE.submit(() -> {
+            try (final Connection connection = getDatabaseConnection(dataFolder)) {
+                final String SQL = "SELECT flags FROM safechat_data WHERE username = ?;";
+                try (final PreparedStatement preparedStatement = connection.prepareStatement(SQL)) {
+                    preparedStatement.setString(1, searchName);
+                    final ResultSet resultSet = preparedStatement.executeQuery();
+                    final int flag = resultSet.getInt("flags");
+                    final UUID uuid = UUID.fromString(resultSet.getString("player_uuid"));
+                    final Pair<UUID, Integer> pair = new Pair(flag, uuid);
+                    completableFuture.complete(pair);
+                }
+            } catch (final SQLException e) {
+                handler.handle(e);
+            }
+        });
+        return completableFuture;
+    }
+
+    private static class Pair<X, Y> {
+
+        private final X x;
+        private final Y y;
+
+        public Pair(X x, Y y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public X getX() {
+            return x;
+        }
+
+        public Y getY() {
+            return y;
         }
     }
 }
