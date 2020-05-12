@@ -8,7 +8,7 @@ safechat:
     # SQLITE database type will use json files to locally store data, so filling the database info fields,
     # such as username, host and passwords will not be required. However if you decide to use PostgreSQL database
     # those fields will be required in order for the plugin to properly connect to the remote\local database!
-    type: 'POSTGRESQL' 
+    type: 'SQLITE' 
     # Enable database based features
     # Values: [true|false]
     enabled: false 
@@ -30,10 +30,7 @@ safechat:
     # NOTE: The plugin will not attempt to create a new database, you need to already have an accessible one!
     # Values: Any string
     database: 'database'
-    # This is the name of the table we will store data into, default is recommended
-    # but if for some reasons you can't use this name, you can modify it
-    # Values: ASCII: [0-9,a-z,A-Z$_] (basic Latin letters, digits 0-9, dollar, underscore) 
-    # More here: https://dev.mysql.com/doc/refman/8.0/en/identifiers.html
+    # for display purposes only.
     table: 'safechat_data'
   # The configuration below uses RegEx to check user input, they are a short sequence of characters that
   # define a search pattern. This are used in order to 'recognize' dangerous messages.

@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
@@ -68,25 +69,32 @@ public final class SQLiteUtils {
         void handle(Exception exception);
     }
 
-    public static void createTable(final JavaPlugin plugin, final File dataFolder, final String tableName, final ExceptionHandler handler) {
-        scheduler.runTask(plugin, () -> {
-            try (final Connection connection = getDatabaseConnection(dataFolder)) {
-                final Statement statement = connection.createStatement();
-                statement.setQueryTimeout(5);
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS `" + tableName + "`\n"
-                        + "(\n"
-                        + "\tplayer_uuid CHARACTER(36) NOT NULL UNIQUE PRIMARY KEY ,\n"
-                        + "\tusername CHARACTER(16) NOT NULL,\n"
-                        + "\tflags INT NOT NULL);");
-            } catch (SQLException exception) {
-                handler.handle(exception);
+    public static void createTable(final JavaPlugin plugin, final File dataFolder, final ExceptionHandler handler) {
+        try (final Connection connection = getDatabaseConnection(dataFolder)) {
+            final String SQL = "CREATE TABLE IF NOT EXISTS `safechat_data`\n"
+                    + "(\n"
+                    + "\tplayer_uuid CHARACTER(36) NOT NULL UNIQUE PRIMARY KEY ,\n"
+                    + "\tusername CHARACTER(16) NOT NULL,\n"
+                    + "\tflags INT NOT NULL);";
+            try (final PreparedStatement statement = connection.prepareStatement(SQL)) {
+                statement.executeUpdate();
             }
-        });
+        } catch (SQLException exception) {
+            handler.handle(exception);
+        }
     }
 
-    public static void addUniquePlayer(final JavaPlugin plugin, final File dataFolder, final UUID uuid, final int severity, final String tableName, final ExceptionHandler handler) {
-        scheduler.runTaskAsynchronously(plugin, () -> {
-
-        });
+    public static void addUniquePlayerOrUpdate(final JavaPlugin plugin, final File dataFolder, final UUID uuid, final String name ,final int severity, final ExceptionHandler handler) {
+        try (final Connection connection = getDatabaseConnection(dataFolder)) {
+            final String SQL = "insert into safechat_data (player_uuid, username, flags) values (?,?,1) on conflict (player_uuid) do update set flags = safechat_data.flags + ?;";
+            try (final PreparedStatement statement = connection.prepareStatement(SQL)) {
+                statement.setString(1, uuid.toString());
+                statement.setString(2, name);
+                statement.setInt(3, severity);
+                statement.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            handler.handle(ex);
+        }
     }
 }

@@ -35,29 +35,34 @@ public class FlagThrownEvent extends Event {
     private final int severity;
     private final String checkName;
     private final UUID senderUUID;
+    private final String playerName;
 
-    public FlagThrownEvent(final int severity, final String checkName, final UUID senderUUID) {
+    public FlagThrownEvent(final int severity, final String checkName, final UUID senderUUID, final String playerName) {
         super(true);
         this.severity = severity;
         this.checkName = checkName;
         this.senderUUID = senderUUID;
-
+        this.playerName = playerName;
     }
 
-    public int getSeverity() {
+    public final int getSeverity() {
         return severity;
     }
 
-    public String getCheckName() {
+    public final String getCheckName() {
         return checkName;
     }
 
-    public UUID getSenderUUID() {
+    public final UUID getSenderUUID() {
         return senderUUID;
     }
 
+    public final String getPlayerName() {
+        return playerName;
+    }
+
     @Override
-    public HandlerList getHandlers() {
+    public final HandlerList getHandlers() {
         return handlers;
     }
 
