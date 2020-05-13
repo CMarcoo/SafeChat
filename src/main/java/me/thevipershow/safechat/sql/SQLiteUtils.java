@@ -30,7 +30,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -119,7 +118,7 @@ public final class SQLiteUtils {
         return completableFuture;
     }
 
-    private static class Pair<X, Y> {
+    public static class Pair<X, Y> {
 
         private final X x;
         private final Y y;

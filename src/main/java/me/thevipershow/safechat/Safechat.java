@@ -29,7 +29,8 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.thevipershow.safechat.checks.register.CheckRegister;
-import me.thevipershow.safechat.commands.SafeChatCommand;
+import me.thevipershow.safechat.commands.PostgresSafechatCommand;
+import me.thevipershow.safechat.commands.SQLiteSafechatCommand;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.events.listeners.PostgreSQLFlagListener;
 import me.thevipershow.safechat.events.listeners.SQLiteFlagListener;
@@ -42,17 +43,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class Safechat extends JavaPlugin {
 
     public HikariDataSource dataSource;
-    private boolean isOnlineMode;
     private final PluginManager pluginManager = Bukkit.getPluginManager();
     private final Values values = Values.getInstance(this);
     private final CheckRegister checkRegister = CheckRegister.getInstance(this);
     private final Logger logger = getLogger();
     private PostgreSQLFlagListener postgreSQLFlagListener;
     private SQLiteFlagListener sqLiteFlagListener;
+    private SQLiteSafechatCommand sqlCommand;
+    private PostgresSafechatCommand postgresCommand;
 
     @Override
     public void onEnable() {
-        isOnlineMode = getServer().getOnlineMode();
         saveDefaultConfig();
         if (values.isEnabled()) {
             if (values.getDbType().equalsIgnoreCase("POSTGRESQL")) {
@@ -67,12 +68,11 @@ public final class Safechat extends JavaPlugin {
                 postgreSQLFlagListener = PostgreSQLFlagListener.getInstance(dataSource, this);
                 PostgreSQLUtils.createTable(dataSource, values.getTable());
                 pluginManager.registerEvents(postgreSQLFlagListener, this);
-
+                getCommand("safechat").setExecutor(postgresCommand = PostgresSafechatCommand.getInstance(this, dataSource));
             } else if (values.getDbType().equalsIgnoreCase("SQLITE")) {
                 try {
                     if (SQLiteUtils.createDatabaseFile(getDataFolder())) {
                         logger.log(Level.INFO, "Succesfully created a new SQLITE database at: {0}\\safechat.sqlite", getDataFolder().getAbsolutePath());
-
                         SQLiteUtils.createTable(getDataFolder(), e -> {
                             logger.log(Level.WARNING, "Something went wrong when trying to create table `{0}`\n", values.getTable());
                             e.printStackTrace();
@@ -83,6 +83,7 @@ public final class Safechat extends JavaPlugin {
                     }
                     sqLiteFlagListener = SQLiteFlagListener.getInstance(this);
                     pluginManager.registerEvents(sqLiteFlagListener, this);
+                    getCommand("safechat").setExecutor(sqlCommand = SQLiteSafechatCommand.getInstance(this));
                 } catch (IOException ex) {
                     logger.log(Level.WARNING, "Could not load the SQLITE database! Something went wrong: \n");
                     ex.printStackTrace();
@@ -92,6 +93,5 @@ public final class Safechat extends JavaPlugin {
         }
 
         pluginManager.registerEvents(checkRegister, this);
-        Objects.requireNonNull(getCommand("safechat")).setExecutor(new SafeChatCommand(this, dataSource, isOnlineMode));
     }
 }

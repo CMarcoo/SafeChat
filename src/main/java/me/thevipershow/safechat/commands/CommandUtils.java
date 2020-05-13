@@ -23,35 +23,23 @@
  */
 package me.thevipershow.safechat.commands;
 
-import com.zaxxer.hikari.HikariDataSource;
-import me.thevipershow.safechat.config.Values;
+import java.io.File;
+import java.util.List;
 import me.thevipershow.safechat.enums.HoverMessages;
 import me.thevipershow.safechat.enums.SPermissions;
-import me.thevipershow.safechat.sql.PostgreSQLUtils;
+import me.thevipershow.safechat.sql.SQLiteUtils;
 import me.thevipershow.spigotchatlib.chat.TextMessage;
 import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public class SafeChatCommand implements CommandExecutor {
+/**
+ *
+ * @author marco
+ */
+public final class CommandUtils {
 
-    private final JavaPlugin plugin;
-    private final HikariDataSource dataSource;
-    private final boolean isOnlineMode;
-    private final Values values;
-
-    public SafeChatCommand(JavaPlugin plugin, HikariDataSource dataSource, boolean isOnlineMode) {
-        this.plugin = plugin;
-        this.dataSource = dataSource;
-        this.isOnlineMode = isOnlineMode;
-        this.values = Values.getInstance(plugin);
-    }
-
-    private void noArguments(final CommandSender commandSender) {
+    public static void noArguments(final CommandSender commandSender) {
         if (commandSender instanceof Player) {
             final Player player = (Player) commandSender;
             player.spigot().sendMessage(HoverMessageBuilder.buildHover(
@@ -64,7 +52,7 @@ public class SafeChatCommand implements CommandExecutor {
         }
     }
 
-    private void sendWarning(final CommandSender commandSender, final String error) {
+    public static void sendWarning(final CommandSender commandSender, final String error) {
         if (commandSender instanceof Player) {
             final Player player = (Player) commandSender;
             player.spigot().sendMessage(HoverMessageBuilder.buildHover(
@@ -76,21 +64,23 @@ public class SafeChatCommand implements CommandExecutor {
         }
     }
 
-    /**
-     * Executes the given command, returning its success.
-     * <br>
-     * If false is returned, then the "usage" plugin.yml entry for this command
-     * (if defined) will be sent to the player.
-     *
-     * @param sender Source of the command
-     * @param command Command which was executed
-     * @param label Alias of the command which was used
-     * @param args Passed command arguments
-     * @return true if a valid command, otherwise false
-     */
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public static void sqlSearch(final Integer flags, final CommandSender sender, final String name) {
+        if (flags == null || flags == -1) {
+            sender.sendMessage(TextMessage.build("&8» &4Player &f" + name + " &4not found!").color().getText());
+        } else {
+            sender.sendMessage(TextMessage.build("&8» &ePlayer &f" + name + " &ehas &6" + flags + " &eflags.").color().getText());
+        }
+    }
 
+    public static void topSearch(final CommandSender sender, final String[] args, final Integer search, final List<SQLiteUtils.Pair<String, Integer>> result) {
+        sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
+        result.forEach(pair -> {
+            sender.sendMessage(TextMessage.build("&7|  &e" + pair.getX() + "  &6" + pair.getY()).color().getText());
+        });
+        sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
+    }
+
+    public static void processCommandInput(final String[] args, final CommandSender sender, final File dataFolder) {
         if (sender.hasPermission(SPermissions.COMMAND.getConcatPermission("main"))) {
             final int length = args.length;
             if (length == 0) {
@@ -98,23 +88,14 @@ public class SafeChatCommand implements CommandExecutor {
             } else if (args[0].equalsIgnoreCase("sql")) {
                 if (length >= 3) {
                     if (args[1].equalsIgnoreCase("search") && length == 3) {
-
-                        PostgreSQLUtils.getPlayerScore(dataSource, args[2], isOnlineMode, values.getTable()).thenAccept(integer -> {
-                            if (integer == -1 || integer == null) {
-                                sender.sendMessage(TextMessage.build("&8» &4Player &f" + args[2] + " &4not found!").color().getText());
-                            } else {
-                                sender.sendMessage(TextMessage.build("&8» &ePlayer &f" + args[2] + " &ehas &6" + integer + " &eflags.").color().getText());
-                            }
-                        });
-
+                        final String playerName = args[2];
+                        SQLiteUtils.getPlayerData(dataFolder, playerName, e -> {
+                            sender.sendMessage(TextMessage.build("&4Something went wrong when trying to obtain data for " + playerName, "Check your console!").color().getText());
+                            e.printStackTrace();
+                        }).thenAcceptAsync(pair -> sqlSearch(pair.getY(), sender, playerName));
                     } else if (args[1].equalsIgnoreCase("top") && args[2].matches("[0-9]+") && length == 3) {
-
-                        sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
-                        PostgreSQLUtils.getTopData(dataSource, Integer.parseInt(args[2]), values.getTable()).thenAccept(r -> {
-                            r.forEach((uuid, integer) -> sender.sendMessage(TextMessage.build("&7|  &e" + Bukkit.getOfflinePlayer(uuid).getName() + "  &6" + integer).color().getText()));
-                            sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
-                        });
-
+                        final int search = Integer.parseInt(args[2]);
+                        //TODO: Implement
                     } else {
                         sendWarning(sender, "'&7" + args[1] + "&f' is an invalid argument");
                     }
@@ -123,6 +104,6 @@ public class SafeChatCommand implements CommandExecutor {
                 }
             }
         }
-        return true;
     }
+
 }
