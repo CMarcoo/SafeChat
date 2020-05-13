@@ -23,12 +23,13 @@
  */
 package me.thevipershow.safechat.commands;
 
+import com.zaxxer.hikari.HikariDataSource;
 import java.io.File;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import me.thevipershow.safechat.enums.HoverMessages;
 import me.thevipershow.safechat.enums.SPermissions;
+import me.thevipershow.safechat.sql.PostgreSQLUtils;
 import me.thevipershow.safechat.sql.SQLiteUtils;
 import me.thevipershow.spigotchatlib.chat.TextMessage;
 import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
@@ -134,17 +135,49 @@ public final class CommandUtils {
             }
         }
     }
-    /*
-   
-    , e -> {
-                            sender.sendMessage(TextMessage.build("&4Something went wrong when trying to get top player data", "&4Check your console!").color().getText());
-                            e.printStackTrace();
-                        }
-    
-    , e -> {
-                            sender.sendMessage(TextMessage.build("&4Something went wrong when trying to obtain data for " + playerName, "&4Check your console!").color().getText());
-                            e.printStackTrace();
-                        }
-     */
 
+    public static void processPostgresCommand(final String[] args, final CommandSender sender, final HikariDataSource source, final ExecutorService service) {
+        if (sender.hasPermission(SPermissions.COMMAND.getConcatPermission("main"))) {
+            final int length = args.length;
+            if (length == 0) {
+                noArguments(sender);
+            } else if (args[0].equalsIgnoreCase("sql")) {
+                if (length >= 3) {
+                    if (args[1].equalsIgnoreCase("search") && length == 3) {
+                        final String playerName = args[2];
+                        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+                        if (!offlinePlayer.hasPlayedBefore()) {
+                            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &cThe player you specified has never joined this server!").color().getText());
+                        } else {
+                            PostgreSQLUtils.getPlayerData(source, offlinePlayer.getUniqueId(), service)
+                                    .thenAcceptAsync(i -> sqlSearch(i, sender, playerName))
+                                    .exceptionally(e -> {
+                                        e.printStackTrace();
+                                        return null;
+                                    });
+                        }
+
+                    } else if (args[1].equalsIgnoreCase("top") && args[2].matches("[0-9]+") && length == 3) {
+                        final int search = Integer.parseInt(args[2]);
+                        PostgreSQLUtils.getTopData(source, search, service)
+                                .thenAcceptAsync(data -> {
+                                    sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
+                                    data.forEach((name, flag) -> {
+                                        sender.sendMessage(TextMessage.build("&7| &e" + name + "  &6 " + flag).color().getText());
+                                    });
+                                    sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
+                                }).exceptionally(e -> {
+                            e.printStackTrace();
+                            return null;
+                        });
+
+                    } else {
+                        sendWarning(sender, "'&7" + args[1] + "&f' is an invalid argument");
+                    }
+                } else {
+                    sendWarning(sender, "Invalid args number");
+                }
+            }
+        }
+    }
 }

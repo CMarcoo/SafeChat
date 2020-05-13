@@ -39,12 +39,6 @@ import org.bukkit.OfflinePlayer;
 
 public final class SQLiteUtils {
 
-    @FunctionalInterface
-    public static interface ExceptionHandler {
-
-        void handle(Exception exception);
-    }
-
     public static boolean createDatabaseFile(File dataFolder) throws IOException {
         boolean success = false;
         if (!dataFolder.exists()) {

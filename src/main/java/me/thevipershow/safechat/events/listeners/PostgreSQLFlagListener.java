@@ -24,6 +24,7 @@
 package me.thevipershow.safechat.events.listeners;
 
 import com.zaxxer.hikari.HikariDataSource;
+import java.util.logging.Level;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.events.FlagThrownEvent;
 import me.thevipershow.safechat.sql.PostgreSQLUtils;
@@ -35,11 +36,13 @@ public final class PostgreSQLFlagListener implements Listener {
 
     private static PostgreSQLFlagListener instance = null;
     private final HikariDataSource dataSource;
+    private final JavaPlugin plugin;
     private final Values values;
 
     private PostgreSQLFlagListener(HikariDataSource dataSource, JavaPlugin plugin) {
         this.dataSource = dataSource;
         this.values = Values.getInstance(plugin);
+        this.plugin = plugin;
     }
 
     public static PostgreSQLFlagListener getInstance(HikariDataSource dataSource, JavaPlugin plugin) {
@@ -56,6 +59,8 @@ public final class PostgreSQLFlagListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true)
     public final void event(FlagThrownEvent event) {
-        PostgreSQLUtils.addUniquePlayer(dataSource, event.getSenderUUID(), event.getSeverity(), values.getTable());
+        PostgreSQLUtils.addPlayerOrUpdate(dataSource, e -> {
+            plugin.getLogger().log(Level.WARNING, "Something went wrong while trying to update values for {0}!\n", event.getPlayerName());
+        }, event.getSenderUUID(), 1);
     }
 }

@@ -23,15 +23,8 @@
  */
 package me.thevipershow.safechat.sql;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,21 +32,13 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import me.thevipershow.safechat.Safechat;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.postgresql.Driver;
 
 public final class PostgreSQLUtils {
-
-    private static final Gson GSON = new Gson();
-    private static final String MOJANG_AUTH_URL = "https://api.mojang.com/users/profiles/minecraft/";
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
     /**
      * Create an HikariDataSource for PostgreSQL from an HikariConfig
@@ -110,160 +95,76 @@ public final class PostgreSQLUtils {
      * Create a table if it doesn't already exist Async [✓]
      *
      * @param source the source
-     * @param tableName the name of the table that will be created
+     * @param handler handle the exception
      */
-    public static void createTable(final HikariDataSource source, final String tableName) {
-        Bukkit.getScheduler().runTaskAsynchronously(Safechat.getPlugin(Safechat.class), () -> {
-            try {
-                try (final Connection connection = source.getConnection(); final PreparedStatement preparedStatement = connection.prepareStatement(
-                        "create table if not exists `" + tableName + "`\n"
-                        + "(\n"
-                        + "\tplayer_uuid uuid not null unique primary key ,\n"
-                        + "\tflags int not null);")) {
-                    preparedStatement.executeUpdate();
-                }
-            } catch (SQLException exc) {
-                exc.printStackTrace();
+    public static void createTable(final HikariDataSource source, final ExceptionHandler handler) {
+        try (final Connection connection = source.getConnection()) {
+            final String SQL = "CREATE TABLE IF NOT EXISTS safechat_data\n"
+                    + "(\n"
+                    + "\tplayer_uuid UUID NOT NULL UNIQUE PRIMARY KEY,\n"
+                    + "\tflags INT NOT NULL);";
+            try (final PreparedStatement statement = connection.prepareStatement(SQL)) {
+                statement.executeUpdate();
             }
-        });
-    }
-
-    public static void addUniquePlayer(final HikariDataSource source, final UUID uuid, final int severity, final String tableName) {
-        Bukkit.getScheduler().runTaskAsynchronously(Safechat.getPlugin(Safechat.class), () -> {
-            try {
-                try (final Connection connection = source.getConnection(); final PreparedStatement preparedStatement = connection.prepareStatement(
-                        "insert into `" + tableName + "` (player_uuid, flags) values ('" + uuid.toString() + "',1) on conflict (player_uuid) do update set flags = safechat_data.flags +" + severity + ";"
-                )) {
-                    preparedStatement.executeUpdate();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    public static CompletableFuture<LinkedHashMap<UUID, Integer>> getTopData(final HikariDataSource source, final int limit, final String tableName) {
-        final CompletableFuture<LinkedHashMap<UUID, Integer>> completableFuture = new CompletableFuture<>();
-        EXECUTOR_SERVICE.submit(() -> {
-            try {
-                try (final Connection connection = source.getConnection(); final PreparedStatement ps = connection.prepareStatement(
-                        "select player_uuid, flags from `" + tableName + "` order by flags desc limit " + limit + ";"
-                )) {
-                    final LinkedHashMap<UUID, Integer> playersFlagsMap = new LinkedHashMap<>();
-                    final ResultSet resultSet = ps.executeQuery();
-                    while (resultSet.next()) {
-                        final UUID uuidOfPlayer = UUID.fromString(resultSet.getString("player_uuid"));
-                        final int flagsOfPlayer = resultSet.getInt("flags");
-                        playersFlagsMap.put(uuidOfPlayer, flagsOfPlayer);
-                    }
-                    connection.close();
-                    completableFuture.complete(playersFlagsMap);
-                }
-            } catch (SQLException sqlE) {
-                sqlE.printStackTrace();
-            }
-        });
-        return completableFuture;
-    }
-
-    public static CompletableFuture<String> readFromURL(String urlString) {
-        final CompletableFuture<String> completableFuture = new CompletableFuture<>();
-        EXECUTOR_SERVICE.submit(() -> {
-            BufferedReader reader = null;
-            try {
-                final var url = new URL(urlString);
-                reader = new BufferedReader(new InputStreamReader(url.openStream()));
-                final StringBuffer buffer = new StringBuffer();
-                int read;
-                char[] charsRead = new char[1024];
-                while ((read = reader.read(charsRead)) != -1) {
-                    buffer.append(charsRead, 0, read);
-                }
-                completableFuture.complete(buffer.toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-                completableFuture.complete(null);
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-        });
-        return completableFuture;
-    }
-
-    private static class AuthResponse {
-
-        private final String id;
-        private final String name;
-
-        public AuthResponse(String id, String name) {
-            this.id = id;
-            this.name = name;
+        } catch (final SQLException exception) {
+            handler.handle(exception);
         }
     }
 
-    public static CompletableFuture<AuthResponse> getMojangAuthResponse(String playerName) {
-        final CompletableFuture<AuthResponse> completableFuture = new CompletableFuture<>();
-        EXECUTOR_SERVICE.submit(() -> {
-            try {
-                final var readJson = readFromURL(MOJANG_AUTH_URL + playerName).get(3250L, TimeUnit.MILLISECONDS);
-                if (readJson == null) {
-                    completableFuture.complete(null);
-                    return;
-                }
-                final AuthResponse obtainedResponse = GSON.fromJson(readJson, AuthResponse.class);
-                completableFuture.complete(obtainedResponse);
-            } catch (JsonSyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
-                e.printStackTrace();
-                completableFuture.complete(null);
+    public static void addPlayerOrUpdate(final HikariDataSource source, final ExceptionHandler handler, final UUID playerUUID, final int severity) {
+        try (final Connection connection = source.getConnection()) {
+            final String SQL = "INSERT INTO safechat_data (player_uuid, flags) VALUES (?,?) ON CONFLICT (player_uuid) DO UPDATE SET flags = safechat_data.flags + ?;";
+            try (final PreparedStatement statement = connection.prepareStatement(SQL)) {
+                statement.setString(1, playerUUID.toString());
+                statement.setInt(2, severity);
+                statement.setInt(3, severity);
+                statement.executeUpdate();
             }
-        });
-        return completableFuture;
+        } catch (final SQLException exception) {
+            handler.handle(exception);
+        }
     }
 
-    public static CompletableFuture<Integer> getPlayerScore(final HikariDataSource source, final String name, final boolean onlineMode, final String tableName) {
-        final CompletableFuture<Integer> completableFuture = new CompletableFuture<>();
-        UUID playerUUID;
-        if (onlineMode) {
-            try {
-                final AuthResponse authResponse = getMojangAuthResponse(name).get();
-                if (authResponse == null) {
-                    completableFuture.complete(null);
-                    return completableFuture;
-                }
-                playerUUID = UUID.fromString(authResponse.id);
-            } catch (InterruptedException | ExecutionException ex) {
-                ex.printStackTrace();
-                completableFuture.complete(null);
-                return completableFuture;
-            }
-        } else {
-            playerUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
-        }
-        EXECUTOR_SERVICE.submit(() -> {
-            final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerUUID);
-            if (offlinePlayer.hasPlayedBefore()) {
-                try {
-                    try (final Connection con = source.getConnection(); final PreparedStatement ps = con.prepareStatement(
-                            "select flags from `" + tableName + "` where player_uuid = " + playerUUID.toString() + ";"
-                    )) {
-                        final ResultSet resultSet = ps.executeQuery();
-                        int playerFlags = (resultSet.getInt("flags"));
-                        completableFuture.complete(playerFlags);
+    public static CompletableFuture<Integer> getPlayerData(final HikariDataSource source, final UUID searchUUID, final ExecutorService service) {
+        final CompletableFuture<Integer> data = new CompletableFuture<>();
+        service.submit(() -> {
+            try (final Connection connection = source.getConnection()) {
+                final String SQL = "SELECT FLAGS FROM safechat_data WHERE player_uuid = ?;";
+                try (final PreparedStatement statement = connection.prepareStatement(SQL)) {
+                    statement.setString(1, searchUUID.toString());
+                    try (final ResultSet resultSet = statement.executeQuery()) {
+                        final int flag = resultSet.getInt("flags");
+                        data.complete(flag);
                     }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    completableFuture.complete(null);
                 }
-            } else {
-                completableFuture.complete(null);
+            } catch (SQLException exception) {
+                data.completeExceptionally(exception);
             }
         });
-        return completableFuture;
+        return data;
+    }
+
+    public static CompletableFuture<LinkedHashMap<String, Integer>> getTopData(final HikariDataSource source, final int search, final ExecutorService service) {
+        final CompletableFuture<LinkedHashMap<String, Integer>> data = new CompletableFuture<>();
+        service.submit(() -> {
+            try (final Connection connection = source.getConnection()) {
+                final String SQL = "SELECT player_uuid, flags FROM safechat_data ORDER BY flags DESC LIMIT " + search + ";";
+                try (final PreparedStatement statement = connection.prepareStatement(SQL)) {
+                    try (final ResultSet result = statement.executeQuery()) {
+                        final LinkedHashMap<String, Integer> results = new LinkedHashMap<>();
+                        while (result.next()) {
+                            final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(result.getString("player_uuid")));
+                            final String foundName = offlinePlayer.getName();
+                            final int foundFlags = result.getInt("flags");
+                            results.put(foundName, foundFlags);
+                        }
+                        data.complete(results);
+                    }
+                }
+            } catch (SQLException exception) {
+                data.completeExceptionally(exception);
+            }
+        });
+        return data;
     }
 }

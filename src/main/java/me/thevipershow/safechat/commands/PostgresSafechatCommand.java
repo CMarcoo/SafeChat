@@ -71,7 +71,8 @@ public final class PostgresSafechatCommand implements CommandExecutor {
      */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        //TODO: Implement
+        CommandUtils.processPostgresCommand(args, sender, dataSource, service);
         return true;
     }
+
 }
