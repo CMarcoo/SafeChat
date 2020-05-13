@@ -24,6 +24,8 @@
 package me.thevipershow.safechat.commands;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -38,10 +40,12 @@ public final class SQLiteSafechatCommand implements CommandExecutor {
     private static SQLiteSafechatCommand instance = null;
     private final JavaPlugin plugin;
     private final File dataFolder;
+    private final ExecutorService service;
 
     private SQLiteSafechatCommand(JavaPlugin plugin) {
         this.plugin = plugin;
         this.dataFolder = plugin.getDataFolder();
+        this.service = Executors.newCachedThreadPool();
     }
 
     public static SQLiteSafechatCommand getInstance(final JavaPlugin plugin) {
@@ -53,7 +57,7 @@ public final class SQLiteSafechatCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmnd, String string, String[] args) {
-        CommandUtils.processCommandInput(args, sender, dataFolder);
+        CommandUtils.processSQLiteCommand(args, sender, dataFolder, service);
         return true;
     }
 }

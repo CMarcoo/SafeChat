@@ -25,7 +25,6 @@ package me.thevipershow.safechat;
 
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.thevipershow.safechat.checks.register.CheckRegister;

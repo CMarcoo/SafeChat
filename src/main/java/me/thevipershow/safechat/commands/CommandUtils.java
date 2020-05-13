@@ -24,12 +24,16 @@
 package me.thevipershow.safechat.commands;
 
 import java.io.File;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import me.thevipershow.safechat.enums.HoverMessages;
 import me.thevipershow.safechat.enums.SPermissions;
 import me.thevipershow.safechat.sql.SQLiteUtils;
 import me.thevipershow.spigotchatlib.chat.TextMessage;
 import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -65,22 +69,30 @@ public final class CommandUtils {
     }
 
     public static void sqlSearch(final Integer flags, final CommandSender sender, final String name) {
-        if (flags == null || flags == -1) {
-            sender.sendMessage(TextMessage.build("&8» &4Player &f" + name + " &4not found!").color().getText());
+        if (flags == null) {
+            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &8» &4Player &f" + name + " &4not found!").color().getText());
         } else {
-            sender.sendMessage(TextMessage.build("&8» &ePlayer &f" + name + " &ehas &6" + flags + " &eflags.").color().getText());
+            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &8» &ePlayer &f" + name + " &ehas &6" + flags + " &eflags.").color().getText());
         }
     }
 
-    public static void topSearch(final CommandSender sender, final String[] args, final Integer search, final List<SQLiteUtils.Pair<String, Integer>> result) {
-        sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
-        result.forEach(pair -> {
-            sender.sendMessage(TextMessage.build("&7|  &e" + pair.getX() + "  &6" + pair.getY()).color().getText());
-        });
-        sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
+    public static void topSearch(final CommandSender sender, final String[] args, final Integer search, final LinkedHashMap<String, Integer> result) {
+        if (result != null) {
+            if (!result.isEmpty()) {
+                sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
+                result.forEach((name, flags) -> {
+                    sender.sendMessage(TextMessage.build("&7|  &e" + name + "  &6 " + flags).color().getText());
+                    sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
+                });
+            } else {
+                sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: No data was found").color().getText());
+            }
+        } else {
+            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7:  &cSomething went wrong when loading data!").color().getText());
+        }
     }
 
-    public static void processCommandInput(final String[] args, final CommandSender sender, final File dataFolder) {
+    public static void processSQLiteCommand(final String[] args, final CommandSender sender, final File dataFolder, final ExecutorService service) {
         if (sender.hasPermission(SPermissions.COMMAND.getConcatPermission("main"))) {
             final int length = args.length;
             if (length == 0) {
@@ -89,13 +101,30 @@ public final class CommandUtils {
                 if (length >= 3) {
                     if (args[1].equalsIgnoreCase("search") && length == 3) {
                         final String playerName = args[2];
-                        SQLiteUtils.getPlayerData(dataFolder, playerName, e -> {
-                            sender.sendMessage(TextMessage.build("&4Something went wrong when trying to obtain data for " + playerName, "Check your console!").color().getText());
-                            e.printStackTrace();
-                        }).thenAcceptAsync(pair -> sqlSearch(pair.getY(), sender, playerName));
+                        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+                        if (!offlinePlayer.hasPlayedBefore()) {
+                            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &cThe player you specified has never joined this server!").color().getText());
+                        } else {
+                            SQLiteUtils.getPlayerData(dataFolder, offlinePlayer.getUniqueId(), service)
+                                    .thenAcceptAsync(i -> sqlSearch(i, sender, playerName))
+                                    .exceptionally(i -> {
+                                        i.printStackTrace();
+                                        return null;
+                                    });
+                        }
+
                     } else if (args[1].equalsIgnoreCase("top") && args[2].matches("[0-9]+") && length == 3) {
                         final int search = Integer.parseInt(args[2]);
-                        //TODO: Implement
+                        SQLiteUtils.getTopData(dataFolder, search, service).thenAcceptAsync(data -> {
+                            sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
+                            data.forEach((name, flag) -> {
+                                sender.sendMessage(TextMessage.build("&7| &e" + name + "  &6 " + flag).color().getText());
+                            });
+                            sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
+                        }).exceptionally(i -> {
+                            i.printStackTrace();
+                            return null;
+                        });
                     } else {
                         sendWarning(sender, "'&7" + args[1] + "&f' is an invalid argument");
                     }
@@ -105,5 +134,17 @@ public final class CommandUtils {
             }
         }
     }
+    /*
+   
+    , e -> {
+                            sender.sendMessage(TextMessage.build("&4Something went wrong when trying to get top player data", "&4Check your console!").color().getText());
+                            e.printStackTrace();
+                        }
+    
+    , e -> {
+                            sender.sendMessage(TextMessage.build("&4Something went wrong when trying to obtain data for " + playerName, "&4Check your console!").color().getText());
+                            e.printStackTrace();
+                        }
+     */
 
 }

@@ -24,6 +24,8 @@
 package me.thevipershow.safechat.commands;
 
 import com.zaxxer.hikari.HikariDataSource;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import me.thevipershow.safechat.config.Values;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -36,6 +38,7 @@ public final class PostgresSafechatCommand implements CommandExecutor {
     private final HikariDataSource dataSource;
     private final boolean isOnlineMode;
     private final Values values;
+    private final ExecutorService service;
 
     private static PostgresSafechatCommand instance = null;
 
@@ -44,6 +47,7 @@ public final class PostgresSafechatCommand implements CommandExecutor {
         this.dataSource = dataSource;
         this.isOnlineMode = isOnlineMode;
         this.values = Values.getInstance(plugin);
+        this.service = Executors.newCachedThreadPool();
     }
 
     public static PostgresSafechatCommand getInstance(final JavaPlugin plugin, final HikariDataSource dataSource) {
@@ -67,7 +71,7 @@ public final class PostgresSafechatCommand implements CommandExecutor {
      */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        CommandUtils.processCommandInput(args, sender, plugin.getDataFolder());
+        //TODO: Implement
         return true;
     }
 }

@@ -163,7 +163,6 @@ public final class PostgreSQLUtils {
                 sqlE.printStackTrace();
             }
         });
-
         return completableFuture;
     }
 

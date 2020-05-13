@@ -30,17 +30,20 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.OfflinePlayer;
 
 public final class SQLiteUtils {
 
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
-    private static final BukkitScheduler scheduler = Bukkit.getScheduler();
+    @FunctionalInterface
+    public static interface ExceptionHandler {
+
+        void handle(Exception exception);
+    }
 
     public static boolean createDatabaseFile(File dataFolder) throws IOException {
         boolean success = false;
@@ -63,18 +66,11 @@ public final class SQLiteUtils {
         throw new SQLException("Couldn't estabilish a connection");
     }
 
-    @FunctionalInterface
-    public static interface ExceptionHandler {
-
-        void handle(Exception exception);
-    }
-
     public static void createTable(final File dataFolder, final ExceptionHandler handler) {
         try (final Connection connection = getDatabaseConnection(dataFolder)) {
             final String SQL = "CREATE TABLE IF NOT EXISTS safechat_data\n"
                     + "(\n"
                     + "\tplayer_uuid CHARACTER(36) NOT NULL UNIQUE PRIMARY KEY ,\n"
-                    + "\tusername CHARACTER(16) NOT NULL,\n"
                     + "\tflags INT NOT NULL);";
             try (final PreparedStatement statement = connection.prepareStatement(SQL)) {
                 statement.executeUpdate();
@@ -86,10 +82,10 @@ public final class SQLiteUtils {
 
     public static void addUniquePlayerOrUpdate(final File dataFolder, final UUID uuid, final String name, final int severity, final ExceptionHandler handler) {
         try (final Connection connection = getDatabaseConnection(dataFolder)) {
-            final String SQL = "insert into safechat_data (player_uuid, username, flags) values (?,?,1) on conflict (player_uuid) do update set flags = safechat_data.flags + ?;";
+            final String SQL = "INSERT INTO safechat_data (player_uuid, flags) VALUES (?,?) ON CONFLICT (player_uuid) DO UPDATE SET flags = safechat_data.flags + ?;";
             try (final PreparedStatement statement = connection.prepareStatement(SQL)) {
                 statement.setString(1, uuid.toString());
-                statement.setString(2, name);
+                statement.setInt(2, severity);
                 statement.setInt(3, severity);
                 statement.executeUpdate();
             }
@@ -98,42 +94,46 @@ public final class SQLiteUtils {
         }
     }
 
-    public static CompletableFuture<Pair<UUID, Integer>> getPlayerData(final File dataFolder, final String searchName, final ExceptionHandler handler) {
-        final CompletableFuture<Pair<UUID, Integer>> completableFuture = new CompletableFuture<>();
-        EXECUTOR_SERVICE.submit(() -> {
+    public static CompletableFuture<Integer> getPlayerData(final File dataFolder, final UUID searchUUID, final ExecutorService service) {
+        final CompletableFuture<Integer> completableFuture = new CompletableFuture<>();
+        service.submit(() -> {
             try (final Connection connection = getDatabaseConnection(dataFolder)) {
-                final String SQL = "SELECT flags FROM safechat_data WHERE username = ?;";
+                final String SQL = "SELECT flags FROM safechat_data WHERE player_uuid = ?";
                 try (final PreparedStatement preparedStatement = connection.prepareStatement(SQL)) {
-                    preparedStatement.setString(1, searchName);
-                    final ResultSet resultSet = preparedStatement.executeQuery();
-                    final int flag = resultSet.getInt("flags");
-                    final UUID uuid = UUID.fromString(resultSet.getString("player_uuid"));
-                    final Pair<UUID, Integer> pair = new Pair(flag, uuid);
-                    completableFuture.complete(pair);
+                    preparedStatement.setString(1, searchUUID.toString());
+                    try (final ResultSet resultSet = preparedStatement.executeQuery()) {
+                        final int flag = resultSet.getInt("flags");
+                        completableFuture.complete(flag);
+                    }
                 }
             } catch (final SQLException e) {
-                handler.handle(e);
+                completableFuture.completeExceptionally(e);
             }
         });
         return completableFuture;
     }
 
-    public static class Pair<X, Y> {
-
-        private final X x;
-        private final Y y;
-
-        public Pair(X x, Y y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public X getX() {
-            return x;
-        }
-
-        public Y getY() {
-            return y;
-        }
+    public static CompletableFuture<LinkedHashMap<String, Integer>> getTopData(final File dataFolder, final int search, final ExecutorService service) {
+        final CompletableFuture<LinkedHashMap<String, Integer>> completableFuture = new CompletableFuture<>();
+        service.submit(() -> {
+            final LinkedHashMap<String, Integer> data = new LinkedHashMap<>();
+            try (final Connection connection = getDatabaseConnection(dataFolder)) {
+                final String SQL = "SELECT player_uuid, flags FROM safechat_data ORDER BY flags LIMIT " + search + ";";
+                try (final PreparedStatement statement = connection.prepareStatement(SQL)) {
+                    try (final ResultSet resultSet = statement.executeQuery()) {
+                        while (resultSet.next()) {
+                            final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(resultSet.getString("player_uuid")));
+                            final String foundName = offlinePlayer.getName();
+                            final int foundFlags = resultSet.getInt("flags");
+                            data.put(foundName, foundFlags);
+                        }
+                        completableFuture.complete(data);
+                    }
+                }
+            } catch (final SQLException e) {
+                completableFuture.completeExceptionally(e);
+            }
+        });
+        return completableFuture;
     }
 }
