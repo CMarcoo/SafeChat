@@ -26,6 +26,7 @@ package me.thevipershow.safechat.config;
 import java.util.ArrayList;
 import java.util.List;
 import me.thevipershow.safechat.checks.WordsCheck;
+import me.thevipershow.safechat.checks.register.CheckRegister;
 import me.thevipershow.safechat.enums.EnumConfig;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -75,6 +76,7 @@ public final class Values {
         this.blacklistWords = EnumConfig.WORDS_BLACKLIST.getWordsMatcherList(configuration);
         this.wordsWarning = EnumConfig.WORDS_WARNING.getStringList(configuration);
         this.wordsHover = EnumConfig.WORDS_HOVER.getStringList(configuration);
+        CheckRegister.getInstance(this).update();
     }
 
     private int serialUID;
@@ -118,10 +120,6 @@ public final class Values {
 
     public JavaPlugin getPlugin() {
         return plugin;
-    }
-
-    public static Values getInstance() {
-        return instance;
     }
 
     public int getSerialUID() {

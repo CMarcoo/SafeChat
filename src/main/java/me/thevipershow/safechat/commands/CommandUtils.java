@@ -23,9 +23,6 @@
  */
 package me.thevipershow.safechat.commands;
 
-import com.sun.jdi.Value;
-import java.io.File;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import me.thevipershow.safechat.checks.register.CheckRegister;
 import me.thevipershow.safechat.config.Values;
@@ -38,8 +35,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
 
 /**
  * @author marco
@@ -101,7 +96,7 @@ public final class CommandUtils {
             if (length == 0) {
                 noArguments(sender);
             } else if (args[0].equalsIgnoreCase("reload") && length == 1) {
-                CheckRegister.getInstance(values).update();
+                values.updateAll();
                 sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &aSuccessfully reloaded the config.yml values").color().getText());
             } else if (args[0].equalsIgnoreCase("sql")) {
                 if (length >= 3) {
