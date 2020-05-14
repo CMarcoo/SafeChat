@@ -23,9 +23,12 @@
  */
 package me.thevipershow.safechat.commands;
 
+import com.sun.jdi.Value;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import me.thevipershow.safechat.checks.register.CheckRegister;
+import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.enums.HoverMessages;
 import me.thevipershow.safechat.enums.SPermissions;
 import me.thevipershow.safechat.sql.DatabaseManager;
@@ -92,11 +95,14 @@ public final class CommandUtils {
         }
     }
 
-    public static void processCommand(final DatabaseManager databaseManager, final String[] args, final CommandSender sender) {
+    public static void processCommand(final DatabaseManager databaseManager, final String[] args, final CommandSender sender, Values values) {
         if (sender.hasPermission(SPermissions.COMMAND.getConcatPermission("main"))) {
             final int length = args.length;
             if (length == 0) {
                 noArguments(sender);
+            } else if (args[0].equalsIgnoreCase("reload") && length == 1) {
+                CheckRegister.getInstance(values).update();
+                sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &aSuccessfully reloaded the config.yml values").color().getText());
             } else if (args[0].equalsIgnoreCase("sql")) {
                 if (length >= 3) {
                     if (args[1].equalsIgnoreCase("search") && length == 3) {

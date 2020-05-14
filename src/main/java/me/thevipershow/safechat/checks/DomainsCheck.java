@@ -56,7 +56,7 @@ public final class DomainsCheck implements ChatCheck {
         final String stringToCheck = message.replaceAll(values.getDomainWhitelist(), "");
         boolean result = stringToCheck.matches(values.getDomainRegex());
 
-        if (result && !chatEvent.isCancelled()) {
+        if (result) {
             final Player player = chatEvent.getPlayer();
             chatEvent.setCancelled(true);
             Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, "domains", player.getUniqueId(), player.getName()));

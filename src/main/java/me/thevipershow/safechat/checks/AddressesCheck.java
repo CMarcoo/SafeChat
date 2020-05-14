@@ -54,7 +54,7 @@ public final class AddressesCheck implements ChatCheck {
         final String stringToCheck = message.replaceAll(values.getIpv4Whitelist(), "");
         boolean result = stringToCheck.matches(values.getIpv4Regex());
 
-        if (result && !chatEvent.isCancelled()) {
+        if (result) {
             chatEvent.setCancelled(true);
             final Player player = chatEvent.getPlayer();
             Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, "addresses", player.getUniqueId(), player.getName()));

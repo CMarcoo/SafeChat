@@ -23,6 +23,7 @@
  */
 package me.thevipershow.safechat.commands;
 
+import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.sql.DatabaseManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -32,21 +33,23 @@ public final class SafechatCommand implements CommandExecutor {
     private final DatabaseManager databaseManager;
 
     private static SafechatCommand instance = null;
+    private final Values values;
 
-    private SafechatCommand(DatabaseManager databaseManager) {
+    private SafechatCommand(DatabaseManager databaseManager, final Values values) {
+        this.values = values;
         this.databaseManager = databaseManager;
     }
 
-    public static SafechatCommand getInstance(final DatabaseManager databaseManager) {
+    public static SafechatCommand getInstance(final DatabaseManager databaseManager, final Values values) {
         if (instance == null) {
-            instance = new SafechatCommand(databaseManager);
+            instance = new SafechatCommand(databaseManager, values);
         }
         return instance;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        CommandUtils.processCommand(databaseManager, args, sender);
+        CommandUtils.processCommand(databaseManager, args, sender, values);
         return true;
     }
 }

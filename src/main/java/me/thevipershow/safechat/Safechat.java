@@ -70,7 +70,7 @@ public final class Safechat extends JavaPlugin {
                 throw new RuntimeException("Unknown database type was found!");
         }
 
-        Objects.requireNonNull(getCommand("safechat")).setExecutor(safechatCommand = SafechatCommand.getInstance(databaseManager));
+        Objects.requireNonNull(getCommand("safechat")).setExecutor(safechatCommand = SafechatCommand.getInstance(databaseManager, values));
         pluginManager.registerEvents(checkRegister = CheckRegister.getInstance(values) , this);
     }
 }
