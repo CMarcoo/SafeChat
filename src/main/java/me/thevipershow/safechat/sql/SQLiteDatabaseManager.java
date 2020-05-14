@@ -24,6 +24,7 @@ public final class SQLiteDatabaseManager implements DatabaseManager {
         this.plugin = plugin;
         this.dataFolder = plugin.getDataFolder();
         this.scheduler = plugin.getServer().getScheduler();
+        createDatabaseFile(plugin.getDataFolder());
     }
 
     public final boolean createDatabaseFile(File dataFolder) {

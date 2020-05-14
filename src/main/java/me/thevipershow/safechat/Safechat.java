@@ -71,6 +71,7 @@ public final class Safechat extends JavaPlugin {
         }
 
         Objects.requireNonNull(getCommand("safechat")).setExecutor(safechatCommand = SafechatCommand.getInstance(databaseManager, values));
-        pluginManager.registerEvents(checkRegister = CheckRegister.getInstance(values) , this);
+        pluginManager.registerEvents(checkRegister = CheckRegister.getInstance(values), this);
+
     }
 }
