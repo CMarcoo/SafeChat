@@ -21,39 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package me.thevipershow.safechat.events.listeners;
+package me.thevipershow.safechat.commands;
 
-import java.util.logging.Level;
-import me.thevipershow.safechat.events.FlagThrownEvent;
-import me.thevipershow.safechat.sql.SQLiteUtils;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
+import me.thevipershow.safechat.sql.DatabaseManager;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 
-/**
- *
- * @author marco
- */
-public final class SQLiteFlagListener implements Listener {
+public final class SafechatCommand implements CommandExecutor {
+    private final DatabaseManager databaseManager;
 
-    private static SQLiteFlagListener instance = null;
-    private final JavaPlugin plugin;
+    private static SafechatCommand instance = null;
 
-    private SQLiteFlagListener(JavaPlugin plugin) {
-        this.plugin = plugin;
+    private SafechatCommand(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
     }
 
-    public static SQLiteFlagListener getInstance(JavaPlugin plugin) {
+    public static SafechatCommand getInstance(final DatabaseManager databaseManager) {
         if (instance == null) {
-            instance = new SQLiteFlagListener(plugin);
+            instance = new SafechatCommand(databaseManager);
         }
         return instance;
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public final void event(FlagThrownEvent event) {
-        SQLiteUtils.addUniquePlayerOrUpdate(plugin.getDataFolder(), event.getSenderUUID(), event.getPlayerName(), event.getSeverity(), e -> {
-            plugin.getLogger().log(Level.WARNING, "Something went wrong while trying to update values for {0}!\n", event.getPlayerName());
-        });
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        CommandUtils.processCommand(databaseManager, args, sender);
+        return true;
     }
 }

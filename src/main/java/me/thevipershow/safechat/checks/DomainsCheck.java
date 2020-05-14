@@ -35,26 +35,23 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class DomainsCheck implements ChatCheck {
 
-    private final JavaPlugin plugin;
+    private final Values values;
 
     private static DomainsCheck instance = null;
 
-    private DomainsCheck(JavaPlugin plugin) {
-        this.plugin = plugin;
-        values = Values.getInstance(plugin);
+    private DomainsCheck(Values values) {
+        this.values = values;
     }
 
-    public static DomainsCheck getInstance(JavaPlugin plugin) {
+    public static DomainsCheck getInstance(Values values) {
         if (instance == null) {
-            instance = new DomainsCheck(plugin);
+            instance = new DomainsCheck(values);
         }
         return instance;
     }
 
-    private final Values values;
-
     @Override
-    public void result(final String message, final AsyncPlayerChatEvent chatEvent, final Plugin plugin) {
+    public void result(final String message, final AsyncPlayerChatEvent chatEvent) {
 
         final String stringToCheck = message.replaceAll(values.getDomainWhitelist(), "");
         boolean result = stringToCheck.matches(values.getDomainRegex());
@@ -64,8 +61,8 @@ public final class DomainsCheck implements ChatCheck {
             chatEvent.setCancelled(true);
             Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, "domains", player.getUniqueId(), player.getName()));
             chatEvent.getPlayer().spigot().sendMessage(HoverMessageBuilder.buildHover(
-                    TextMessage.build(values.getDomainWarning().toArray(String[]::new)).color(),
-                    TextMessage.build(values.getDomainHover().toArray(String[]::new)).color()
+                    TextMessage.build(values.getArrayAndReplace(values.getDomainWarning(), "%PLAYER%", player.getName())).color(),
+                    TextMessage.build(values.getArrayAndReplace(values.getDomainHover(), "%PLAYER%", player.getName())).color()
             ));
         }
     }

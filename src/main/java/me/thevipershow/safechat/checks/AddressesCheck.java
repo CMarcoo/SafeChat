@@ -33,28 +33,24 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-@SuppressWarnings("UnstableApiUsage")
 public final class AddressesCheck implements ChatCheck {
 
-    private final JavaPlugin plugin;
     private static AddressesCheck instance = null;
+    private final Values values;
 
-    private AddressesCheck(JavaPlugin plugin) {
-        this.values = Values.getInstance(plugin);
-        this.plugin = plugin;
+    private AddressesCheck(Values values) {
+        this.values = values;
     }
 
-    public static AddressesCheck getInstance(JavaPlugin plugin) {
+    public static AddressesCheck getInstance(Values values) {
         if (instance == null) {
-            instance = new AddressesCheck(plugin);
+            instance = new AddressesCheck(values);
         }
         return instance;
     }
 
-    private final Values values;
-
     @Override
-    public void result(final String message, final AsyncPlayerChatEvent chatEvent, final Plugin plugin) {
+    public void result(final String message, final AsyncPlayerChatEvent chatEvent) {
         final String stringToCheck = message.replaceAll(values.getIpv4Whitelist(), "");
         boolean result = stringToCheck.matches(values.getIpv4Regex());
 
@@ -63,8 +59,8 @@ public final class AddressesCheck implements ChatCheck {
             final Player player = chatEvent.getPlayer();
             Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, "addresses", player.getUniqueId(), player.getName()));
             chatEvent.getPlayer().spigot().sendMessage(HoverMessageBuilder.buildHover(
-                    TextMessage.build(values.getIpv4Warning().toArray(String[]::new)).color(),
-                    TextMessage.build(values.getIpv4Hover().toArray(String[]::new)).color()
+                    TextMessage.build(values.getArrayAndReplace(values.getIpv4Warning(), "%PLAYER%", player.getName())).color(),
+                    TextMessage.build(values.getArrayAndReplace(values.getIpv4Hover(), "%PLAYER%", player.getName())).color()
             ));
         }
     }

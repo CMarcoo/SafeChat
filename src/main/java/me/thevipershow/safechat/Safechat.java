@@ -23,77 +23,54 @@
  */
 package me.thevipershow.safechat;
 
-import com.zaxxer.hikari.HikariDataSource;
-import java.io.IOException;
-import java.util.logging.Level;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.logging.Logger;
 import me.thevipershow.safechat.checks.register.CheckRegister;
-import me.thevipershow.safechat.commands.PostgresSafechatCommand;
-import me.thevipershow.safechat.commands.SQLiteSafechatCommand;
+import me.thevipershow.safechat.commands.SafechatCommand;
 import me.thevipershow.safechat.config.Values;
-import me.thevipershow.safechat.events.listeners.PostgreSQLFlagListener;
-import me.thevipershow.safechat.events.listeners.SQLiteFlagListener;
-import me.thevipershow.safechat.sql.PostgreSQLUtils;
-import me.thevipershow.safechat.sql.SQLiteUtils;
+import me.thevipershow.safechat.config.ValuesValidator;
+import me.thevipershow.safechat.config.WordsMatcher;
+import me.thevipershow.safechat.sql.DatabaseManager;
+import me.thevipershow.safechat.sql.PostgreSQLDatabaseManager;
+import me.thevipershow.safechat.sql.SQLiteDatabaseManager;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Safechat extends JavaPlugin {
+    static {
+        ConfigurationSerialization.registerClass(WordsMatcher.class, "WordsMatcher");
+    }
 
-    public HikariDataSource dataSource;
     private final PluginManager pluginManager = Bukkit.getPluginManager();
-    private final Values values = Values.getInstance(this);
-    private final CheckRegister checkRegister = CheckRegister.getInstance(this);
+    private Values values;
+    private ValuesValidator valuesValidator;
+    private CheckRegister checkRegister;
     private final Logger logger = getLogger();
-    private PostgreSQLFlagListener postgreSQLFlagListener;
-    private SQLiteFlagListener sqLiteFlagListener;
-    private SQLiteSafechatCommand sqlCommand;
-    private PostgresSafechatCommand postgresCommand;
+    private SafechatCommand safechatCommand;
+    private DatabaseManager databaseManager;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        if (values.isEnabled()) {
-            if (values.getDbType().equalsIgnoreCase("POSTGRESQL")) {
-                dataSource = PostgreSQLUtils.createDataSource(
-                        PostgreSQLUtils.createConfig(
-                                values.getAddress(),
-                                values.getPort(),
-                                values.getDatabase(),
-                                values.getUsername(),
-                                values.getPassword()));
-
-                postgreSQLFlagListener = PostgreSQLFlagListener.getInstance(dataSource, this);
-                PostgreSQLUtils.createTable(dataSource, e -> {
-                    logger.log(Level.WARNING, "Something went wrong while creating table safechat_data!");
-                    e.printStackTrace();
-                });
-                pluginManager.registerEvents(postgreSQLFlagListener, this);
-                getCommand("safechat").setExecutor(postgresCommand = PostgresSafechatCommand.getInstance(this, dataSource));
-            } else if (values.getDbType().equalsIgnoreCase("SQLITE")) {
-                try {
-                    if (SQLiteUtils.createDatabaseFile(getDataFolder())) {
-                        logger.log(Level.INFO, "Succesfully created a new SQLITE database at: {0}\\safechat.sqlite", getDataFolder().getAbsolutePath());
-                        SQLiteUtils.createTable(getDataFolder(), e -> {
-                            logger.log(Level.WARNING, "Something went wrong when trying to create table `{0}`\n", values.getTable());
-                            e.printStackTrace();
-                        });
-
-                    } else {
-                        logger.log(Level.INFO, "The SQLITE database has been loaded correctly!");
-                    }
-                    sqLiteFlagListener = SQLiteFlagListener.getInstance(this);
-                    pluginManager.registerEvents(sqLiteFlagListener, this);
-                    getCommand("safechat").setExecutor(sqlCommand = SQLiteSafechatCommand.getInstance(this));
-                } catch (IOException ex) {
-                    logger.log(Level.WARNING, "Could not load the SQLITE database! Something went wrong: \n");
-                    ex.printStackTrace();
-                }
-
-            }
+        values = Values.getInstance(this);
+        valuesValidator = ValuesValidator.getInstance(values);
+        valuesValidator.validateAll();
+        // from here on values are assumed as safe
+        switch (values.getDbType().toUpperCase(Locale.getDefault())) {
+            case "POSTGRESQL":
+                databaseManager = PostgreSQLDatabaseManager.getInstance(this, values.getAddress(), values.getDatabase(), values.getUsername(), values.getPassword());
+                break;
+            case "SQLITE":
+                databaseManager = SQLiteDatabaseManager.getInstance(this);
+                break;
+            default:
+                throw new RuntimeException("Unknown database type was found!");
         }
 
-        pluginManager.registerEvents(checkRegister, this);
+        Objects.requireNonNull(getCommand("safechat")).setExecutor(safechatCommand = SafechatCommand.getInstance(databaseManager));
+        pluginManager.registerEvents(checkRegister = CheckRegister.getInstance(values) , this);
     }
 }

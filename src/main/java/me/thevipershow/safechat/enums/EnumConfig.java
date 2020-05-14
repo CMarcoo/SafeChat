@@ -24,43 +24,56 @@
 package me.thevipershow.safechat.enums;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import me.thevipershow.safechat.config.WordsMatcher;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public enum EnumConfig {
     SERIAL_UID("serialUID"),
     DB_TYPE("safechat.database.type"),
-    ENABLED("safechat.database.enabled"),
     USERNAME("safechat.database.username"),
     PASSWORD("safechat.database.password"),
     PORT("safechat.database.port"),
     ADDRESS("safechat.database.address"),
     DATABASE("safechat.database.database"),
     TABLE("safechat.database.table"),
+    DOMAIN_ENABLED("safechat.domains.enabled"),
     DOMAIN_REGEX("safechat.domains.regex"),
     DOMAIN_WHITELIST("safechat.domains.whitelisted"),
     DOMAIN_WARNING("safechat.domains.warning"),
     DOMAIN_HOVER("safechat.domains.hover-warning"),
+    IPV4_ENABLED("safechat.addresses.enabled"),
     IPV4_REGEX("safechat.addresses.regex"),
     IPV4_WHITELIST("safechat.addresses.whitelisted"),
     IPV4_WARNING("safechat.addresses.warning"),
-    IPV4_HOVER("safechat.addresses.hover-warning");
+    IPV4_HOVER("safechat.addresses.hover-warning"),
+    WORDS_ENABLED("safechat.words.enabled"),
+    WORDS_CANCEL_EVENT("safechat.words.cancel-event"),
+    WORDS_BLACKLIST("safechat.words.blacklisted"),
+    WORDS_WARNING("safechat.words.warning"),
+    WORDS_HOVER("safechat.words.hover-warning");
 
     private final String value;
 
-    public final String getString(FileConfiguration configuration) {
+    public final String getString(final FileConfiguration configuration) {
         return configuration.getString(value);
     }
 
-    public final int getInt(FileConfiguration configuration) {
+    public final int getInt(final FileConfiguration configuration) {
         return configuration.getInt(value);
     }
 
-    public final boolean getBool(FileConfiguration configuration) {
+    public final boolean getBool(final FileConfiguration configuration) {
         return configuration.getBoolean(value);
     }
 
-    public final List<String> getStringList(FileConfiguration configuration) {
+    public final List<String> getStringList(final FileConfiguration configuration) {
         return configuration.getStringList(value);
+    }
+
+    public final List<WordsMatcher> getWordsMatcherList(final FileConfiguration configuration) {
+        return configuration.getMapList(value).stream().map(map -> WordsMatcher.deserialize((Map<String, Object>) map)).collect(Collectors.toUnmodifiableList());
     }
 
     EnumConfig(String value) {
