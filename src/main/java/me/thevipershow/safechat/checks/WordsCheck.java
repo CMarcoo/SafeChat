@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.config.WordsMatcher;
+import me.thevipershow.safechat.events.FlagThrownEvent;
 import me.thevipershow.spigotchatlib.chat.TextMessage;
 import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public final class WordsCheck implements ChatCheck {
@@ -57,6 +59,7 @@ public final class WordsCheck implements ChatCheck {
         }
 
         if (sendWarning) {
+            Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, "words-blacklist", chatEvent.getPlayer().getUniqueId(), chatEvent.getPlayer().getName()));
             chatEvent.getPlayer().spigot().sendMessage(HoverMessageBuilder.buildHover(
                     TextMessage.build(values.getArrayAndReplace(values.getWordsWarning(), "%PLAYER%", chatEvent.getPlayer().getName())).color(),
                     TextMessage.build(values.getArrayAndReplace(values.getWordsHover(), "%PLAYER%", chatEvent.getPlayer().getName())).color()

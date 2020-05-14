@@ -31,6 +31,7 @@ import me.thevipershow.safechat.commands.SafechatCommand;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.config.ValuesValidator;
 import me.thevipershow.safechat.config.WordsMatcher;
+import me.thevipershow.safechat.events.listeners.FlagListener;
 import me.thevipershow.safechat.sql.DatabaseManager;
 import me.thevipershow.safechat.sql.PostgreSQLDatabaseManager;
 import me.thevipershow.safechat.sql.SQLiteDatabaseManager;
@@ -71,6 +72,7 @@ public final class Safechat extends JavaPlugin {
         }
 
         Objects.requireNonNull(getCommand("safechat")).setExecutor(safechatCommand = SafechatCommand.getInstance(databaseManager, values));
+        pluginManager.registerEvents(FlagListener.getInstance(databaseManager, logger, values), this);
         pluginManager.registerEvents(checkRegister = CheckRegister.getInstance(values), this);
 
     }

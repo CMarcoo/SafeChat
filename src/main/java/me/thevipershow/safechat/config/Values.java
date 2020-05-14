@@ -51,6 +51,7 @@ public final class Values {
     public final void updateAll() {
         plugin.reloadConfig();
         final FileConfiguration configuration = plugin.getConfig();
+        this.enableConsoleLogging = EnumConfig.ENABLE_CONSOLE_LOGGING.getBool(configuration);
         this.serialUID = EnumConfig.SERIAL_UID.getInt(configuration);
         this.dbType = EnumConfig.DB_TYPE.getString(configuration);
         this.username = EnumConfig.USERNAME.getString(configuration);
@@ -77,6 +78,7 @@ public final class Values {
     }
 
     private int serialUID;
+    private boolean enableConsoleLogging;
     private String dbType;
     private String username;
     private String password;
@@ -108,6 +110,10 @@ public final class Values {
 
     public String[] getArrayAndReplace(List<String> list, String placeholder, String replace) {
         return getListAndReplace(list, placeholder, replace).toArray(String[]::new);
+    }
+
+    public boolean isEnableConsoleLogging() {
+        return enableConsoleLogging;
     }
 
     public JavaPlugin getPlugin() {

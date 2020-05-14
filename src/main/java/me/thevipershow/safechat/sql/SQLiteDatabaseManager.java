@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import static me.thevipershow.safechat.sql.SQLPrebuiltStatements.*;
@@ -25,6 +26,7 @@ public final class SQLiteDatabaseManager implements DatabaseManager {
         this.dataFolder = plugin.getDataFolder();
         this.scheduler = plugin.getServer().getScheduler();
         createDatabaseFile(plugin.getDataFolder());
+        createTable(e -> {plugin.getLogger().log(Level.WARNING, "Something went wrong when creating table!"); e.printStackTrace();});
     }
 
     public final boolean createDatabaseFile(File dataFolder) {

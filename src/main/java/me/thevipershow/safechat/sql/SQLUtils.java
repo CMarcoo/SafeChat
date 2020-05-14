@@ -34,6 +34,7 @@ public final class SQLUtils {
                 s.setString(1, playerUUID.toString());
                 s.setInt(2, severity);
                 s.setInt(3, severity);
+                s.executeUpdate();
             }
         } catch (SQLException e) {
             handler.handle(e);

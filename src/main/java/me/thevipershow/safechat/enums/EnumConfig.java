@@ -31,6 +31,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 public enum EnumConfig {
     SERIAL_UID("serialUID"),
+    ENABLE_CONSOLE_LOGGING("safechat.enable-console-logging"),
     DB_TYPE("safechat.database.type"),
     USERNAME("safechat.database.username"),
     PASSWORD("safechat.database.password"),
