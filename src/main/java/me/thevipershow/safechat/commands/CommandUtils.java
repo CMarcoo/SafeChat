@@ -24,7 +24,6 @@
 package me.thevipershow.safechat.commands;
 
 import java.util.Map;
-import me.thevipershow.safechat.checks.register.CheckRegister;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.enums.HoverMessages;
 import me.thevipershow.safechat.enums.SPermissions;

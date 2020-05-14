@@ -3,7 +3,7 @@
 serialUID: 1
 safechat:
   # Send a message to the console whenever one of the checks is verified
-  enable-console-logging: true
+  enable-console-logging: false
   database:
     # Allowed types are currently:
     # Values: [POSTRESQL | SQLITE]

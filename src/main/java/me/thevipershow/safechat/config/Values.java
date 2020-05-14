@@ -105,8 +105,8 @@ public final class Values {
     private List<String> wordsHover;
 
     public List<String> getListAndReplace(List<String> list, String placeholder, String replace) {
-        final List<String> stringList = new ArrayList<>(list);
-        stringList.forEach(s -> s = s.replace(placeholder, replace));
+        final List<String> stringList = new ArrayList<>();
+        stringList.forEach(s -> stringList.add(s.replace(placeholder, replace)));
         return stringList;
     }
 
