@@ -1,5 +1,7 @@
 package me.thevipershow.safechat.config;
 
+import java.util.Locale;
+
 public final class ValuesValidator {
 
     public static ValuesValidator instance = null;
@@ -14,7 +16,7 @@ public final class ValuesValidator {
     }
 
     public boolean validateAll() {
-        boolean dbtype = Validator.validate(values.getDatabase().toLowerCase(), Throwable::printStackTrace, "SQLITE", "POSTGRESQL");
+        boolean dbtype = Validator.validate(values.getDbType().toUpperCase(Locale.getDefault()), Throwable::printStackTrace, "SQLITE", "POSTGRESQL");
         boolean portCheck = Validator.validateInRange(values.getPort(), Throwable::printStackTrace, Validator.NumberRange.process(0, 65535));
         boolean nullCheckBlacklistWords = Validator.validateNotNull(values.getBlacklistWords(), Throwable::printStackTrace);
         boolean nullCheckDomainHover = Validator.validateNotNull(values.getDomainHover(), Throwable::printStackTrace);
