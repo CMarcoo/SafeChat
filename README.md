@@ -20,15 +20,17 @@ The domains check blocks any message that contains a domains, it also blocks dom
 ## YAML Configuration file
 This plugin's configuration will be automatically generated in your server inside the SafeChat/ folder.
 The file is called config.yml and contains important settings that allow you to modify your plugin checks:
-![config.yml file](https://i.imgur.com/0RiMSlh.png)
+![config.yml file](https://i.imgur.com/7hqmWiW.png)
 ## Database features
-SafeChat is currently able to use a PostgreSQL database to manage player flags and warnings.
+SafeChat is currently able to use a PostgreSQL or SQLite database to manage player flags and warnings.
 You should only be putting it on enabled if you're planning to use it!
 Current features:
 
  - Per player flags
  - Player flags search
  - Top flags search
+ - Data Configuration reload
+ - Completely customizable RegEx checks
  
  Every player in your server will have a flags counter, which represents how many times he has tried to break the chat rules.
  SafeChat provides command to get the current flags of a specific player, or even better to get the players with the most flags list:
