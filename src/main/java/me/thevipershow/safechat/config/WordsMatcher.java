@@ -42,7 +42,6 @@ public final class WordsMatcher implements ConfigurationSerializable, Cloneable 
     public static WordsMatcher deserialize(Map<String, Object> objectMap) {
         final String pattern = (String) objectMap.get("pattern");
         final String replace = (String) objectMap.get("replace");
-        final boolean sendWarning = (boolean) objectMap.get("send-warning");
         return new WordsMatcher(pattern, replace);
     }
 }
