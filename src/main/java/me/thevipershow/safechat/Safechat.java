@@ -35,6 +35,7 @@ import me.thevipershow.safechat.config.WordsMatcher;
 import me.thevipershow.safechat.enums.ANSIColor;
 import me.thevipershow.safechat.events.listeners.FlagListener;
 import me.thevipershow.safechat.sql.DatabaseManager;
+import me.thevipershow.safechat.sql.MySQLDatabaseManager;
 import me.thevipershow.safechat.sql.PostgreSQLDatabaseManager;
 import me.thevipershow.safechat.sql.SQLiteDatabaseManager;
 import org.bukkit.Bukkit;
@@ -62,7 +63,7 @@ public final class Safechat extends JavaPlugin {
         for (final String s : pluginLogo.split("\\n"))
             logger.log(Level.INFO, ANSIColor.colorString('&', s));
         for (final WordsMatcher word : values.getBlacklistWords()) {
-            logger.log(Level.INFO, ANSIColor.colorString('&', "Loaded words matcher &yREGEX: &R`&g" + word.getPattern() + "&R` &yPATTERN: &R`&g" + word.getReplace() + "&R`"));
+            logger.log(Level.INFO, ANSIColor.colorString('&', "Loaded words matcher &yREGEX: &R`&g" + word.getPattern() + "&R` &yREPLACE: &R`&g" + word.getReplace() + "&R`"));
         }
     }
 
@@ -76,11 +77,13 @@ public final class Safechat extends JavaPlugin {
         // from here on values are assumed as safe
         switch (values.getDbType().toUpperCase(Locale.getDefault())) {
             case "POSTGRESQL":
-                databaseManager = PostgreSQLDatabaseManager.getInstance(this, values.getAddress(), values.getDatabase(), values.getUsername(), values.getPassword());
+                databaseManager = PostgreSQLDatabaseManager.getInstance(this, values.getAddress(), values.getPort(), values.getDatabase(), values.getUsername(), values.getPassword());
                 break;
             case "SQLITE":
                 databaseManager = SQLiteDatabaseManager.getInstance(this);
                 break;
+            case "MYSQL":
+                databaseManager = MySQLDatabaseManager.getInstance(this, values.getAddress(), values.getPort(), values.getDatabase(), values.getUsername(), values.getPassword());
         }
         sendInfo();
     }

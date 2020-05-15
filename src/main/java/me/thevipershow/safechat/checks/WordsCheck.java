@@ -25,19 +25,18 @@ public final class WordsCheck implements ChatCheck {
     }
 
     @Override
-    public final void result(String message, AsyncPlayerChatEvent chatEvent) {
-        String adaptedMessage = message;
+    public final void result(String message, final AsyncPlayerChatEvent chatEvent) {
         final Player player = chatEvent.getPlayer();
         short flags = 0;
         short replaced = 0;
         for (final WordsMatcher wordsMatcher : values.getBlacklistWords()) {
-            final Matcher matcher = wordsMatcher.getCompiledPattern().matcher(adaptedMessage);
-            if (matcher.matches()) {
+            final Matcher matcher = wordsMatcher.getCompiledPattern().matcher(message);
+            if (matcher.lookingAt()) {
                 flags++;
                 final String replace = wordsMatcher.getReplace();
                 if (!replace.equals("NONE")) {
                     replaced++;
-                    adaptedMessage = matcher.replaceAll(replace);
+                    message = matcher.replaceAll(replace);
                 }
             }
         }
@@ -49,8 +48,7 @@ public final class WordsCheck implements ChatCheck {
                     TextMessage.build(values.getArrayAndReplace(values.getDomainHover(), "%PLAYER%", player.getName())).color()
             ));
             if (replaced > 0) {
-                chatEvent.setCancelled(true);
-                player.chat(adaptedMessage);
+                chatEvent.setMessage(message);
             }
         }
     }

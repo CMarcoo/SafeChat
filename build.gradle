@@ -29,6 +29,9 @@ shadowJar {
     relocate 'org.postgresql','me.thevipershow.safechat.libs.org.postgresql'
     relocate 'org.slf4j','me.thevipershow.safechat.libs.org.slf4j'
     relocate 'me.thevipershow.spigotchatlib', 'me.thevipershow.safechat.libs.spigotchatlib'
+    relocate 'com.google.protobuf', 'me.thevipershow.safechat.libs.com.google.protobuf'
+    relocate 'com.mysql', 'me.thevipershow.safechat.libs.mysql'
+    relocate 'google.protobuf', 'me.thevipershow.safechat.libs.google.protobuf'
 }
 
 dependencies {
@@ -36,6 +39,7 @@ dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT'
     compile group: 'com.github.TheViperShow', name: 'SpigotChatLib', version: '9326763'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.8'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.20'
     compile group: 'com.zaxxer', name: 'HikariCP', version: '3.4.2'
 }
 

@@ -28,7 +28,7 @@ import org.bukkit.event.HandlerList;
 
 import java.util.UUID;
 
-public class FlagThrownEvent extends Event {
+public final class FlagThrownEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 

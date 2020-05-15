@@ -8,7 +8,7 @@ import me.thevipershow.safechat.sql.DatabaseManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-public class FlagListener implements Listener {
+public final class FlagListener implements Listener {
     private static FlagListener instance = null;
     private final DatabaseManager databaseManager;
     private final Logger logger;

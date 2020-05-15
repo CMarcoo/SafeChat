@@ -6,7 +6,7 @@ safechat:
   enable-console-logging: false
   database:
     # Allowed types are currently:
-    # Values: [POSTRESQL | SQLITE]
+    # Values: [POSTRESQL | MYSQL | SQLITE ]
     # SQLITE database type will use json files to locally store data, so filling the database info fields,
     # such as username, host and passwords will not be required. However if you decide to use PostgreSQL database
     # those fields will be required in order for the plugin to properly connect to the remote\local database!

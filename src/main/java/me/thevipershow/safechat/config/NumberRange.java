@@ -1,6 +1,6 @@
 package me.thevipershow.safechat.config;
 
-public class NumberRange<N extends Number & Comparable<N>> extends Range<N> {
+public final class NumberRange<N extends Number & Comparable<N>> extends Range<N> {
 
     public NumberRange(N lowerBound, N upperBound) {
         super(lowerBound, upperBound);

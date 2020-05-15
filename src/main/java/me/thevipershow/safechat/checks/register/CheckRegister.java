@@ -53,7 +53,7 @@ public final class CheckRegister implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
+    private void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
         if (!event.getPlayer().hasPermission(SPermissions.BYPASS.getPermission())) {
             chatChecks.forEach(check -> check.result(event.getMessage(), event));
         }

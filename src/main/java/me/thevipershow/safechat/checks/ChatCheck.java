@@ -28,5 +28,5 @@ import org.bukkit.plugin.Plugin;
 
 @FunctionalInterface
 public interface ChatCheck {
-    void result(final String message, final AsyncPlayerChatEvent chatEvent);
+    void result(String message, final AsyncPlayerChatEvent chatEvent);
 }
