@@ -104,7 +104,9 @@ public final class Values {
 
     public List<String> getListAndReplace(List<String> list, String placeholder, String replace) {
         final List<String> stringList = new ArrayList<>();
-        stringList.forEach(s -> stringList.add(s.replace(placeholder, replace)));
+        for (final String string : list) {
+            stringList.add(string.replace(placeholder, replace));
+        }
         return stringList;
     }
 

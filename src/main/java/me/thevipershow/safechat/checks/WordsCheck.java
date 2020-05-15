@@ -1,6 +1,5 @@
 package me.thevipershow.safechat.checks;
 
-import java.util.List;
 import java.util.regex.Matcher;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.config.WordsMatcher;
