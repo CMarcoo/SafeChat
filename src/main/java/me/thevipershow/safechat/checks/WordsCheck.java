@@ -25,12 +25,6 @@ public final class WordsCheck implements ChatCheck {
         return instance != null ? instance : (instance = new WordsCheck(values));
     }
 
-    private String joinStrings(final List<String> list) {
-        final StringBuilder builder = new StringBuilder();
-        list.forEach(s -> builder.append(s + ","));
-        return builder.toString();
-    }
-
     @Override
     public final void result(String message, AsyncPlayerChatEvent chatEvent) {
         String adaptedMessage = message;
