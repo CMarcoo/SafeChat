@@ -25,12 +25,14 @@ package me.thevipershow.safechat;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.thevipershow.safechat.checks.register.CheckRegister;
 import me.thevipershow.safechat.commands.SafechatCommand;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.config.ValuesValidator;
 import me.thevipershow.safechat.config.WordsMatcher;
+import me.thevipershow.safechat.enums.ANSIColor;
 import me.thevipershow.safechat.events.listeners.FlagListener;
 import me.thevipershow.safechat.sql.DatabaseManager;
 import me.thevipershow.safechat.sql.PostgreSQLDatabaseManager;
@@ -41,9 +43,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Safechat extends JavaPlugin {
-    static {
-        ConfigurationSerialization.registerClass(WordsMatcher.class, "WordsMatcher");
-    }
 
     private final PluginManager pluginManager = Bukkit.getPluginManager();
     private Values values;
@@ -53,8 +52,23 @@ public final class Safechat extends JavaPlugin {
     private SafechatCommand safechatCommand;
     private DatabaseManager databaseManager;
 
+    private final String pluginLogo = "&y ____   __   ____  ____  ___  _  _   __  ____ &R\n" +
+            "&y/ ___) / _\\ (  __)(  __)/ __)/ )( \\ / _\\(_  _)&R\n" +
+            "&y\\___ \\/    \\ ) _)  ) _)( (__ ) __ (/    \\ )(  &R\n" +
+            "&y(____/\\_/\\_/(__)  (____)\\___)\\_)(_/\\_/\\_/(__) &R\n" +
+            "\n&R&gVersion&R: &b" + getDescription().getVersion() + "&R\n" + "&gAuthor&R: &bTheViperShow&R";
+
+    private void sendInfo() {
+        for (final String s : pluginLogo.split("\\n"))
+            logger.log(Level.INFO, ANSIColor.colorString('&', s));
+        for (final WordsMatcher word : values.getBlacklistWords()) {
+            logger.log(Level.INFO, ANSIColor.colorString('&', "Loaded words matcher &yREGEX: &R`&g" + word.getPattern() + "&R` &yPATTERN: &R`&g" + word.getReplace() + "&R`"));
+        }
+    }
+
     @Override
-    public void onEnable() {
+    public void onLoad() {
+        ConfigurationSerialization.registerClass(WordsMatcher.class, "WordsMatcher");
         saveDefaultConfig();
         values = Values.getInstance(this);
         valuesValidator = ValuesValidator.getInstance(values);
@@ -67,13 +81,14 @@ public final class Safechat extends JavaPlugin {
             case "SQLITE":
                 databaseManager = SQLiteDatabaseManager.getInstance(this);
                 break;
-            default:
-                throw new RuntimeException("Unknown database type was found!");
         }
+        sendInfo();
+    }
 
+    @Override
+    public void onEnable() {
         Objects.requireNonNull(getCommand("safechat")).setExecutor(safechatCommand = SafechatCommand.getInstance(databaseManager, values));
-        pluginManager.registerEvents(FlagListener.getInstance(databaseManager, logger, values), this);
+        pluginManager.registerEvents(FlagListener.getInstance(Objects.requireNonNull(databaseManager), logger, values), this);
         pluginManager.registerEvents(checkRegister = CheckRegister.getInstance(values), this);
-
     }
 }

@@ -42,7 +42,7 @@ public final class WordsCheck implements ChatCheck {
             }
         }
         if (flags > 0) {
-            Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, "domains", player.getUniqueId(), player.getName()));
+            Bukkit.getPluginManager().callEvent(new FlagThrownEvent(flags, "domains", player.getUniqueId(), player.getName()));
 
             chatEvent.getPlayer().spigot().sendMessage(HoverMessageBuilder.buildHover(
                     TextMessage.build(values.getArrayAndReplace(values.getDomainWarning(), "%PLAYER%", player.getName())).color(),

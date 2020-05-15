@@ -1,11 +1,11 @@
-name: Safechat
+name: 'SafeChat'
 version: @version@
 main: me.thevipershow.safechat.Safechat
 authors: [TheViperShow]
-description: Make your chat safe.
+description: 'Make your chat safe.'
 api-version: '1.13'
 commands:
   safechat:
     description: "Safechat's main command"
-    usage: "/<command> [search|top]"
+    usage: "/<command> [search|top|reload]"
 
