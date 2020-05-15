@@ -12,6 +12,8 @@ This plugin currently provides the following features , all aim towards protecti
  4. Domains configurable whitelist
  5. Domains blacklist configurable regex
  6. IPv4 configurable whitelist
+ 7. Words blacklist
+ 8. Words match and replace feature
 
 The IPv4 addresses check will block any form of valid IPv4 in the game chat, this to avoid other people spamming their server. The localhost IPv4s "127.0.0.1" and "0.0.0.0" are whitelisted by default as they're commonly used to indicate local addresses which are not harmful for your server, but of course you can remove them.
 
