@@ -83,16 +83,13 @@ safechat:
       - "&7Please don't to that again"
   words:
     enabled: true
-    # Set this to true if we should just cancel the event and send a warning to the player
-    # if any of the regex is found
-    cancel-event: false
     # This is a list of blacklisted words that can't be used in the chat
     # if your message contains any of them, the check will be triggered.
     # NOTE: RegEx are supported here.
     # you can set the matcher using a RegEx , and the replace string, which will
     # be replaced into matched zone if found in the messages.
     # "What if I don't want to replace the messages?":
-    # You can remove the 'replace' parameter from the object.
+    # You can set the 'replace' parameter to "NONE"
     blacklisted:
       - pattern: "[Ff](?=[Uu](?=[Cc](?=[Kk])))"
         replace: 'd'

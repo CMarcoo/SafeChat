@@ -50,7 +50,6 @@ public enum EnumConfig {
     IPV4_WARNING("safechat.addresses.warning"),
     IPV4_HOVER("safechat.addresses.hover-warning"),
     WORDS_ENABLED("safechat.words.enabled"),
-    WORDS_CANCEL_EVENT("safechat.words.cancel-event"),
     WORDS_BLACKLIST("safechat.words.blacklisted"),
     WORDS_WARNING("safechat.words.warning"),
     WORDS_HOVER("safechat.words.hover-warning");

@@ -35,7 +35,7 @@ public final class WordsMatcher implements ConfigurationSerializable, Cloneable 
     public final Map<String, Object> serialize() {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("pattern", Objects.requireNonNull(pattern));
-        result.put("replace", replace);
+        result.put("replace", Objects.requireNonNull(replace));
         return result;
     }
 

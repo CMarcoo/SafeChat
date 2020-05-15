@@ -72,7 +72,6 @@ public final class Values {
         this.ipv4Warning = EnumConfig.IPV4_WARNING.getStringList(configuration);
         this.ipv4Hover = EnumConfig.IPV4_HOVER.getStringList(configuration);
         this.wordsEnabled = EnumConfig.WORDS_ENABLED.getBool(configuration);
-        this.wordsCancelEvent = EnumConfig.WORDS_CANCEL_EVENT.getBool(configuration);
         this.blacklistWords = EnumConfig.WORDS_BLACKLIST.getWordsMatcherList(configuration);
         this.wordsWarning = EnumConfig.WORDS_WARNING.getStringList(configuration);
         this.wordsHover = EnumConfig.WORDS_HOVER.getStringList(configuration);
@@ -99,7 +98,6 @@ public final class Values {
     private List<String> ipv4Warning;
     private List<String> ipv4Hover;
     private boolean wordsEnabled;
-    private boolean wordsCancelEvent;
     private List<WordsMatcher> blacklistWords;
     private List<String> wordsWarning;
     private List<String> wordsHover;
@@ -196,10 +194,6 @@ public final class Values {
 
     public boolean isWordsEnabled() {
         return wordsEnabled;
-    }
-
-    public boolean isWordsCancelEvent() {
-        return wordsCancelEvent;
     }
 
     public List<WordsMatcher> getBlacklistWords() {
