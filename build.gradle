@@ -19,13 +19,19 @@ repositories {
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
     maven {
-        url 'https://jitpack.io' 
+        url = 'https://jitpack.io'
+    }
+    maven {
+        name = 'minecraft-repo'
+        url = 'https://libraries.minecraft.net/'
     }
 }
 
 shadowJar {
     archiveName = 'SafeChat-1.0.0.jar'
+    exclude 'com.mojang.brigadier'
     relocate 'com.zaxxer.hikari','me.thevipershow.safechat.libs.com.zaxxer.hikari'
+    relocate 'me.lucko.commodore', 'me.thevipershow.safechat.libs.lucko.commodore'
     relocate 'org.postgresql','me.thevipershow.safechat.libs.org.postgresql'
     relocate 'org.slf4j','me.thevipershow.safechat.libs.org.slf4j'
     relocate 'me.thevipershow.spigotchatlib', 'me.thevipershow.safechat.libs.spigotchatlib'
@@ -37,6 +43,7 @@ shadowJar {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compileOnly 'org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT'
+    compile group: 'me.lucko', name: 'commodore', version: '1.8'
     compile group: 'com.github.TheViperShow', name: 'SpigotChatLib', version: '9326763'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.8'
     compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.20'

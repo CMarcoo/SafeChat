@@ -21,7 +21,10 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import me.lucko.commodore.Commodore;
+import me.lucko.commodore.CommodoreProvider;
 import me.thevipershow.safechat.checks.register.CheckRegister;
+import me.thevipershow.safechat.commands.CommandUtils;
 import me.thevipershow.safechat.commands.SafechatCommand;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.config.ValuesValidator;
@@ -33,6 +36,7 @@ import me.thevipershow.safechat.sql.MySQLDatabaseManager;
 import me.thevipershow.safechat.sql.PostgreSQLDatabaseManager;
 import me.thevipershow.safechat.sql.SQLiteDatabaseManager;
 import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -46,6 +50,8 @@ public final class Safechat extends JavaPlugin {
     private final Logger logger = getLogger();
     private SafechatCommand safechatCommand;
     private DatabaseManager databaseManager;
+    private Commodore commodore;
+    private PluginCommand safechatPluginCommand;
 
     private final String pluginLogo = "&y ____   __   ____  ____  ___  _  _   __  ____ &R\n" +
             "&y/ ___) / _\\ (  __)(  __)/ __)/ )( \\ / _\\(_  _)&R\n" +
@@ -65,6 +71,7 @@ public final class Safechat extends JavaPlugin {
     public void onLoad() {
         ConfigurationSerialization.registerClass(WordsMatcher.class, "WordsMatcher");
         saveDefaultConfig();
+        saveResource("safechat.commodore", true);
         values = Values.getInstance(this);
         valuesValidator = ValuesValidator.getInstance(values);
         valuesValidator.validateAll();
@@ -84,7 +91,11 @@ public final class Safechat extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Objects.requireNonNull(getCommand("safechat")).setExecutor(safechatCommand = SafechatCommand.getInstance(databaseManager, values));
+        if (CommodoreProvider.isSupported()) {
+            commodore = CommodoreProvider.getCommodore(this);
+        }
+        Objects.requireNonNull(safechatPluginCommand = getCommand("safechat")).setExecutor(safechatCommand = SafechatCommand.getInstance(databaseManager, values));
+        CommandUtils.registerCompletions(commodore, safechatPluginCommand, this, e -> { logger.log(Level.WARNING, "Something went wrong when enabling command completion"); e.printStackTrace();});
         pluginManager.registerEvents(FlagListener.getInstance(Objects.requireNonNull(databaseManager), logger, values), this);
         pluginManager.registerEvents(checkRegister = CheckRegister.getInstance(values), this);
     }

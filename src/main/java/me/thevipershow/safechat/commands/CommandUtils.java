@@ -17,22 +17,41 @@
  */
 package me.thevipershow.safechat.commands;
 
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import java.io.IOException;
 import java.util.Map;
+import me.lucko.commodore.Commodore;
+import me.lucko.commodore.file.CommodoreFileFormat;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.enums.HoverMessages;
 import me.thevipershow.safechat.enums.SPermissions;
 import me.thevipershow.safechat.sql.DatabaseManager;
+import me.thevipershow.safechat.sql.ExceptionHandler;
 import me.thevipershow.spigotchatlib.chat.TextMessage;
 import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * @author marco
  */
 public final class CommandUtils {
+
+    public static void registerCompletions(Commodore commodore, PluginCommand command, JavaPlugin plugin, ExceptionHandler handler) {
+        try {
+            LiteralCommandNode<?> safechatCommand = CommodoreFileFormat.parse(plugin.getResource("safechat.commodore"));
+            commodore.register(safechatCommand);
+        } catch (IOException e) {
+            handler.handle(e);
+        }
+    }
 
     private static void noArguments(final CommandSender commandSender) {
         if (commandSender instanceof Player) {

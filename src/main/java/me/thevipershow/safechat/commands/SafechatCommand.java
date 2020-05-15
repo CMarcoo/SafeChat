@@ -29,12 +29,12 @@ public final class SafechatCommand implements CommandExecutor {
     private static SafechatCommand instance = null;
     private final Values values;
 
-    private SafechatCommand(DatabaseManager databaseManager, final Values values) {
+    private SafechatCommand(DatabaseManager databaseManager, Values values) {
         this.values = values;
         this.databaseManager = databaseManager;
     }
 
-    public static SafechatCommand getInstance(final DatabaseManager databaseManager, final Values values) {
+    public static SafechatCommand getInstance(final DatabaseManager databaseManager, Values values) {
         if (instance == null) {
             instance = new SafechatCommand(databaseManager, values);
         }

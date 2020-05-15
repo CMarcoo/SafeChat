@@ -1,0 +1,11 @@
+safechat {
+  sql {
+    search {
+      player brigadier:string single_word;
+    }
+    top {
+      count brigadier:integer;
+    }
+  }
+  reload;
+}
