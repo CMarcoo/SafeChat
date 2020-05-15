@@ -38,7 +38,7 @@ safechat:
   domains:
     enabled: true
     # This regex is used to check domains in the chat which will be blocked.
-    regex: "[\\S]{1,63}[,.\\s]{1,6}[\\S]{1,63}[,.\\s]{1,6}[\\S]{2,63}"
+    regex: "(?i)([a-z0-9]{1,63}[.,])+net|com|org|co|us|uk|xyz|info|de|tk|ga|cf"
     # These are the domains which will not be blocked.
     whitelisted: "play.hypixel.net|www.minecraft.net"
     # A list of messages that will be sent to the player upon triggering the domain check
