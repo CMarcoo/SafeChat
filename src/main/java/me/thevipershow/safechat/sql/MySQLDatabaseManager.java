@@ -23,8 +23,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.util.HashMap;
 import java.util.UUID;
 import static me.thevipershow.safechat.sql.SQLPrebuiltStatements.*;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
 
 public final class MySQLDatabaseManager implements DatabaseManager {
     private static MySQLDatabaseManager instance = null;
@@ -38,11 +36,11 @@ public final class MySQLDatabaseManager implements DatabaseManager {
         this( address, 5432, database, username, password);
     }
 
-    public static MySQLDatabaseManager getInstance(JavaPlugin plugin, String address, String database, String username, String password) {
+    public static MySQLDatabaseManager getInstance(String address, String database, String username, String password) {
         return instance != null ? instance : (instance = new MySQLDatabaseManager(address, database, username, password));
     }
 
-    public static MySQLDatabaseManager getInstance(JavaPlugin plugin, String address, int port, String database, String username, String password) {
+    public static MySQLDatabaseManager getInstance(String address, int port, String database, String username, String password) {
         return instance != null ? instance : (instance = new MySQLDatabaseManager(address, port, database, username, password));
     }
 

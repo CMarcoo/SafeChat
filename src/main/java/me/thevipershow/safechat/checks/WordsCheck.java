@@ -21,6 +21,7 @@ package me.thevipershow.safechat.checks;
 import java.util.regex.Matcher;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.config.WordsMatcher;
+import me.thevipershow.safechat.enums.CheckName;
 import me.thevipershow.safechat.events.FlagThrownEvent;
 import me.thevipershow.spigotchatlib.chat.TextMessage;
 import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
@@ -59,7 +60,7 @@ public final class WordsCheck implements ChatCheck {
             }
         }
         if (flags > 0) {
-            Bukkit.getPluginManager().callEvent(new FlagThrownEvent(flags, "words", player.getUniqueId(), player.getName()));
+            Bukkit.getPluginManager().callEvent(new FlagThrownEvent(flags, CheckName.WORDS, player.getUniqueId(), player.getName()));
 
             chatEvent.getPlayer().spigot().sendMessage(HoverMessageBuilder.buildHover(
                     TextMessage.build(values.getArrayAndReplace(values.getDomainWarning(), "%PLAYER%", player.getName())).color(),

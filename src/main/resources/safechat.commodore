@@ -1,6 +1,15 @@
 safechat {
   sql {
     search {
+      words {
+        player brigadier:string single_word;
+      }
+      domains {
+        player brigadier:string single_word;
+      }
+      ipv4 {
+        player brigadier:string single_word;
+      }
       player brigadier:string single_word;
     }
     top {

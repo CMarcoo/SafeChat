@@ -78,13 +78,13 @@ public final class Safechat extends JavaPlugin {
         // from here on values are assumed as safe
         switch (values.getDbType().toUpperCase(Locale.getDefault())) {
             case "POSTGRESQL":
-                databaseManager = PostgreSQLDatabaseManager.getInstance(this, values.getAddress(), values.getPort(), values.getDatabase(), values.getUsername(), values.getPassword());
+                databaseManager = PostgreSQLDatabaseManager.getInstance(values.getAddress(), values.getPort(), values.getDatabase(), values.getUsername(), values.getPassword());
                 break;
             case "SQLITE":
                 databaseManager = SQLiteDatabaseManager.getInstance(this);
                 break;
             case "MYSQL":
-                databaseManager = MySQLDatabaseManager.getInstance(this, values.getAddress(), values.getPort(), values.getDatabase(), values.getUsername(), values.getPassword());
+                databaseManager = MySQLDatabaseManager.getInstance(values.getAddress(), values.getPort(), values.getDatabase(), values.getUsername(), values.getPassword());
         }
         dataManager = DataManager.getInstance(databaseManager, this, values);
         sendInfo();
@@ -95,12 +95,17 @@ public final class Safechat extends JavaPlugin {
         if (CommodoreProvider.isSupported()) {
             commodore = CommodoreProvider.getCommodore(this);
         }
-        Objects.requireNonNull(safechatPluginCommand = getCommand("safechat")).setExecutor(safechatCommand = SafechatCommand.getInstance(databaseManager, values));
+        Objects.requireNonNull(safechatPluginCommand = getCommand("safechat")).setExecutor(safechatCommand = SafechatCommand.getInstance(dataManager, values));
         CommandUtils.registerCompletions(commodore, safechatPluginCommand, this, e -> {
             logger.log(Level.WARNING, "Something went wrong when enabling command completion");
             e.printStackTrace();
         });
         pluginManager.registerEvents(FlagListener.getInstance(Objects.requireNonNull(databaseManager), logger, values, dataManager), this);
         pluginManager.registerEvents(checkRegister = CheckRegister.getInstance(values), this);
+    }
+
+    @Override
+    public void onDisable() {
+        dataManager.transferAllData();
     }
 }

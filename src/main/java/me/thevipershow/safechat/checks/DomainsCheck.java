@@ -18,6 +18,7 @@
 package me.thevipershow.safechat.checks;
 
 import me.thevipershow.safechat.config.Values;
+import me.thevipershow.safechat.enums.CheckName;
 import me.thevipershow.safechat.events.FlagThrownEvent;
 import me.thevipershow.spigotchatlib.chat.TextMessage;
 import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
@@ -53,7 +54,7 @@ public final class DomainsCheck implements ChatCheck {
         if (result) {
             final Player player = chatEvent.getPlayer();
             chatEvent.setCancelled(true);
-            Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, "domains", player.getUniqueId(), player.getName()));
+            Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, CheckName.DOMAINS, player.getUniqueId(), player.getName()));
             chatEvent.getPlayer().spigot().sendMessage(HoverMessageBuilder.buildHover(
                     TextMessage.build(values.getArrayAndReplace(values.getDomainWarning(), "%PLAYER%", player.getName())).color(),
                     TextMessage.build(values.getArrayAndReplace(values.getDomainHover(), "%PLAYER%", player.getName())).color()

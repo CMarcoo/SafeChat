@@ -44,7 +44,7 @@ public final class CommandUtils {
 
     public static void registerCompletions(Commodore commodore, PluginCommand command, JavaPlugin plugin, ExceptionHandler handler) {
         try {
-            LiteralCommandNode<?> safechatCommand = CommodoreFileFormat.parse(plugin.getResource("safechat.commodore"));
+            LiteralCommandNode<?> safechatCommand = CommodoreFileFormat.parse(Objects.requireNonNull(plugin.getResource("safechat.commodore")));
             commodore.register(safechatCommand);
         } catch (IOException e) {
             handler.handle(e);
@@ -68,7 +68,7 @@ public final class CommandUtils {
         if (commandSender instanceof Player) {
             final Player player = (Player) commandSender;
             player.spigot().sendMessage(HoverMessageBuilder.buildHover(
-                    TextMessage.build("&7Â» &4Your command was incorrect!", "&7Hover here to see the issue &8[&4*&8]").color(),
+                    TextMessage.build("&7» &4Your command was incorrect!", "&7Hover here to see the issue &8[&4*&8]").color(),
                     TextMessage.build("&4Found syntax error &8-> &7[&r " + error + "&7 ]").color()
             ));
         } else {
@@ -77,17 +77,28 @@ public final class CommandUtils {
     }
 
     private static void sqlSearch(final DataManager dataManager, final CommandSender sender, final String searchName) {
-        for (Map.Entry<UUID, PlayerData> entry : dataManager.getPlayerData().entrySet()) {
-            final PlayerData playerData = entry.getValue();
-            if (playerData.getUsername().equals(searchName)) {
+        final List<EnumMap<CheckName, Integer>> obtained = dataManager.getPlayerFlags(searchName);
+        if (obtained != null) {
+            obtained.forEach(enumMap -> {
                 sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &8» &ePlayer " + searchName + " &fflags list:",
-                        "  &8[&6Domains Check&8]&7: &e" + playerData.getDomainFlags() + " &fflags",
-                        "  &8[&6IPv4 Check&8]&7: &e" + playerData.getIpv4Flags() + " &fflags",
-                        "  &8[&6Words Check&8]&7: &e" + playerData.getDomainFlags() + " &fflags").color().getText());
-                return;
-            }
+                        "  &8[&6Domains Check&8]&7: &e" + enumMap.get(CheckName.DOMAINS) + " &fflags",
+                        "  &8[&6IPv4 Check&8]&7: &e" + enumMap.get(CheckName.ADDRESSES) + " &fflags",
+                        "  &8[&6Words Check&8]&7: &e" + enumMap.get(CheckName.WORDS) + " &fflags").color().getText());
+            });
+        } else {
+            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: Player " + searchName + " was not found in the database!").color().getText());
         }
-        sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: Player " + searchName + " was not found in the database!").color().getText());
+    }
+
+    private static void sqlSearch(final DataManager dataManager, final CommandSender sender, final String searchName, final CheckName checkName) {
+        final List<Integer> obtained = dataManager.getPlayerFlags(searchName, checkName);
+        if (obtained != null) {
+            obtained.forEach(n -> {
+                sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &8» &ePlayer &f" + searchName + " &7has &e" + n + " &7" + checkName.name() + " flags").color().getText());
+            });
+        } else {
+            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: Player " + searchName + " was not found in the database!").color().getText());
+        }
     }
 
     private static void topSearch(final CommandSender sender, final DataManager dataManager, final int top, final CheckName checkName) {
@@ -95,14 +106,14 @@ public final class CommandUtils {
         if (playerDataList != null) {
             if (!playerDataList.isEmpty()) {
                 sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
-                for (PlayerData playerData : playerDataList) {
+                for (final PlayerData playerData : playerDataList) {
                     sender.sendMessage(TextMessage.build("&7| &e" + playerData.getUsername() + "  &7|  &e" + playerData.getFlag(checkName)).color().getText());
                 }
             } else {
                 sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: No data was found").color().getText());
             }
         } else {
-            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7:  &cSomething went wrong when loading data!").color().getText());
+            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7:  &cThe provided number was too huge (1-250)!").color().getText());
         }
     }
 
@@ -115,16 +126,52 @@ public final class CommandUtils {
                 values.updateAll();
                 sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &aSuccessfully reloaded the config.yml values").color().getText());
             } else if (args[0].equalsIgnoreCase("sql")) {
-                if (length >= 3) {
-                    if (args[1].equalsIgnoreCase("search") && length == 3) {
+                if (length == 3) {
+                    if (args[1].equalsIgnoreCase("search")) {
                         final String playerName = args[2];
                         sqlSearch(dataManager, sender, playerName);
-
-
-                    } else if (args[1].equalsIgnoreCase("top") && args[2].matches("[0-9]+") && length == 3) {
-                        final int search = Integer.parseInt(args[2]);
-
-
+                    } else {
+                        sendWarning(sender, "'&7" + args[1] + "&f' is an invalid argument");
+                    }
+                } else if (length == 4) {
+                    if (args[1].equalsIgnoreCase("search")) {
+                        final String playerName = args[3];
+                        final String checkType = args[2].toLowerCase(Locale.getDefault());
+                        switch (checkType) {
+                            case "words":
+                                sqlSearch(dataManager, sender, playerName, CheckName.WORDS);
+                                break;
+                            case "domains":
+                                sqlSearch(dataManager, sender, playerName, CheckName.DOMAINS);
+                                break;
+                            case "ipv4":
+                                sqlSearch(dataManager, sender, playerName, CheckName.ADDRESSES);
+                                break;
+                            default:
+                                sendWarning(sender, "`&7" + checkType + "&f` is an invalid check type");
+                                break;
+                        }
+                    } else if (args[1].equalsIgnoreCase("top")) {
+                        if (args[2].matches("[0-9]+]")) {
+                            int search = Integer.parseInt(args[2]);
+                            final String checkType = args[3];
+                            switch (checkType) {
+                                case "words":
+                                    topSearch(sender, dataManager, search, CheckName.WORDS);
+                                    break;
+                                case "domains":
+                                    topSearch(sender, dataManager, search, CheckName.DOMAINS);
+                                    break;
+                                case "ipv4":
+                                    topSearch(sender, dataManager, search, CheckName.ADDRESSES);
+                                    break;
+                                default:
+                                    sendWarning(sender, "`&7" + checkType + "&f` is an invalid check type");
+                                    break;
+                            }
+                        } else {
+                            sendWarning(sender, "'&7" + args[2] + "&f' is not a number!");
+                        }
                     } else {
                         sendWarning(sender, "'&7" + args[1] + "&f' is an invalid argument");
                     }

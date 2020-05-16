@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.plaf.multi.MultiMenuBarUI;
 import javax.xml.transform.OutputKeys;
 import me.thevipershow.safechat.config.Values;
@@ -62,13 +63,15 @@ public final class DataManager {
         return instance != null ? instance : (instance = new DataManager(databaseManager, plugin, values));
     }
 
+    public void transferAllData() {
+        databaseManager.transferAllData(e -> {
+            logger.log(Level.WARNING, "Something went wrong when saving data into the database!");
+            e.printStackTrace();
+        }, this.playerData);
+    }
+
     private void startAutomatedSaving() {
-        plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-            databaseManager.transferAllData(e -> {
-                logger.log(Level.WARNING, "Something went wrong when saving data into the database!");
-                e.printStackTrace();
-            }, this.playerData);
-        }, TicksConverter.MINUTES.convert(values.getAutoSave()), TicksConverter.MINUTES.convert(values.getAutoSave()));
+        plugin.getServer().getScheduler().runTaskTimer(plugin, this::transferAllData, TicksConverter.MINUTES.convert(values.getAutoSave()), TicksConverter.MINUTES.convert(values.getAutoSave()));
     }
 
     public final void addPlayerData(final UUID uuid, final String username, final PlayerData playerData, final CheckName checkName, final int severity) {
@@ -79,8 +82,34 @@ public final class DataManager {
         }
     }
 
-    public HashMap<UUID, PlayerData> getPlayerData() {
+    public final HashMap<UUID, PlayerData> getPlayerData() {
         return playerData;
+    }
+
+    public final List<EnumMap<CheckName, Integer>> getPlayerFlags(final String playerName) {
+        Stream<PlayerData> playerDataStream = this.playerData.values().stream().filter(e -> e.getUsername().equals(playerName));
+        if (playerDataStream.count() > 0) {
+            final List<EnumMap<CheckName, Integer>> enumMaps = new ArrayList<>();
+            playerDataStream.forEach(c -> {
+                final EnumMap<CheckName, Integer> checkNameIntegerEnumMap = new EnumMap<>(CheckName.class);
+                for (final CheckName checkName : CheckName.values()) {
+                    checkNameIntegerEnumMap.put(checkName, c.getFlag(checkName));
+                }
+                enumMaps.add(checkNameIntegerEnumMap);
+            });
+            return enumMaps;
+        }
+        return null;
+    }
+
+    public final List<Integer> getPlayerFlags(final String playerName, final CheckName checkName) {
+        Stream<PlayerData> playerDataStream = this.playerData.values().stream().filter(e -> e.getUsername().equals(playerName));
+        if (playerDataStream.count() > 0) {
+            final List<Integer> list = new ArrayList<>();
+            playerDataStream.forEach(c -> list.add(c.getFlag(checkName)));
+            return list;
+        }
+        return null;
     }
 
     public final List<PlayerData> getTopCheckData(final CheckName checkName, final int top) {

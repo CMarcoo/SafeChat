@@ -18,6 +18,7 @@
 package me.thevipershow.safechat.checks;
 
 import me.thevipershow.safechat.config.Values;
+import me.thevipershow.safechat.enums.CheckName;
 import me.thevipershow.safechat.events.FlagThrownEvent;
 import me.thevipershow.spigotchatlib.chat.TextMessage;
 import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
@@ -51,7 +52,7 @@ public final class AddressesCheck implements ChatCheck {
         if (result) {
             chatEvent.setCancelled(true);
             final Player player = chatEvent.getPlayer();
-            Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, "addresses", player.getUniqueId(), player.getName()));
+            Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, CheckName.ADDRESSES, player.getUniqueId(), player.getName()));
             chatEvent.getPlayer().spigot().sendMessage(HoverMessageBuilder.buildHover(
                     TextMessage.build(values.getArrayAndReplace(values.getIpv4Warning(), "%PLAYER%", player.getName())).color(),
                     TextMessage.build(values.getArrayAndReplace(values.getIpv4Hover(), "%PLAYER%", player.getName())).color()
