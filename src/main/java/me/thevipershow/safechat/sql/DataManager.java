@@ -18,25 +18,14 @@
 
 package me.thevipershow.safechat.sql;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.swing.plaf.multi.MultiMenuBarUI;
-import javax.xml.transform.OutputKeys;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.enums.CheckName;
 import me.thevipershow.safechat.enums.TicksConverter;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class DataManager {

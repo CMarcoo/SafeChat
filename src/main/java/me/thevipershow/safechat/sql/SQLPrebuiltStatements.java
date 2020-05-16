@@ -27,9 +27,9 @@ public enum SQLPrebuiltStatements {
             + "\tflags_words INT NOT NULL ,\n"
             + "\tflags_domains INT NOT NULL ,\n"
             + "\tflags_ipv4 INT NOT NULL);"),
-    SQLITE_GET_ALL_DATA("SELECT player_uuid, flags_domain, flags_ipv4, flags_words FROM safechat_data;"),
-    SQLITE_SAVE_ALL_DATA("INSERT INTO safechat_data (player_uuid, player_name, flags_domain, flags_ipv4, flags_words) VALUES (?,?,?,?,?)" +
-            " ON CONFLICT (player_uuid) DO UPDATE SET player_name = ?, flags_domain = ?, flags_ipv4 = ?, flags_words = ?;"),
+    SQLITE_GET_ALL_DATA("SELECT player_uuid, flags_domains, flags_ipv4, flags_words FROM safechat_data;"),
+    SQLITE_SAVE_ALL_DATA("INSERT INTO safechat_data (player_uuid, player_name, flags_domains, flags_ipv4, flags_words) VALUES (?,?,?,?,?)" +
+            " ON CONFLICT (player_uuid) DO UPDATE SET player_name = ?, flags_domains = ?, flags_ipv4 = ?, flags_words = ?;"),
     POSTGRESQL_CREATE_TABLE("CREATE TABLE IF NOT EXISTS safechat_data\n"
             + "(\n"
             + "\tplayer_uuid UUID NOT NULL UNIQUE PRIMARY KEY ,\n"
@@ -41,8 +41,8 @@ public enum SQLPrebuiltStatements {
     POSTGRESQL_SAVE_ALL_DATA(SQLITE_SAVE_ALL_DATA.SQL),
     MYSQL_CREATE_TABLE(SQLITE_CREATE_TABLE.SQL),
     MYSQL_GET_ALL_DATA(SQLITE_GET_ALL_DATA.SQL),
-    MYSQL_SAVE_ALL_DATA("INSERT INTO safechat_data (player_uuid, player_name, flags_domain, flags_ipv4, flags_words) VALUES (?,?,?,?,?)" +
-            " ON DUPLICATE KEY UPDATE player_name = ?, flags_domain = ?, flags_ipv4 = ?, flags_words = ?;");
+    MYSQL_SAVE_ALL_DATA("INSERT INTO safechat_data (player_uuid, player_name, flags_domains, flags_ipv4, flags_words) VALUES (?,?,?,?,?)" +
+            " ON DUPLICATE KEY UPDATE player_name = ?, flags_domains = ?, flags_ipv4 = ?, flags_words = ?;");
 
     SQLPrebuiltStatements(String SQL) {
         this.SQL = SQL;

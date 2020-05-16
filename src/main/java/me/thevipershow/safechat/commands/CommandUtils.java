@@ -152,7 +152,7 @@ public final class CommandUtils {
                                 break;
                         }
                     } else if (args[1].equalsIgnoreCase("top")) {
-                        if (args[2].matches("[0-9]+]")) {
+                        if (args[2].matches("[0-9]+")) {
                             int search = Integer.parseInt(args[2]);
                             final String checkType = args[3];
                             switch (checkType) {

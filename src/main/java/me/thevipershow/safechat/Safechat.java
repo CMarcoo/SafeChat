@@ -86,12 +86,12 @@ public final class Safechat extends JavaPlugin {
             case "MYSQL":
                 databaseManager = MySQLDatabaseManager.getInstance(values.getAddress(), values.getPort(), values.getDatabase(), values.getUsername(), values.getPassword());
         }
-        dataManager = DataManager.getInstance(databaseManager, this, values);
         sendInfo();
     }
 
     @Override
     public void onEnable() {
+        dataManager = DataManager.getInstance(databaseManager, this, values);
         if (CommodoreProvider.isSupported()) {
             commodore = CommodoreProvider.getCommodore(this);
         }
