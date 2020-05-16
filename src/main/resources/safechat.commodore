@@ -13,7 +13,11 @@ safechat {
       player brigadier:string single_word;
     }
     top {
-      count brigadier:integer;
+      count brigadier:integer {
+        words;
+        domains;
+        ipv4;
+      }
     }
   }
   reload;
