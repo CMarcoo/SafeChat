@@ -19,47 +19,42 @@
 package me.thevipershow.safechat.config;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Pattern;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 
-@SerializableAs("WordsMatcher")
-public final class WordsMatcher implements ConfigurationSerializable, Cloneable {
+@SerializableAs("ExecutableObject")
+public final class ExecutableObject implements ConfigurationSerializable {
     private final long serialVersionUID = 1L;
-    private final String pattern;
-    private final String replace;
+    private final List<String> commands;
+    private final int flags;
 
-    public WordsMatcher(String pattern, String replace) {
-        this.pattern = pattern;
-        this.replace = replace;
+    public ExecutableObject(List<String> commands, int flags) {
+        this.commands = commands;
+        this.flags = flags;
     }
 
-    public final String getPattern() {
-        return pattern;
+    public List<String> getCommands() {
+        return commands;
     }
 
-    public final String getReplace() {
-        return replace;
+    public int getFlags() {
+        return flags;
     }
 
-    public final Pattern getCompiledPattern() {
-        return Pattern.compile(this.pattern);
-    }
-
-    // Can throw NullPointerException
     @Override
     public final Map<String, Object> serialize() {
         final Map<String, Object> result = new HashMap<>();
-        result.put("pattern", Objects.requireNonNull(pattern));
-        result.put("replace", Objects.requireNonNull(replace));
+        result.put("commands", Objects.requireNonNull(commands));
+        result.put("flags", flags);
         return result;
     }
 
-    public static WordsMatcher deserialize(Map<String, Object> objectMap) {
-        final String pattern = (String) objectMap.get("pattern");
-        final String replace = (String) objectMap.get("replace");
-        return new WordsMatcher(pattern, replace);
+    public static ExecutableObject deserialize(final Map<String, Object> objectMap) {
+        final List<String> commands = (List<String>) objectMap.get("commands");
+        final int flags = (int) objectMap.get("flags");
+        return new ExecutableObject(commands, flags);
     }
 }

@@ -20,6 +20,7 @@ package me.thevipershow.safechat.enums;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import me.thevipershow.safechat.config.ExecutableObject;
 import me.thevipershow.safechat.config.WordsMatcher;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -38,15 +39,18 @@ public enum EnumConfig {
     DOMAIN_WHITELIST("safechat.domains.whitelisted"),
     DOMAIN_WARNING("safechat.domains.warning"),
     DOMAIN_HOVER("safechat.domains.hover-warning"),
+    DOMAIN_EXECUTABLES("safechat.domains.executables"),
     IPV4_ENABLED("safechat.addresses.enabled"),
     IPV4_REGEX("safechat.addresses.regex"),
     IPV4_WHITELIST("safechat.addresses.whitelisted"),
     IPV4_WARNING("safechat.addresses.warning"),
     IPV4_HOVER("safechat.addresses.hover-warning"),
+    IPV4_EXECUTABLES("safechat.addresses.executables"),
     WORDS_ENABLED("safechat.words.enabled"),
     WORDS_BLACKLIST("safechat.words.blacklisted"),
     WORDS_WARNING("safechat.words.warning"),
-    WORDS_HOVER("safechat.words.hover-warning");
+    WORDS_HOVER("safechat.words.hover-warning"),
+    WORDS_EXECUTABLES("safechat.words.executables");
 
     private final String value;
 
@@ -67,7 +71,11 @@ public enum EnumConfig {
     }
 
     public final List<WordsMatcher> getWordsMatcherList(final FileConfiguration configuration) {
-        return configuration.getMapList(value).stream().map(map -> WordsMatcher.deserialize((Map<String, Object>) map)).collect(Collectors.toList());
+        return configuration.getMapList(value).stream().map(map -> WordsMatcher.deserialize((Map<String, Object>) map)).collect(Collectors.toUnmodifiableList());
+    }
+
+    public final List<ExecutableObject> getExecutableObject(final FileConfiguration configuration) {
+        return configuration.getMapList(value).stream().map(map -> ExecutableObject.deserialize((Map<String, Object>) map)).collect(Collectors.toUnmodifiableList());
     }
 
     EnumConfig(String value) {

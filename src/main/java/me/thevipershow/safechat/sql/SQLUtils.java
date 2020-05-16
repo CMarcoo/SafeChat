@@ -32,9 +32,6 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 public final class SQLUtils {
 
-    private final static String FLAGS_COLUMN = "flags";
-    private final static String UUID_COLUMN = "player_uuid";
-
     public static void createTable(final ConnectionProvider provider, final SQLPrebuiltStatements sql, final ExceptionHandler handler) {
         try (final Connection c = provider.findConnection()) {
             try (final PreparedStatement s = c.prepareStatement(sql.getSQL())) {
@@ -45,9 +42,10 @@ public final class SQLUtils {
         }
     }
 
+    /*
     public static void addUniquePlayerOrUpdate(final ConnectionProvider provider, final SQLPrebuiltStatements sql, final UUID playerUUID, final int severity, final ExceptionHandler handler) {
         try (final Connection c = provider.findConnection()) {
-            try (final PreparedStatement s = c.prepareStatement(sql.getSQL())) {
+            try (final PreparedStatement s = c.prepareStatement(String.format(sql.getSQL(), ))) {
                 s.setString(1, playerUUID.toString());
                 s.setInt(2, severity);
                 s.setInt(3, severity);
@@ -57,6 +55,8 @@ public final class SQLUtils {
             handler.handle(e);
         }
     }
+
+     */
 
     public static CompletableFuture<Integer> getPlayerData(final ConnectionProvider provider, final UUID playerUuid, final BukkitScheduler scheduler, final JavaPlugin plugin, final SQLPrebuiltStatements sql) {
         final CompletableFuture<Integer> completableFuture = new CompletableFuture<>();

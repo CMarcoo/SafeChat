@@ -17,9 +17,6 @@
  */
 package me.thevipershow.safechat.commands;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.io.IOException;
 import java.util.Map;

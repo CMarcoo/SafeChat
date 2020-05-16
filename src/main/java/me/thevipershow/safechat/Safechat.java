@@ -26,6 +26,7 @@ import me.lucko.commodore.CommodoreProvider;
 import me.thevipershow.safechat.checks.register.CheckRegister;
 import me.thevipershow.safechat.commands.CommandUtils;
 import me.thevipershow.safechat.commands.SafechatCommand;
+import me.thevipershow.safechat.config.ExecutableObject;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.config.ValuesValidator;
 import me.thevipershow.safechat.config.WordsMatcher;
@@ -70,6 +71,7 @@ public final class Safechat extends JavaPlugin {
     @Override
     public void onLoad() {
         ConfigurationSerialization.registerClass(WordsMatcher.class, "WordsMatcher");
+        ConfigurationSerialization.registerClass(ExecutableObject.class, "ExecutableObject");
         saveDefaultConfig();
         saveResource("safechat.commodore", true);
         values = Values.getInstance(this);
@@ -95,7 +97,10 @@ public final class Safechat extends JavaPlugin {
             commodore = CommodoreProvider.getCommodore(this);
         }
         Objects.requireNonNull(safechatPluginCommand = getCommand("safechat")).setExecutor(safechatCommand = SafechatCommand.getInstance(databaseManager, values));
-        CommandUtils.registerCompletions(commodore, safechatPluginCommand, this, e -> { logger.log(Level.WARNING, "Something went wrong when enabling command completion"); e.printStackTrace();});
+        CommandUtils.registerCompletions(commodore, safechatPluginCommand, this, e -> {
+            logger.log(Level.WARNING, "Something went wrong when enabling command completion");
+            e.printStackTrace();
+        });
         pluginManager.registerEvents(FlagListener.getInstance(Objects.requireNonNull(databaseManager), logger, values), this);
         pluginManager.registerEvents(checkRegister = CheckRegister.getInstance(values), this);
     }

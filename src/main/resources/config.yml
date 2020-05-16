@@ -52,12 +52,24 @@ safechat:
     # A list of messages that will be sent as hover message to the message above,
     # Available placeholders:
     # %PLAYER% , the player name
-
     # leave empty if none should be generated
     hover-warning:
       - "&7  [&eServer&7]"
       - "&7It looks like you've sent a &c&nforbidden&r&7 address..."
       - "&7Please don't to that again"
+    # These are a list of executables objects that will trigger upon one of the players failing the check
+    # you can set a list of commands that will be executed by the server.
+    # you can set the field 'flags-trigger' to specify at how many flags the check should trigger
+    # Available placeholders:
+    # %PLAYER%, the player name.
+    executables:
+      - commands:
+          - "tell %PLAYER% you just sent a forbidden address into the chat"
+          - "tell %PLAYER% the next time this happens, this will result in a ban"
+        flags: 1
+      - commands:
+          - "ban %PLAYER%"
+        flags: 2
   addresses:
     enabled: true
     # This regex is used to blacklist all domains
@@ -81,6 +93,14 @@ safechat:
       - "&7  [&eServer&7]"
       - "&7It looks like you've sent a &c&nforbidden&r&7 ipv4..."
       - "&7Please don't to that again"
+    executables:
+      - commands:
+          - "tell %PLAYER% you just sent a forbidden address into the chat"
+          - "tell %PLAYER% the next time this happens, this will result in a ban"
+        flags: 1
+      - commands:
+          - "ban %PLAYER%"
+        flags: 2
   words:
     enabled: true
     # This is a list of blacklisted words that can't be used in the chat
@@ -114,6 +134,14 @@ safechat:
       - "&7  [&eServer&7]"
       - "&7It looks like you've used a &c&nforbidden&r&7 word..."
       - "&7Please don't to that again"
+    executables:
+      - commands:
+          - "tell %PLAYER% you just sent a forbidden word into the chat"
+          - "tell %PLAYER% the next time this happens, this will result in a ban"
+        flags: 2
+      - commands:
+          - "ban %PLAYER%"
+        flags: 5
 
 # |-----------------------------------------------------------------------------------------------------|
 # |   ______     ______     ______   ______     ______     __  __     ______     ______                 |
@@ -123,5 +151,3 @@ safechat:
 # |    \/_____/   \/_/\/_/   \/_/     \/_____/   \/_____/   \/_/\/_/   \/_/\/_/     \/_/                |
 # |-----------------------------------------------------------------------------------------------------|
 # Plugin by TheViperShow.
-
-

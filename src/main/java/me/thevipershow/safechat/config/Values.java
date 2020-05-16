@@ -38,10 +38,7 @@ public final class Values {
     private static Values instance = null;
 
     public static Values getInstance(JavaPlugin plugin) {
-        if (instance == null) {
-            instance = new Values(plugin);
-        }
-        return instance;
+        return instance != null ? instance : (instance = new Values(plugin));
     }
 
     public final void updateAll() {
@@ -61,15 +58,18 @@ public final class Values {
         this.domainWhitelist = EnumConfig.DOMAIN_WHITELIST.getString(configuration);
         this.domainWarning = EnumConfig.DOMAIN_WARNING.getStringList(configuration);
         this.domainHover = EnumConfig.DOMAIN_HOVER.getStringList(configuration);
+        this.domainExecutables = EnumConfig.DOMAIN_EXECUTABLES.getExecutableObject(configuration);
         this.ipv4Enabled = EnumConfig.IPV4_ENABLED.getBool(configuration);
         this.ipv4Regex = EnumConfig.IPV4_REGEX.getString(configuration);
         this.ipv4Whitelist = EnumConfig.IPV4_WHITELIST.getString(configuration);
         this.ipv4Warning = EnumConfig.IPV4_WARNING.getStringList(configuration);
         this.ipv4Hover = EnumConfig.IPV4_HOVER.getStringList(configuration);
+        this.ipv4Executables = EnumConfig.IPV4_EXECUTABLES.getExecutableObject(configuration);
         this.wordsEnabled = EnumConfig.WORDS_ENABLED.getBool(configuration);
         this.blacklistWords = EnumConfig.WORDS_BLACKLIST.getWordsMatcherList(configuration);
         this.wordsWarning = EnumConfig.WORDS_WARNING.getStringList(configuration);
         this.wordsHover = EnumConfig.WORDS_HOVER.getStringList(configuration);
+        this.wordsExecutables = EnumConfig.WORDS_EXECUTABLES.getExecutableObject(configuration);
         CheckRegister.getInstance(this).update();
     }
 
@@ -87,15 +87,18 @@ public final class Values {
     private String domainWhitelist;
     private List<String> domainWarning;
     private List<String> domainHover;
+    private List<ExecutableObject> domainExecutables;
     private boolean ipv4Enabled;
     private String ipv4Regex;
     private String ipv4Whitelist;
     private List<String> ipv4Warning;
     private List<String> ipv4Hover;
+    private List<ExecutableObject> ipv4Executables;
     private boolean wordsEnabled;
     private List<WordsMatcher> blacklistWords;
     private List<String> wordsWarning;
     private List<String> wordsHover;
+    private List<ExecutableObject> wordsExecutables;
 
     public List<String> getListAndReplace(List<String> list, String placeholder, String replace) {
         final List<String> stringList = new ArrayList<>();
@@ -109,16 +112,12 @@ public final class Values {
         return getListAndReplace(list, placeholder, replace).toArray(String[]::new);
     }
 
-    public boolean isEnableConsoleLogging() {
-        return enableConsoleLogging;
-    }
-
-    public JavaPlugin getPlugin() {
-        return plugin;
-    }
-
     public int getSerialUID() {
         return serialUID;
+    }
+
+    public boolean isEnableConsoleLogging() {
+        return enableConsoleLogging;
     }
 
     public String getDbType() {
@@ -169,6 +168,10 @@ public final class Values {
         return domainHover;
     }
 
+    public List<ExecutableObject> getDomainExecutables() {
+        return domainExecutables;
+    }
+
     public boolean isIpv4Enabled() {
         return ipv4Enabled;
     }
@@ -189,6 +192,10 @@ public final class Values {
         return ipv4Hover;
     }
 
+    public List<ExecutableObject> getIpv4Executables() {
+        return ipv4Executables;
+    }
+
     public boolean isWordsEnabled() {
         return wordsEnabled;
     }
@@ -203,5 +210,9 @@ public final class Values {
 
     public List<String> getWordsHover() {
         return wordsHover;
+    }
+
+    public List<ExecutableObject> getWordsExecutables() {
+        return wordsExecutables;
     }
 }
