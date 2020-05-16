@@ -22,9 +22,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -84,17 +83,12 @@ public final class SQLiteDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public final void addUniquePlayerOrUpdate(UUID playerUuid, int severity, ExceptionHandler handler) {
-        SQLUtils.addUniquePlayerOrUpdate(this::getDatabaseConnection, SQLITE_ADD_PLAYER_OR_UPDATE, playerUuid, severity, handler);
+    public HashMap<UUID, PlayerData> getAllData(ExceptionHandler handler) {
+        return SQLUtils.getAllData(this::getDatabaseConnection, SQLITE_GET_ALL_DATA, handler);
     }
 
     @Override
-    public final CompletableFuture<Integer> getPlayerData(UUID playerUuid) {
-        return SQLUtils.getPlayerData(this::getDatabaseConnection, playerUuid, scheduler, plugin, SQLITE_GET_PLAYER_DATA);
-    }
-
-    @Override
-    public final CompletableFuture<Map<String, Integer>> getTopData(int search) {
-        return SQLUtils.getTopData(this::getDatabaseConnection, scheduler, plugin, SQLITE_GET_TOP_DATA, search);
+    public void transferAllData(ExceptionHandler handler, final HashMap<UUID, PlayerData> dataHashMap) {
+        SQLUtils.transferAllData(dataHashMap, this::getDatabaseConnection, SQLITE_SAVE_ALL_DATA, handler);
     }
 }

@@ -32,10 +32,7 @@ import me.thevipershow.safechat.config.ValuesValidator;
 import me.thevipershow.safechat.config.WordsMatcher;
 import me.thevipershow.safechat.enums.ANSIColor;
 import me.thevipershow.safechat.events.listeners.FlagListener;
-import me.thevipershow.safechat.sql.DatabaseManager;
-import me.thevipershow.safechat.sql.MySQLDatabaseManager;
-import me.thevipershow.safechat.sql.PostgreSQLDatabaseManager;
-import me.thevipershow.safechat.sql.SQLiteDatabaseManager;
+import me.thevipershow.safechat.sql.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -53,6 +50,7 @@ public final class Safechat extends JavaPlugin {
     private DatabaseManager databaseManager;
     private Commodore commodore;
     private PluginCommand safechatPluginCommand;
+    private DataManager dataManager;
 
     private final String pluginLogo = "&y ____   __   ____  ____  ___  _  _   __  ____ &R\n" +
             "&y/ ___) / _\\ (  __)(  __)/ __)/ )( \\ / _\\(_  _)&R\n" +
@@ -88,6 +86,7 @@ public final class Safechat extends JavaPlugin {
             case "MYSQL":
                 databaseManager = MySQLDatabaseManager.getInstance(this, values.getAddress(), values.getPort(), values.getDatabase(), values.getUsername(), values.getPassword());
         }
+        dataManager = DataManager.getInstance(databaseManager, this, values);
         sendInfo();
     }
 
@@ -101,7 +100,7 @@ public final class Safechat extends JavaPlugin {
             logger.log(Level.WARNING, "Something went wrong when enabling command completion");
             e.printStackTrace();
         });
-        pluginManager.registerEvents(FlagListener.getInstance(Objects.requireNonNull(databaseManager), logger, values), this);
+        pluginManager.registerEvents(FlagListener.getInstance(Objects.requireNonNull(databaseManager), logger, values, dataManager), this);
         pluginManager.registerEvents(checkRegister = CheckRegister.getInstance(values), this);
     }
 }

@@ -18,43 +18,47 @@
 
 package me.thevipershow.safechat.sql;
 
-import java.util.UUID;
+import me.thevipershow.safechat.enums.CheckName;
 
 public final class PlayerData {
-    private final UUID playerUuid;
     private int domainFlags;
     private int ipv4Flags;
     private int wordFlags;
+    private String username;
 
-    public PlayerData(final UUID playerUuid, final int domainFlags, final int ipv4Flags, final int wordFlags) {
-        this.playerUuid = playerUuid;
+    public PlayerData(final int domainFlags, final int ipv4Flags, final int wordFlags, final String username) {
         this.domainFlags = domainFlags;
         this.ipv4Flags = ipv4Flags;
         this.wordFlags = wordFlags;
+        this.username = username;
     }
 
-    public final void incrementDomainFlags() {
-        domainFlags++;
+    public final PlayerData incrementFlag(final CheckName checkName, final int severity, final String username) {
+        switch (checkName) {
+            case DOMAINS:
+                this.domainFlags += severity;
+                break;
+            case ADDRESSES:
+                this.ipv4Flags += severity;
+                break;
+            case WORDS:
+                this.wordFlags += severity;
+                break;
+        }
+        return new PlayerData(this.domainFlags, this.ipv4Flags, this.wordFlags, username);
     }
 
-    public final void incrementIpv4Flags() {
-        ipv4Flags++;
-    }
-
-    public final void incrementWordFlags() {
-        wordFlags++;
-    }
-
-    public final void incrementDomainFlags(int value) {
-        domainFlags += value;
-    }
-
-    public final void incrementIpv4Flags(int value) {
-        ipv4Flags += value;
-    }
-
-    public final void incrementWordFlags(int value) {
-        wordFlags += value;
+    public final int getFlag(final CheckName checkName) {
+        switch (checkName) {
+            case WORDS:
+                return this.wordFlags;
+            case ADDRESSES:
+                return this.ipv4Flags;
+            case DOMAINS:
+                return this.domainFlags;
+            default:
+                throw new IllegalArgumentException("Unknown Check type of: " + checkName.name());
+        }
     }
 
     public final int getDomainFlags() {
@@ -67,5 +71,13 @@ public final class PlayerData {
 
     public final int getWordFlags() {
         return wordFlags;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

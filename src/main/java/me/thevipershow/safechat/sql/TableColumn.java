@@ -19,6 +19,7 @@
 package me.thevipershow.safechat.sql;
 
 public enum TableColumn {
+    PLAYER_NAME("player_name"),
     FLAGS_WORDS("flags_words"),
     FLAGS_DOMAINS("flags_domains"),
     FLAGS_IPV4("flags_ipv4"),

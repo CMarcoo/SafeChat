@@ -19,21 +19,22 @@ package me.thevipershow.safechat.commands;
 
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.io.IOException;
-import java.util.Map;
+import java.util.*;
 import me.lucko.commodore.Commodore;
 import me.lucko.commodore.file.CommodoreFileFormat;
 import me.thevipershow.safechat.config.Values;
+import me.thevipershow.safechat.enums.CheckName;
 import me.thevipershow.safechat.enums.HoverMessages;
 import me.thevipershow.safechat.enums.SPermissions;
-import me.thevipershow.safechat.sql.DatabaseManager;
+import me.thevipershow.safechat.sql.DataManager;
 import me.thevipershow.safechat.sql.ExceptionHandler;
+import me.thevipershow.safechat.sql.PlayerData;
 import me.thevipershow.spigotchatlib.chat.TextMessage;
 import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -75,22 +76,28 @@ public final class CommandUtils {
         }
     }
 
-    private static void sqlSearch(final Integer flags, final CommandSender sender, final String name) {
-        if (flags == null) {
-            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &8» &4Player &f" + name + " &4not found!").color().getText());
-        } else {
-            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &8» &ePlayer &f" + name + " &ehas &6" + flags + " &eflags.").color().getText());
+    private static void sqlSearch(final DataManager dataManager, final CommandSender sender, final String searchName) {
+        for (Map.Entry<UUID, PlayerData> entry : dataManager.getPlayerData().entrySet()) {
+            final PlayerData playerData = entry.getValue();
+            if (playerData.getUsername().equals(searchName)) {
+                sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &8» &ePlayer " + searchName + " &fflags list:",
+                        "  &8[&6Domains Check&8]&7: &e" + playerData.getDomainFlags() + " &fflags",
+                        "  &8[&6IPv4 Check&8]&7: &e" + playerData.getIpv4Flags() + " &fflags",
+                        "  &8[&6Words Check&8]&7: &e" + playerData.getDomainFlags() + " &fflags").color().getText());
+                return;
+            }
         }
+        sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: Player " + searchName + " was not found in the database!").color().getText());
     }
 
-    private static void topSearch(final CommandSender sender, final Map<String, Integer> result) {
-        if (result != null) {
-            if (!result.isEmpty()) {
+    private static void topSearch(final CommandSender sender, final DataManager dataManager, final int top, final CheckName checkName) {
+        final List<PlayerData> playerDataList = dataManager.getTopCheckData(checkName, top);
+        if (playerDataList != null) {
+            if (!playerDataList.isEmpty()) {
                 sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
-                result.forEach((name, flags) -> {
-                    sender.sendMessage(TextMessage.build("&7|  &e" + name + "  &6 " + flags).color().getText());
-                    sender.sendMessage(TextMessage.build("&7---------------------------------").color().getText());
-                });
+                for (PlayerData playerData : playerDataList) {
+                    sender.sendMessage(TextMessage.build("&7| &e" + playerData.getUsername() + "  &7|  &e" + playerData.getFlag(checkName)).color().getText());
+                }
             } else {
                 sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: No data was found").color().getText());
             }
@@ -99,7 +106,7 @@ public final class CommandUtils {
         }
     }
 
-    public static void processCommand(final DatabaseManager databaseManager, final String[] args, final CommandSender sender, Values values) {
+    public static void processCommand(final DataManager dataManager, final String[] args, final CommandSender sender, Values values) {
         if (sender.hasPermission(SPermissions.COMMAND.getConcatPermission("main"))) {
             final int length = args.length;
             if (length == 0) {
@@ -111,24 +118,13 @@ public final class CommandUtils {
                 if (length >= 3) {
                     if (args[1].equalsIgnoreCase("search") && length == 3) {
                         final String playerName = args[2];
-                        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-                        if (!offlinePlayer.hasPlayedBefore()) {
-                            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &cThe player you specified has never joined this server!").color().getText());
-                        } else {
-                            databaseManager.getPlayerData(offlinePlayer.getUniqueId())
-                                    .thenAcceptAsync(i -> sqlSearch(i, sender, playerName))
-                                    .exceptionally(i -> {
-                                        i.printStackTrace();
-                                        return null;
-                                    });
-                        }
+                        sqlSearch(dataManager, sender, playerName);
+
 
                     } else if (args[1].equalsIgnoreCase("top") && args[2].matches("[0-9]+") && length == 3) {
                         final int search = Integer.parseInt(args[2]);
-                        databaseManager.getTopData(search).thenAcceptAsync(data -> topSearch(sender, data)).exceptionally(i -> {
-                            i.printStackTrace();
-                            return null;
-                        });
+
+
                     } else {
                         sendWarning(sender, "'&7" + args[1] + "&f' is an invalid argument");
                     }

@@ -16,15 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.thevipershow.safechat.sql;
+package me.thevipershow.safechat.enums;
 
-import java.util.HashMap;
-import java.util.UUID;
+public enum TicksConverter {
+    SECONDS(20),
+    MINUTES(20 * 60),
+    HOURS(20 * 60 * 60),
+    DAYS(20 * 60 * 60 * 24),
+    WEEKS(20 * 60 * 60 * 24 * 7),
+    YEARS(20 * 60 * 60 * 365);
 
-public interface DatabaseManager {
-    void createTable(final ExceptionHandler handler);
+    private final int conversion;
 
-    HashMap<UUID,PlayerData> getAllData(final ExceptionHandler handler);
+    TicksConverter(final int conversion) {
+        this.conversion = conversion;
+    }
 
-    void transferAllData(final ExceptionHandler handler, final HashMap<UUID,PlayerData> dataHashMap);
+    public long convert(final long value) {
+        return value * conversion;
+    }
 }

@@ -35,12 +35,13 @@ public final class ValuesValidator {
 
     public boolean validateAll() {
         boolean databaseType = Validator.validate(values.getDbType().toUpperCase(Locale.getDefault()), Throwable::printStackTrace, "SQLITE", "POSTGRESQL", "MYSQL");
+        boolean autoSaveCheck = Validator.validateInRange(values.getAutoSave(), Throwable::printStackTrace, NumberRange.process(1, Integer.MAX_VALUE));
         boolean portCheck = Validator.validateInRange(values.getPort(), Throwable::printStackTrace, NumberRange.process(0, 65535));
         boolean nullCheckBlacklistWords = Validator.validateNotNull(values.getBlacklistWords(), Throwable::printStackTrace);
         boolean nullCheckDomainHover = Validator.validateNotNull(values.getDomainHover(), Throwable::printStackTrace);
         boolean nullCheckDomainWarning = Validator.validateNotNull(values.getDomainWarning(), Throwable::printStackTrace);
         boolean nullCheckWordsWarning = Validator.validateNotNull(values.getWordsWarning(), Throwable::printStackTrace);
         boolean nullCheckWordsHover = Validator.validateNotNull(values.getWordsHover(), Throwable::printStackTrace);
-        return databaseType && portCheck && nullCheckBlacklistWords && nullCheckDomainHover && nullCheckDomainWarning && nullCheckWordsHover && nullCheckWordsWarning;
+        return databaseType && autoSaveCheck && portCheck && nullCheckBlacklistWords && nullCheckDomainHover && nullCheckDomainWarning && nullCheckWordsHover && nullCheckWordsWarning;
     }
 }

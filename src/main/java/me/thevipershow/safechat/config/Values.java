@@ -53,6 +53,7 @@ public final class Values {
         this.address = EnumConfig.ADDRESS.getString(configuration);
         this.database = EnumConfig.DATABASE.getString(configuration);
         this.table = EnumConfig.TABLE.getString(configuration);
+        this.autoSave = EnumConfig.AUTO_SAVE.getInt(configuration);
         this.domainEnabled = EnumConfig.DOMAIN_ENABLED.getBool(configuration);
         this.domainRegex = EnumConfig.DOMAIN_REGEX.getString(configuration);
         this.domainWhitelist = EnumConfig.DOMAIN_WHITELIST.getString(configuration);
@@ -82,6 +83,7 @@ public final class Values {
     private String address;
     private String database;
     private String table;
+    private int autoSave;
     private boolean domainEnabled;
     private String domainRegex;
     private String domainWhitelist;
@@ -146,6 +148,10 @@ public final class Values {
 
     public String getTable() {
         return table;
+    }
+
+    public int getAutoSave() {
+        return autoSave;
     }
 
     public boolean isDomainEnabled() {

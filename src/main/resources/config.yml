@@ -31,6 +31,11 @@ safechat:
     database: 'database'
     # for display purposes only.
     table: 'safechat_data'
+    # This value is really important, it determines how often should the server save the data onto the table.
+    # This could avoid data loss after eventual server crashes.
+    # recommended value is between 5-15 (minutes)
+    # Note that the data will also get saved when the plugin disables.
+    auto-save: 5
   # The configuration below uses RegEx to check user input, they are a short sequence of characters that
   # define a search pattern. This are used in order to 'recognize' dangerous messages.
   # You can easily modify them to your own liking, you can find more info here:

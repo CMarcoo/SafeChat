@@ -34,6 +34,7 @@ public enum EnumConfig {
     ADDRESS("safechat.database.address"),
     DATABASE("safechat.database.database"),
     TABLE("safechat.database.table"),
+    AUTO_SAVE("safechat.database.auto-save"),
     DOMAIN_ENABLED("safechat.domains.enabled"),
     DOMAIN_REGEX("safechat.domains.regex"),
     DOMAIN_WHITELIST("safechat.domains.whitelisted"),

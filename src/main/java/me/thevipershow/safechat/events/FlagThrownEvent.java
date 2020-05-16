@@ -17,6 +17,8 @@
  */
 package me.thevipershow.safechat.events;
 
+import me.thevipershow.safechat.enums.CheckName;
+import me.thevipershow.safechat.sql.PlayerData;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -27,11 +29,11 @@ public final class FlagThrownEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
 
     private final int severity;
-    private final String checkName;
+    private final CheckName checkName;
     private final UUID senderUUID;
     private final String playerName;
 
-    public FlagThrownEvent(final int severity, final String checkName, final UUID senderUUID, final String playerName) {
+    public FlagThrownEvent(final int severity, final CheckName checkName, final UUID senderUUID, final String playerName) {
         super(true);
         this.severity = severity;
         this.checkName = checkName;
@@ -43,7 +45,7 @@ public final class FlagThrownEvent extends Event {
         return severity;
     }
 
-    public final String getCheckName() {
+    public final CheckName getCheckName() {
         return checkName;
     }
 
@@ -53,6 +55,22 @@ public final class FlagThrownEvent extends Event {
 
     public final String getPlayerName() {
         return playerName;
+    }
+
+    public final PlayerData generatePlayerData() {
+        int domains = 0, ipv4 = 0, words = 0;
+        switch (checkName) {
+            case WORDS:
+                words++;
+                break;
+            case DOMAINS:
+                domains++;
+                break;
+            case ADDRESSES:
+                ipv4++;
+                break;
+        }
+        return new PlayerData(domains, ipv4, words, playerName);
     }
 
     @Override

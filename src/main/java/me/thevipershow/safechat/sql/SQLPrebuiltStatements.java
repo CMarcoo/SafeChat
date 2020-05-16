@@ -23,29 +23,26 @@ public enum SQLPrebuiltStatements {
     SQLITE_CREATE_TABLE("CREATE TABLE IF NOT EXISTS safechat_data\n"
             + "(\n"
             + "\tplayer_uuid CHARACTER(36) NOT NULL UNIQUE PRIMARY KEY ,\n"
+            + "\tplayer_name CHARACTER(16) NOT NULL ,\n"
             + "\tflags_words INT NOT NULL ,\n"
             + "\tflags_domains INT NOT NULL ,\n"
             + "\tflags_ipv4 INT NOT NULL);"),
-    SQLITE_ADD_PLAYER_OR_UPDATE("INSERT INTO safechat_data (player_uuid, flags_%s) VALUES (?,?) ON CONFLICT (player_uuid) DO UPDATE SET flags_%s = safechat_data.flags_%s + ?;"),
-    SQLITE_GET_PLAYER_DATA("SELECT flags_%s FROM safechat_data WHERE player_uuid = ?"),
-    SQLITE_GET_TOP_DATA("SELECT player_uuid, flags FROM safechat_data ORDER BY flags LIMIT %d;"),
+    SQLITE_GET_ALL_DATA("SELECT player_uuid, flags_domain, flags_ipv4, flags_words FROM safechat_data;"),
+    SQLITE_SAVE_ALL_DATA("INSERT INTO safechat_data (player_uuid, player_name, flags_domain, flags_ipv4, flags_words) VALUES (?,?,?,?,?)" +
+            " ON CONFLICT (player_uuid) DO UPDATE SET player_name = ?, flags_domain = ?, flags_ipv4 = ?, flags_words = ?;"),
     POSTGRESQL_CREATE_TABLE("CREATE TABLE IF NOT EXISTS safechat_data\n"
             + "(\n"
-            + "\tplayer_uuid UUID NOT NULL UNIQUE PRIMARY KEY,\n"
-            + "\tflags INT NOT NULL);"),
-    POSTGRESQL_ADD_PLAYER_OR_UPDATE("INSERT INTO safechat_data (player_uuid, flags) VALUES (?,?) ON CONFLICT (player_uuid) DO UPDATE SET flags = safechat_data.flags + ?;"),
-    POSTGRESQL_GET_PLAYER_DATA("SELECT FLAGS FROM safechat_data WHERE player_uuid = ?;"),
-    POSTGRESQL_GET_TOP_DATA("SELECT player_uuid, flags FROM safechat_data ORDER BY flags DESC LIMIT %d;"),
-    MYSQL_CREATE_TABLE("CREATE TABLE IF NOT EXISTS safechat_data (\n" +
-            "  player_uuid CHAR(36) UNIQUE PRIMARY KEY NOT NULL,\n" +
-            "  flags INT NOT NULL\n" +
-            ");"),
-    MYSQL_ADD_PLAYER_OR_UPDATE("INSERT INTO\n" +
-            "  safechat_data (player_uuid, flags)\n" +
-            "VALUES\n" +
-            "  (?, ?) ON DUPLICATE KEY\n" +
-            "UPDATE\n" +
-            "  flags = safechat_data.flags + ?;\n");
+            + "\tplayer_uuid UUID NOT NULL UNIQUE PRIMARY KEY ,\n"
+            + "\tplayer_name CHAR(16) NOT NULL ,\n"
+            + "\tflags_words INT NOT NULL ,\n"
+            + "\tflags_domains INT NOT NULL ,\n"
+            + "\tflags_ipv4 INT NOT NULL);"),
+    POSTGRESQL_GET_ALL_DATA(SQLITE_GET_ALL_DATA.SQL),
+    POSTGRESQL_SAVE_ALL_DATA(SQLITE_SAVE_ALL_DATA.SQL),
+    MYSQL_CREATE_TABLE(SQLITE_CREATE_TABLE.SQL),
+    MYSQL_GET_ALL_DATA(SQLITE_GET_ALL_DATA.SQL),
+    MYSQL_SAVE_ALL_DATA("INSERT INTO safechat_data (player_uuid, player_name, flags_domain, flags_ipv4, flags_words) VALUES (?,?,?,?,?)" +
+            " ON DUPLICATE KEY UPDATE player_name = ?, flags_domain = ?, flags_ipv4 = ?, flags_words = ?;");
 
     SQLPrebuiltStatements(String SQL) {
         this.SQL = SQL;

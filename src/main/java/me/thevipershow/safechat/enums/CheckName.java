@@ -16,24 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.thevipershow.safechat.sql;
+package me.thevipershow.safechat.enums;
 
-import java.util.ArrayList;
-
-public final class DataLoader {
-    private static DataLoader instance = null;
-    private final DatabaseManager databaseManager;
-    private final ArrayList<PlayerData> playerData = new ArrayList<>();
-
-    private DataLoader(final DatabaseManager databaseManager) {
-        this.databaseManager = databaseManager;
-    }
-
-    public static DataLoader getInstance(final DatabaseManager databaseManager) {
-        return instance != null ? instance : (instance = new DataLoader(databaseManager));
-    }
-
-    public final void loadData() {
-        //TODO: finish
-    }
+public enum CheckName {
+    WORDS, DOMAINS, ADDRESSES
 }
