@@ -17,8 +17,7 @@
  */
 package me.thevipershow.safechat;
 
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.lucko.commodore.Commodore;
@@ -31,6 +30,7 @@ import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.config.ValuesValidator;
 import me.thevipershow.safechat.config.WordsMatcher;
 import me.thevipershow.safechat.enums.ANSIColor;
+import me.thevipershow.safechat.enums.CheckName;
 import me.thevipershow.safechat.events.listeners.FlagListener;
 import me.thevipershow.safechat.sql.*;
 import org.bukkit.Bukkit;
@@ -64,6 +64,26 @@ public final class Safechat extends JavaPlugin {
         for (final WordsMatcher word : values.getBlacklistWords()) {
             logger.log(Level.INFO, ANSIColor.colorString('&', "Loaded words matcher &yREGEX: &R`&g" + word.getPattern() + "&R` &yREPLACE: &R`&g" + word.getReplace() + "&R`"));
         }
+        logExecutables(values.getDomainExecutables(), CheckName.DOMAINS);
+        logExecutables(values.getIpv4Executables(), CheckName.ADDRESSES);
+        logExecutables(values.getWordsExecutables(), CheckName.WORDS);
+    }
+
+    private String joinCommands(final ExecutableObject executableObject) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        int size = executableObject.getCommands().size();
+        for (int i = 0; i < size; i++) {
+            if (i != size - 1) {
+                stringBuilder.append("\t\t\t     "+executableObject.getCommands().get(i).concat("\n"));
+            } else {
+                stringBuilder.append("\t\t\t     "+executableObject.getCommands().get(i));
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    private void logExecutables(final List<ExecutableObject> executableObjects, final CheckName checkName) {
+        executableObjects.forEach(o -> logger.info(ANSIColor.colorString('&',"Loaded executables for check: `&y" + checkName.name() + "&R` minimum flags: &y" + o.getFlags() + " &Rwith commands:\n" + joinCommands(o))));
     }
 
     @Override
@@ -100,16 +120,13 @@ public final class Safechat extends JavaPlugin {
             logger.log(Level.WARNING, "Something went wrong when enabling command completion");
             e.printStackTrace();
         });
-        pluginManager.registerEvents(FlagListener.getInstance(logger, values, dataManager, getServer().getConsoleSender()), this);
+        pluginManager.registerEvents(FlagListener.getInstance(logger, values, dataManager, getServer().getConsoleSender(), this), this);
         pluginManager.registerEvents(checkRegister = CheckRegister.getInstance(values), this);
     }
 
     @Override
     public void onDisable() {
         logger.log(Level.INFO, "Saving all player data . . .");
-        if (dataManager.transferAllData()) {
-            logger.log(Level.INFO, "Data has been saved correctly!");
-            logger.log(Level.INFO, "Thank you for using SafeChat.");
-        }
+        dataManager.transferAllData();
     }
 }

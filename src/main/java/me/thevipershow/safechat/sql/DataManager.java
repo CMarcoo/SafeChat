@@ -19,6 +19,7 @@
 package me.thevipershow.safechat.sql;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
@@ -41,6 +42,7 @@ public final class DataManager {
     private final JavaPlugin plugin;
     private final Logger logger;
     private final Values values;
+    private boolean working = false;
 
     private DataManager(final DatabaseManager databaseManager, final JavaPlugin plugin, final Values values) {
         this.databaseManager = databaseManager;
@@ -58,18 +60,32 @@ public final class DataManager {
         return instance != null ? instance : (instance = new DataManager(databaseManager, plugin, values));
     }
 
-    public boolean transferAllData() {
-        final AtomicBoolean toReturn = new AtomicBoolean(true);
+    public void transferAllData() {
+        if (working) {
+            long waited = 25;
+            do {
+                try {
+                    wait(25);
+                    waited += 25;
+                    if (waited >= 1500) {
+                        logger.warning("Database is not responding correctly, closing connections.");
+                        plugin.getServer().getScheduler().cancelTasks(plugin);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } while (working);
+        }
+        working = true;
         databaseManager.transferAllData(e -> {
             logger.log(Level.WARNING, "Something went wrong when saving data into the database!");
             e.printStackTrace();
-            toReturn.set(false);
         }, this.playerData);
-        return toReturn.get();
+        working = false;
     }
 
     private void startAutomatedSaving() {
-        plugin.getServer().getScheduler().runTaskTimer(plugin, this::transferAllData, TicksConverter.MINUTES.convert(values.getAutoSave()), TicksConverter.MINUTES.convert(values.getAutoSave()));
+        plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, this::transferAllData, TicksConverter.MINUTES.convert(values.getAutoSave()), TicksConverter.MINUTES.convert(values.getAutoSave()));
     }
 
     public final void addPlayerData(final UUID uuid, final String username, final PlayerData playerData, final CheckName checkName, final int severity) {
@@ -119,8 +135,9 @@ public final class DataManager {
     private void dispatchCommands(final List<String> commands,
                                   final String username,
                                   final ConsoleCommandSender console) {
-        for (final String command : commands)
+        for (final String command : commands) {
             Bukkit.dispatchCommand(console, command.replaceAll("%PLAYER%", username));
+        }
     }
 
     private boolean checkFlags(final List<ExecutableObject> executableObjects,
@@ -132,10 +149,7 @@ public final class DataManager {
             if (e.getFlags() == data.getFlag(checkName)) {
                 dispatchCommands(e.getCommands(), username, console);
                 return true;
-            } else {
-                return false;
             }
-
         }
         return false;
     }

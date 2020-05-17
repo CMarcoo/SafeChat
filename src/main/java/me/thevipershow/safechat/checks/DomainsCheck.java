@@ -51,7 +51,7 @@ public final class DomainsCheck implements ChatCheck {
     public void result(final String message, final AsyncPlayerChatEvent chatEvent) {
 
         final String stringToCheck = message.replaceAll(values.getDomainWhitelist(), "");
-        final Matcher matcher = Pattern.compile(values.getDomainWhitelist()).matcher(stringToCheck);
+        final Matcher matcher = Pattern.compile(values.getDomainRegex()).matcher(stringToCheck);
 
         if (matcher.find()) {
             final Player player = chatEvent.getPlayer();

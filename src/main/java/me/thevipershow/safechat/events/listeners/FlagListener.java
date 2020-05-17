@@ -25,6 +25,7 @@ import me.thevipershow.safechat.sql.DataManager;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public final class FlagListener implements Listener {
     private static FlagListener instance = null;
@@ -32,22 +33,26 @@ public final class FlagListener implements Listener {
     private final Logger logger;
     private final Values values;
     private final ConsoleCommandSender consoleCommandSender;
+    private final JavaPlugin plugin;
 
     private FlagListener(final Logger logger,
                          final Values values,
                          final DataManager manager,
-                         final ConsoleCommandSender consoleCommandSender) {
+                         final ConsoleCommandSender consoleCommandSender,
+                         final JavaPlugin plugin) {
         this.logger = logger;
         this.values = values;
         this.dataManager = manager;
         this.consoleCommandSender = consoleCommandSender;
+        this.plugin = plugin;
     }
 
     public static FlagListener getInstance(final Logger logger,
                                            final Values values,
                                            final DataManager manager,
-                                           final ConsoleCommandSender console) {
-        return instance != null ? instance : (instance = new FlagListener(logger, values, manager, console));
+                                           final ConsoleCommandSender console,
+                                           final JavaPlugin plugin) {
+        return instance != null ? instance : (instance = new FlagListener(logger, values, manager, console, plugin));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -55,7 +60,18 @@ public final class FlagListener implements Listener {
         if (values.isEnableConsoleLogging())
             logger.info("Player: " + event.getPlayerName() + " has failed a " + event.getCheckName().name() + " check!");
 
-        dataManager.addPlayerData(event.getSenderUUID(), event.getPlayerName(), event.generatePlayerData(), event.getCheckName(), event.getSeverity());
-        dataManager.checkExecute(event.getSenderUUID(), event.getPlayerName(), values.getWordsExecutables(), values.getIpv4Executables(), values.getDomainExecutables(), consoleCommandSender);
+        dataManager.addPlayerData(event.getSenderUUID(),
+                event.getPlayerName(),
+                event.generatePlayerData(),
+                event.getCheckName(),
+                event.getSeverity());
+
+        plugin.getServer().getScheduler().runTask(plugin, () ->
+                dataManager.checkExecute(
+                        event.getSenderUUID(),
+                        event.getPlayerName(),
+                        values.getWordsExecutables(),
+                        values.getIpv4Executables(),
+                        values.getDomainExecutables(), consoleCommandSender));
     }
 }
