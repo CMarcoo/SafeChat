@@ -106,6 +106,10 @@ public final class Safechat extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        dataManager.transferAllData();
+        logger.log(Level.INFO, "Saving all player data . . .");
+        if (dataManager.transferAllData()) {
+            logger.log(Level.INFO, "Data has been saved correctly!");
+            logger.log(Level.INFO, "Thank you for using SafeChat.");
+        }
     }
 }

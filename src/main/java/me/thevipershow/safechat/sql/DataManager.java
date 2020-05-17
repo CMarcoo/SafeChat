@@ -19,6 +19,7 @@
 package me.thevipershow.safechat.sql;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -52,11 +53,14 @@ public final class DataManager {
         return instance != null ? instance : (instance = new DataManager(databaseManager, plugin, values));
     }
 
-    public void transferAllData() {
+    public boolean transferAllData() {
+        final AtomicBoolean toReturn = new AtomicBoolean(true);
         databaseManager.transferAllData(e -> {
             logger.log(Level.WARNING, "Something went wrong when saving data into the database!");
             e.printStackTrace();
+            toReturn.set(false);
         }, this.playerData);
+        return toReturn.get();
     }
 
     private void startAutomatedSaving() {
