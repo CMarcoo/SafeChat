@@ -75,10 +75,6 @@ public final class DataManager {
         }
     }
 
-    public final HashMap<UUID, PlayerData> getPlayerData() {
-        return playerData;
-    }
-
     public final List<EnumMap<CheckName, Integer>> getPlayerFlags(final String playerName) {
         List<PlayerData> playerDataStream = this.playerData.values().stream().filter(e -> e.getUsername().equals(playerName)).collect(Collectors.toUnmodifiableList());
         if (playerDataStream.size() > 0) {
