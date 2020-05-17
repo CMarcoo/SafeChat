@@ -7,5 +7,7 @@ api-version: '1.13'
 commands:
   safechat:
     description: "Safechat's main command"
-    usage: "/<command> [search|top|reload]"
-
+    usage: |
+      /&lt;command&gt; reload - update the values from the config.yml
+      /&lt;command&gt; sql top &lt;number&gt; [ipv4|domains|words]
+      /&lt;command&gt; sql search [ipv4|domains|words] &lt;player&gt;

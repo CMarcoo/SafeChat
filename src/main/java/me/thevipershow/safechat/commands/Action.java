@@ -15,27 +15,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package me.thevipershow.safechat.enums;
 
-public enum SPermissions {
+package me.thevipershow.safechat.commands;
 
-    BYPASS("safechat.bypass"),
-    HELP("safechat.help"),
-    RELOAD("safechat.reload"),
-    TOP("safechat.top"),
-    SEARCH("safechat.search");
-
-    private final String string;
-
-    SPermissions(String string) {
-        this.string = string;
-    }
-
-    public final String getConcatPermission(final String permission) {
-        return string.concat(".".concat(permission));
-    }
-
-    public final String getPermission() {
-        return string;
-    }
+@FunctionalInterface
+public interface Action {
+    void perform();
 }

@@ -29,13 +29,13 @@ import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.enums.CheckName;
 import me.thevipershow.safechat.enums.HoverMessages;
 import me.thevipershow.safechat.enums.SPermissions;
+import static me.thevipershow.safechat.enums.SPermissions.*;
 import me.thevipershow.safechat.sql.DataManager;
 import me.thevipershow.safechat.sql.ExceptionHandler;
 import me.thevipershow.safechat.sql.PlayerData;
 import me.thevipershow.spigotchatlib.chat.TextMessage;
 import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -44,12 +44,20 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public final class CommandUtils {
 
-    public static void registerCompletions(Commodore commodore, PluginCommand command, JavaPlugin plugin, ExceptionHandler handler) {
+    public static void registerCompletions(final Commodore commodore, final JavaPlugin plugin, final ExceptionHandler handler) {
         try {
             LiteralCommandNode<?> safechatCommand = CommodoreFileFormat.parse(Objects.requireNonNull(plugin.getResource("safechat.commodore")));
             commodore.register(safechatCommand);
         } catch (IOException e) {
             handler.handle(e);
+        }
+    }
+
+    private static void permissionCheck(final CommandSender sender, final SPermissions permission, final Action action) {
+        if (sender.hasPermission(permission.getPermission())) {
+            action.perform();
+        } else {
+            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &cYou are missing permissions").color().getText());
         }
     }
 
@@ -123,24 +131,30 @@ public final class CommandUtils {
         }
     }
 
+    private static void reload(final CommandSender sender, final Values values) {
+        values.updateAll();
+        sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &aSuccessfully reloaded the config.yml values").color().getText());
+    }
+
     public static void processCommand(final DataManager dataManager, final String[] args, final CommandSender sender, Values values) {
-        if (sender.hasPermission(SPermissions.COMMAND.getConcatPermission("main"))) {
-            final int length = args.length;
-            if (length == 0) {
-                noArguments(sender);
-            } else if (args[0].equalsIgnoreCase("reload") && length == 1) {
-                values.updateAll();
-                sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &aSuccessfully reloaded the config.yml values").color().getText());
-            } else if (args[0].equalsIgnoreCase("sql")) {
-                if (length == 3) {
-                    if (args[1].equalsIgnoreCase("search")) {
+        final int length = args.length;
+        if (length == 0) {
+            permissionCheck(sender, HELP, () -> noArguments(sender));
+        } else if (args[0].equalsIgnoreCase("reload") && length == 1) {
+            permissionCheck(sender, RELOAD, () -> reload(sender, values));
+        } else if (args[0].equalsIgnoreCase("sql")) {
+            if (length == 3) {
+                if (args[1].equalsIgnoreCase("search")) {
+                    permissionCheck(sender, SEARCH, () -> {
                         final String playerName = args[2];
                         sqlSearch(dataManager, sender, playerName);
-                    } else {
-                        sendWarning(sender, "'&7" + args[1] + "&f' is an invalid argument");
-                    }
-                } else if (length == 4) {
-                    if (args[1].equalsIgnoreCase("search")) {
+                    });
+                } else {
+                    permissionCheck(sender, SEARCH, () -> sendWarning(sender, "'&7" + args[1] + "&f' is an invalid argument"));
+                }
+            } else if (length == 4) {
+                if (args[1].equalsIgnoreCase("search")) {
+                    permissionCheck(sender, SEARCH, () -> {
                         final String playerName = args[3];
                         final String checkType = args[2].toLowerCase(Locale.getDefault());
                         switch (checkType) {
@@ -157,7 +171,9 @@ public final class CommandUtils {
                                 sendWarning(sender, "`&7" + checkType + "&f` is an invalid check type");
                                 break;
                         }
-                    } else if (args[1].equalsIgnoreCase("top")) {
+                    });
+                } else if (args[1].equalsIgnoreCase("top")) {
+                    permissionCheck(sender, TOP, () -> {
                         if (args[2].matches("[0-9]+")) {
                             int search = Integer.parseInt(args[2]);
                             final String checkType = args[3];
@@ -178,12 +194,12 @@ public final class CommandUtils {
                         } else {
                             sendWarning(sender, "'&7" + args[2] + "&f' is not a number!");
                         }
-                    } else {
-                        sendWarning(sender, "'&7" + args[1] + "&f' is an invalid argument");
-                    }
+                    });
                 } else {
-                    sendWarning(sender, "Invalid args number");
+                    sendWarning(sender, "'&7" + args[1] + "&f' is an invalid argument");
                 }
+            } else {
+                sendWarning(sender, "Invalid args number");
             }
         }
     }
