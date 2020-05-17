@@ -17,6 +17,8 @@
  */
 package me.thevipershow.safechat.checks;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.enums.CheckName;
 import me.thevipershow.safechat.events.FlagThrownEvent;
@@ -49,9 +51,9 @@ public final class DomainsCheck implements ChatCheck {
     public void result(final String message, final AsyncPlayerChatEvent chatEvent) {
 
         final String stringToCheck = message.replaceAll(values.getDomainWhitelist(), "");
-        boolean result = stringToCheck.matches(values.getDomainRegex());
+        final Matcher matcher = Pattern.compile(values.getDomainWhitelist()).matcher(stringToCheck);
 
-        if (result) {
+        if (matcher.find()) {
             final Player player = chatEvent.getPlayer();
             chatEvent.setCancelled(true);
             Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, CheckName.DOMAINS, player.getUniqueId(), player.getName()));

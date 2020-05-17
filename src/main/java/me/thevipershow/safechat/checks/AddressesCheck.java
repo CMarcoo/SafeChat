@@ -17,6 +17,8 @@
  */
 package me.thevipershow.safechat.checks;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.enums.CheckName;
 import me.thevipershow.safechat.events.FlagThrownEvent;
@@ -47,9 +49,9 @@ public final class AddressesCheck implements ChatCheck {
     @Override
     public void result(final String message, final AsyncPlayerChatEvent chatEvent) {
         final String stringToCheck = message.replaceAll(values.getIpv4Whitelist(), "");
-        boolean result = stringToCheck.matches(values.getIpv4Regex());
+        final Matcher matcher = Pattern.compile(values.getIpv4Regex()).matcher(stringToCheck);
 
-        if (result) {
+        if (matcher.find()) {
             chatEvent.setCancelled(true);
             final Player player = chatEvent.getPlayer();
             Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, CheckName.ADDRESSES, player.getUniqueId(), player.getName()));

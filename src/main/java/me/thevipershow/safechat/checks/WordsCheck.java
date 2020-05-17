@@ -50,7 +50,7 @@ public final class WordsCheck implements ChatCheck {
         short replaced = 0;
         for (final WordsMatcher wordsMatcher : values.getBlacklistWords()) {
             final Matcher matcher = wordsMatcher.getCompiledPattern().matcher(message);
-            if (matcher.lookingAt()) {
+            if (matcher.find()) {
                 flags++;
                 final String replace = wordsMatcher.getReplace();
                 if (!replace.equals("NONE")) {
