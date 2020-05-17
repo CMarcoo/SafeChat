@@ -20,13 +20,18 @@ package me.thevipershow.safechat.sql;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import me.thevipershow.safechat.config.ExecutableObject;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.enums.CheckName;
 import me.thevipershow.safechat.enums.TicksConverter;
+import org.bukkit.Bukkit;
+import org.bukkit.Server;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class DataManager {
@@ -109,5 +114,45 @@ public final class DataManager {
                     .collect(Collectors.toUnmodifiableList());
         }
         return null;
+    }
+
+    private void dispatchCommands(final List<String> commands,
+                                  final String username,
+                                  final ConsoleCommandSender console) {
+        for (final String command : commands)
+            Bukkit.dispatchCommand(console, command.replaceAll("%PLAYER%", username));
+    }
+
+    private boolean checkFlags(final List<ExecutableObject> executableObjects,
+                               final CheckName checkName,
+                               final PlayerData data,
+                               final String username,
+                               final ConsoleCommandSender console) {
+        for (final ExecutableObject e : executableObjects) {
+            if (e.getFlags() == data.getFlag(checkName)) {
+                dispatchCommands(e.getCommands(), username, console);
+                return true;
+            } else {
+                return false;
+            }
+
+        }
+        return false;
+    }
+
+    public final void checkExecute(final UUID uuid,
+                                   final String username,
+                                   final List<ExecutableObject> wordsExecutable,
+                                   final List<ExecutableObject> ipv4Executable,
+                                   final List<ExecutableObject> domainsExecutable,
+                                   final ConsoleCommandSender console) {
+        final PlayerData matchingData = this.playerData.get(uuid);
+        if (matchingData != null) {
+            if (!checkFlags(wordsExecutable, CheckName.WORDS, matchingData, username, console)) {
+                if (!checkFlags(domainsExecutable, CheckName.DOMAINS, matchingData, username, console)) {
+                    checkFlags(ipv4Executable, CheckName.ADDRESSES, matchingData, username, console);
+                }
+            }
+        }
     }
 }

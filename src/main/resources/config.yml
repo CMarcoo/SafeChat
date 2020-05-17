@@ -116,13 +116,13 @@ safechat:
     # "What if I don't want to replace the messages?":
     # You can set the 'replace' parameter to "NONE"
     blacklisted:
-      - pattern: "[Ff](?=[Uu](?=[Cc](?=[Kk])))"
+      - pattern: "(?i)f(?=u(?=c(?=k)))"
         replace: 'd'
 
-      - pattern: "[Ss][Hh][Ii][Tt]"
+      - pattern: "(?i)shit"
         replace: "poop"
 
-      - pattern: "[Dd](?=ick(?!ens))"
+      - pattern: "(?i)d(?=ick(?!ens))"
         replace: "tr"
     # A list of messages that will be sent to the player upon triggering the words blacklist check
     # Available placeholders:

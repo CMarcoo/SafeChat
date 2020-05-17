@@ -100,7 +100,7 @@ public final class Safechat extends JavaPlugin {
             logger.log(Level.WARNING, "Something went wrong when enabling command completion");
             e.printStackTrace();
         });
-        pluginManager.registerEvents(FlagListener.getInstance(Objects.requireNonNull(databaseManager), logger, values, dataManager), this);
+        pluginManager.registerEvents(FlagListener.getInstance(logger, values, dataManager, getServer().getConsoleSender()), this);
         pluginManager.registerEvents(checkRegister = CheckRegister.getInstance(values), this);
     }
 
