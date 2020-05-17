@@ -23,9 +23,9 @@ public enum HoverMessages {
             "&6Open this help page&7:",
             "- &7/safechat",
             "&6Get stored data of a certain player&7:",
-            "- &7/safechat sql search &8<&eplayer&8>",
+            "- &7/safechat sql search &8[&eipv4|domains|words&8] &8<&eplayer&8>",
             "&6Get &o&nX&r &6players with the highest flags count&7:",
-            "- &7/safechat sql top &8<&enumber&8>",
+            "- &7/safechat sql top &8<&enumber&8> &8[&eipv4|domains|words&8]",
             "&6Reload all the values from the config.yml",
             "- &7/safechat reload");
 

@@ -91,12 +91,10 @@ public final class DataManager {
         return null;
     }
 
-    public final List<Integer> getPlayerFlags(final String playerName, final CheckName checkName) {
-        Stream<PlayerData> playerDataStream = this.playerData.values().stream().filter(e -> e.getUsername().equals(playerName));
-        if (playerDataStream.count() > 0) {
-            final List<Integer> list = new ArrayList<>();
-            playerDataStream.forEach(c -> list.add(c.getFlag(checkName)));
-            return list;
+    public final List<PlayerData> getPlayerFlags(final String playerName, final CheckName checkName) {
+        List<PlayerData> playerData = this.playerData.values().stream().filter(e -> e.getUsername().equals(playerName)).collect(Collectors.toUnmodifiableList());
+        if (playerData.size() > 0) {
+            return playerData;
         }
         return null;
     }
@@ -105,6 +103,7 @@ public final class DataManager {
         if (top < 250) {
             return this.playerData.values()
                     .stream()
+                    .filter(c -> c.getFlag(checkName) != 0)
                     .sorted(Comparator.comparingInt(o -> o.getFlag(checkName)))
                     .limit(top)
                     .collect(Collectors.toUnmodifiableList());

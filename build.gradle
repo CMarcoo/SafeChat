@@ -29,14 +29,14 @@ repositories {
 
 shadowJar {
     archiveName = 'SafeChat-1.0.0.jar'
-    exclude 'com.mojang.brigadier'
+    dependencies {
+        exclude(dependency("com.mojang:brigadier:.*"))
+    }
     relocate 'com.zaxxer.hikari','me.thevipershow.safechat.libs.com.zaxxer.hikari'
     relocate 'me.lucko.commodore', 'me.thevipershow.safechat.libs.lucko.commodore'
     relocate 'org.postgresql','me.thevipershow.safechat.libs.org.postgresql'
     relocate 'org.slf4j','me.thevipershow.safechat.libs.org.slf4j'
     relocate 'me.thevipershow.spigotchatlib', 'me.thevipershow.safechat.libs.spigotchatlib'
-    relocate 'com.google.protobuf', 'me.thevipershow.safechat.libs.com.google.protobuf'
-    relocate 'google.protobuf', 'me.thevipershow.safechat.libs.google.protobuf'
 }
 
 dependencies {

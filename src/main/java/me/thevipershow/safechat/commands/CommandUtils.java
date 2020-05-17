@@ -19,7 +19,10 @@ package me.thevipershow.safechat.commands;
 
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.io.IOException;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import me.lucko.commodore.Commodore;
 import me.lucko.commodore.file.CommodoreFileFormat;
 import me.thevipershow.safechat.config.Values;
@@ -34,7 +37,6 @@ import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -91,11 +93,15 @@ public final class CommandUtils {
     }
 
     private static void sqlSearch(final DataManager dataManager, final CommandSender sender, final String searchName, final CheckName checkName) {
-        final List<Integer> obtained = dataManager.getPlayerFlags(searchName, checkName);
+        final List<PlayerData> obtained = dataManager.getPlayerFlags(searchName, checkName);
         if (obtained != null) {
-            obtained.forEach(n -> {
-                sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &8» &ePlayer &f" + searchName + " &7has &e" + n + " &7" + checkName.name() + " flags").color().getText());
-            });
+            obtained.forEach(n ->
+                    sender.sendMessage(
+                            TextMessage
+                                    .build("&8[&6SafeChat&8]&7: &8» &ePlayer &f" + searchName + " &7has &e" + n.getFlag(checkName) + " &7" + checkName.name() + " flags")
+                                    .color()
+                                    .getText())
+            );
         } else {
             sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: Player " + searchName + " was not found in the database!").color().getText());
         }
