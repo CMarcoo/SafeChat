@@ -80,8 +80,8 @@ public final class DataManager {
     }
 
     public final List<EnumMap<CheckName, Integer>> getPlayerFlags(final String playerName) {
-        Stream<PlayerData> playerDataStream = this.playerData.values().stream().filter(e -> e.getUsername().equals(playerName));
-        if (playerDataStream.count() > 0) {
+        List<PlayerData> playerDataStream = this.playerData.values().stream().filter(e -> e.getUsername().equals(playerName)).collect(Collectors.toUnmodifiableList());
+        if (playerDataStream.size() > 0) {
             final List<EnumMap<CheckName, Integer>> enumMaps = new ArrayList<>();
             playerDataStream.forEach(c -> {
                 final EnumMap<CheckName, Integer> checkNameIntegerEnumMap = new EnumMap<>(CheckName.class);
