@@ -30,14 +30,14 @@ public final class Values {
 
     private final JavaPlugin plugin;
 
-    private Values(JavaPlugin plugin) {
+    private Values(final JavaPlugin plugin) {
         this.plugin = plugin;
         updateAll();
     }
 
     private static Values instance = null;
 
-    public static Values getInstance(JavaPlugin plugin) {
+    public static Values getInstance(final JavaPlugin plugin) {
         return instance != null ? instance : (instance = new Values(plugin));
     }
 
@@ -102,7 +102,7 @@ public final class Values {
     private List<String> wordsHover;
     private List<ExecutableObject> wordsExecutables;
 
-    public List<String> getListAndReplace(List<String> list, String placeholder, String replace) {
+    public List<String> getListAndReplace(final List<String> list,final String placeholder,final String replace) {
         final List<String> stringList = new ArrayList<>();
         for (final String string : list) {
             stringList.add(string.replace(placeholder, replace));
@@ -110,7 +110,7 @@ public final class Values {
         return stringList;
     }
 
-    public String[] getArrayAndReplace(List<String> list, String placeholder, String replace) {
+    public String[] getArrayAndReplace(final List<String> list,final String placeholder,final String replace) {
         return getListAndReplace(list, placeholder, replace).toArray(String[]::new);
     }
 

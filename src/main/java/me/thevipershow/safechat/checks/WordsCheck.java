@@ -35,11 +35,11 @@ public final class WordsCheck implements ChatCheck {
 
     private static WordsCheck instance = null;
 
-    private WordsCheck(Values values) {
+    private WordsCheck(final Values values) {
         this.values = values;
     }
 
-    public static WordsCheck getInstance(Values values) {
+    public static WordsCheck getInstance(final Values values) {
         return instance != null ? instance : (instance = new WordsCheck(values));
     }
 

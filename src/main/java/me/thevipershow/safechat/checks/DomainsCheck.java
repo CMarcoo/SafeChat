@@ -36,11 +36,11 @@ public final class DomainsCheck implements ChatCheck {
 
     private static DomainsCheck instance = null;
 
-    private DomainsCheck(Values values) {
+    private DomainsCheck(final Values values) {
         this.values = values;
     }
 
-    public static DomainsCheck getInstance(Values values) {
+    public static DomainsCheck getInstance(final Values values) {
         if (instance == null) {
             instance = new DomainsCheck(values);
         }

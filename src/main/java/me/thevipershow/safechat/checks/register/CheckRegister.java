@@ -58,15 +58,15 @@ public final class CheckRegister implements Listener {
         }
     }
 
-    public final boolean addCheck(ChatCheck chatCheck) {
+    public final boolean addCheck(final ChatCheck chatCheck) {
         return chatChecks.add(chatCheck);
     }
 
-    public final boolean removeCheck(ChatCheck chatCheck) {
+    public final boolean removeCheck(final ChatCheck chatCheck) {
         return chatChecks.remove(chatCheck);
     }
 
-    public static CheckRegister getInstance(Values values) {
+    public static CheckRegister getInstance(final Values values) {
         return instance != null ? instance : (instance = new CheckRegister(values));
     }
 

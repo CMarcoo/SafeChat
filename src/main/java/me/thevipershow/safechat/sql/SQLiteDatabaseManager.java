@@ -48,7 +48,7 @@ public final class SQLiteDatabaseManager implements DatabaseManager {
         });
     }
 
-    public final boolean createDatabaseFile(File dataFolder) {
+    public final boolean createDatabaseFile(final File dataFolder) {
         boolean success = false;
         if (!dataFolder.exists()) {
             dataFolder.mkdirs();
@@ -78,17 +78,17 @@ public final class SQLiteDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public final void createTable(ExceptionHandler handler) {
+    public final void createTable(final ExceptionHandler handler) {
         SQLUtils.createTable(this::getDatabaseConnection, SQLITE_CREATE_TABLE, handler);
     }
 
     @Override
-    public HashMap<UUID, PlayerData> getAllData(ExceptionHandler handler) {
+    public HashMap<UUID, PlayerData> getAllData(final ExceptionHandler handler) {
         return SQLUtils.getAllData(this::getDatabaseConnection, SQLITE_GET_ALL_DATA, handler);
     }
 
     @Override
-    public void transferAllData(ExceptionHandler handler, final HashMap<UUID, PlayerData> dataHashMap) {
+    public void transferAllData(final ExceptionHandler handler, final HashMap<UUID, PlayerData> dataHashMap) {
         SQLUtils.transferAllData(dataHashMap, this::getDatabaseConnection, SQLITE_SAVE_ALL_DATA, handler);
     }
 }

@@ -29,12 +29,12 @@ public final class SafechatCommand implements CommandExecutor {
     private static SafechatCommand instance = null;
     private final Values values;
 
-    private SafechatCommand(DataManager dataManager, Values values) {
+    private SafechatCommand(final DataManager dataManager,final Values values) {
         this.values = values;
         this.dataManager = dataManager;
     }
 
-    public static SafechatCommand getInstance(final DataManager dataManager, Values values) {
+    public static SafechatCommand getInstance(final DataManager dataManager,final Values values) {
         if (instance == null) {
             instance = new SafechatCommand(dataManager, values);
         }
@@ -42,7 +42,7 @@ public final class SafechatCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(final CommandSender sender,final Command command,final String label,final String[] args) {
         CommandUtils.processCommand(dataManager, args, sender, values);
         return true;
     }

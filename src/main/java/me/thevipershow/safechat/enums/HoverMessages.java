@@ -31,7 +31,7 @@ public enum HoverMessages {
 
     private final String[] messages;
 
-    HoverMessages(String... messages) {
+    HoverMessages(final String... messages) {
         this.messages = messages;
     }
 

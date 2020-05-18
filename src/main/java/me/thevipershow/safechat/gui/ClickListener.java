@@ -16,20 +16,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.thevipershow.safechat.config;
+package me.thevipershow.safechat.gui;
 
-public final class NumberRange<N extends Number & Comparable<N>> extends Range<N> {
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 
-    public NumberRange(final N lowerBound,final N upperBound) {
-        super(lowerBound, upperBound);
+public class ClickListener implements Listener {
+
+    private final InventoryManager inventoryManager = InventoryManager.getInstance();
+    private static ClickListener instance = null;
+
+    private ClickListener() {
     }
 
-    public static <T extends Number & Comparable<T>> NumberRange<T> process(final T lowerLimit,final T upperLimit) {
-        return new NumberRange<>(lowerLimit, upperLimit);
+    public static ClickListener getInstance() {
+        return instance != null ? instance : (instance = new ClickListener());
     }
 
-    @Override
-    public boolean isInRange(final N subject) {
-        return (subject.compareTo(super.lowerBound) >= 0) && (subject.compareTo(super.upperBound) <= 0);
+    @EventHandler(ignoreCancelled = true)
+    public void onInventoryClick(final InventoryClickEvent event) {
+        if (inventoryManager.isFound(event.getInventory())) {
+            event.setCancelled(true);
+        }
     }
 }

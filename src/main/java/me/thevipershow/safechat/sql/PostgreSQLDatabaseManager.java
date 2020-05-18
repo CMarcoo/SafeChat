@@ -28,34 +28,34 @@ public final class PostgreSQLDatabaseManager implements DatabaseManager {
     private static PostgreSQLDatabaseManager instance = null;
     private final HikariDataSource source;
 
-    private PostgreSQLDatabaseManager(String address, int port, String database, String username, String password) {
+    private PostgreSQLDatabaseManager(final String address, final int port, final String database, final String username, final String password) {
         this.source = HikariDatabaseUtils.createDataSource(HikariDatabaseUtils.createConfig(address, port, database, username, password, Driver.class, HikariDatabaseUtils.DatabaseType.POSTGRESQL));
     }
 
-    private PostgreSQLDatabaseManager(String address, String database, String username, String password) {
+    private PostgreSQLDatabaseManager(final String address, final String database, final String username, final String password) {
         this(address, 5432, database, username, password);
     }
 
-    public static PostgreSQLDatabaseManager getInstance(String address, int port, String database, String username, String password) {
+    public static PostgreSQLDatabaseManager getInstance(final String address, final int port, final String database, final String username, final String password) {
         return instance != null ? instance : (instance = new PostgreSQLDatabaseManager(address, port, database, username, password));
     }
 
-    public static PostgreSQLDatabaseManager getInstance(String address, String database, String username, String password) {
+    public static PostgreSQLDatabaseManager getInstance(final String address, final String database, final String username, final String password) {
         return instance != null ? instance : (instance = new PostgreSQLDatabaseManager(address, database, username, password));
     }
 
     @Override
-    public void createTable(ExceptionHandler handler) {
+    public void createTable(final ExceptionHandler handler) {
         SQLUtils.createTable(source::getConnection, POSTGRESQL_CREATE_TABLE, handler);
     }
 
     @Override
-    public HashMap<UUID, PlayerData> getAllData(ExceptionHandler handler) {
+    public HashMap<UUID, PlayerData> getAllData(final ExceptionHandler handler) {
         return SQLUtils.getAllData(source::getConnection, POSTGRESQL_GET_ALL_DATA, handler);
     }
 
     @Override
-    public void transferAllData(ExceptionHandler handler, HashMap<UUID, PlayerData> dataHashMap) {
+    public void transferAllData(final ExceptionHandler handler, final HashMap<UUID, PlayerData> dataHashMap) {
         SQLUtils.transferAllData(dataHashMap, source::getConnection, POSTGRESQL_SAVE_ALL_DATA, handler);
     }
 }

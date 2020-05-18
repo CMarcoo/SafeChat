@@ -28,7 +28,7 @@ public final class MySQLDatabaseManager implements DatabaseManager {
     private static MySQLDatabaseManager instance = null;
     private HikariDataSource source = null;
 
-    private MySQLDatabaseManager(String address, int port, String database, String username, String password) {
+    private MySQLDatabaseManager(final String address,final int port,final String database,final String username,final String password) {
         try {
             this.source = HikariDatabaseUtils.createDataSource(HikariDatabaseUtils.createConfig(
                     address,
@@ -43,30 +43,30 @@ public final class MySQLDatabaseManager implements DatabaseManager {
         }
     }
 
-    private MySQLDatabaseManager(String address, String database, String username, String password) {
+    private MySQLDatabaseManager(final String address,final String database,final String username,final String password) {
         this(address, 5432, database, username, password);
     }
 
-    public static MySQLDatabaseManager getInstance(String address, String database, String username, String password) {
+    public static MySQLDatabaseManager getInstance(final String address,final String database,final String username,final String password) {
         return instance != null ? instance : (instance = new MySQLDatabaseManager(address, database, username, password));
     }
 
-    public static MySQLDatabaseManager getInstance(String address, int port, String database, String username, String password) {
+    public static MySQLDatabaseManager getInstance(final String address,final int port,final String database,final String username,final String password) {
         return instance != null ? instance : (instance = new MySQLDatabaseManager(address, port, database, username, password));
     }
 
     @Override
-    public final void createTable(ExceptionHandler handler) {
+    public final void createTable(final ExceptionHandler handler) {
         SQLUtils.createTable(source::getConnection, MYSQL_CREATE_TABLE, handler);
     }
 
     @Override
-    public HashMap<UUID, PlayerData> getAllData(ExceptionHandler handler) {
+    public HashMap<UUID, PlayerData> getAllData(final ExceptionHandler handler) {
         return SQLUtils.getAllData(source::getConnection, MYSQL_GET_ALL_DATA, handler);
     }
 
     @Override
-    public void transferAllData(ExceptionHandler handler, HashMap<UUID, PlayerData> dataHashMap) {
+    public void transferAllData(final ExceptionHandler handler,final HashMap<UUID, PlayerData> dataHashMap) {
         SQLUtils.transferAllData(dataHashMap, source::getConnection, MYSQL_SAVE_ALL_DATA, handler);
     }
 }

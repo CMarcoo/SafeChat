@@ -79,7 +79,7 @@ public enum EnumConfig {
         return configuration.getMapList(value).stream().map(map -> ExecutableObject.deserialize((Map<String, Object>) map)).collect(Collectors.toUnmodifiableList());
     }
 
-    EnumConfig(String value) {
+    EnumConfig(final String value) {
         this.value = value;
     }
 }

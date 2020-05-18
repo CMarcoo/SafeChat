@@ -27,7 +27,7 @@ public enum TableColumn {
 
     final String name;
 
-    TableColumn(String name) {
+    TableColumn(final String name) {
         this.name = name;
     }
 

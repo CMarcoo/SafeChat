@@ -24,7 +24,7 @@ import org.yaml.snakeyaml.error.YAMLException;
 public final class Validator {
 
     @SafeVarargs
-    public static <T> boolean validate(T subject, ExceptionHandler handler, T... validOptions) {
+    public static <T> boolean validate(final T subject,final ExceptionHandler handler,final T... validOptions) {
         for (T t : validOptions) {
             if (t.equals(subject)) {
                 return true;
@@ -35,7 +35,7 @@ public final class Validator {
         throw e;
     }
 
-    public static <N extends Number & Comparable<N>> boolean validateInRange(N number, ExceptionHandler handler, NumberRange<N> range) {
+    public static <N extends Number & Comparable<N>> boolean validateInRange(final N number,final ExceptionHandler handler,final NumberRange<N> range) {
         if (range.isInRange(number)) {
             return true;
         }
@@ -44,7 +44,7 @@ public final class Validator {
         throw e;
     }
 
-    public static boolean validateNotNull(Object o, ExceptionHandler handler) {
+    public static boolean validateNotNull(final Object o,final ExceptionHandler handler) {
         if (o != null) {
             return true;
         }

@@ -74,16 +74,16 @@ public final class Safechat extends JavaPlugin {
         int size = executableObject.getCommands().size();
         for (int i = 0; i < size; i++) {
             if (i != size - 1) {
-                stringBuilder.append("\t\t\t     "+executableObject.getCommands().get(i).concat("\n"));
+                stringBuilder.append("\t\t\t     " + executableObject.getCommands().get(i).concat("\n"));
             } else {
-                stringBuilder.append("\t\t\t     "+executableObject.getCommands().get(i));
+                stringBuilder.append("\t\t\t     " + executableObject.getCommands().get(i));
             }
         }
         return stringBuilder.toString();
     }
 
     private void logExecutables(final List<ExecutableObject> executableObjects, final CheckName checkName) {
-        executableObjects.forEach(o -> logger.info(ANSIColor.colorString('&',"Loaded executables for check: `&y" + checkName.name() + "&R` minimum flags: &y" + o.getFlags() + " &Rwith commands:\n" + joinCommands(o))));
+        executableObjects.forEach(o -> logger.info(ANSIColor.colorString('&', "Loaded executables for check: `&y" + checkName.name() + "&R` minimum flags: &y" + o.getFlags() + " &Rwith commands:\n" + joinCommands(o))));
     }
 
     @Override

@@ -27,7 +27,7 @@ public enum SPermissions {
 
     private final String string;
 
-    SPermissions(String string) {
+    SPermissions(final String string) {
         this.string = string;
     }
 

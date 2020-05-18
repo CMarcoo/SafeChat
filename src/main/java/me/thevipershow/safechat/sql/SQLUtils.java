@@ -61,8 +61,11 @@ public final class SQLUtils {
         return data;
     }
 
-    public static void transferAllData(final HashMap<UUID, PlayerData> data, final ConnectionProvider provider, final SQLPrebuiltStatements sql, final ExceptionHandler handler) {
-
+    public static void transferAllData(
+            final HashMap<UUID, PlayerData> data,
+            final ConnectionProvider provider,
+            final SQLPrebuiltStatements sql,
+            final ExceptionHandler handler) {
         try (final Connection connection = provider.findConnection()) {
             for (Map.Entry<UUID, PlayerData> entry : data.entrySet()) {
                 try (final PreparedStatement statement = connection.prepareStatement(sql.getSQL())) {

@@ -31,7 +31,7 @@ public final class WordsMatcher implements ConfigurationSerializable, Cloneable 
     private final String pattern;
     private final String replace;
 
-    public WordsMatcher(String pattern, String replace) {
+    public WordsMatcher(final String pattern,final String replace) {
         this.pattern = pattern;
         this.replace = replace;
     }
@@ -57,7 +57,7 @@ public final class WordsMatcher implements ConfigurationSerializable, Cloneable 
         return result;
     }
 
-    public static WordsMatcher deserialize(Map<String, Object> objectMap) {
+    public static WordsMatcher deserialize(final Map<String, Object> objectMap) {
         final String pattern = (String) objectMap.get("pattern");
         final String replace = (String) objectMap.get("replace");
         return new WordsMatcher(pattern, replace);

@@ -44,7 +44,7 @@ public enum SQLPrebuiltStatements {
     MYSQL_SAVE_ALL_DATA("INSERT INTO safechat_data (player_uuid, player_name, flags_domains, flags_ipv4, flags_words) VALUES (?,?,?,?,?)" +
             " ON DUPLICATE KEY UPDATE player_name = ?, flags_domains = ?, flags_ipv4 = ?, flags_words = ?;");
 
-    SQLPrebuiltStatements(String SQL) {
+    SQLPrebuiltStatements(final String SQL) {
         this.SQL = SQL;
     }
 
@@ -54,7 +54,7 @@ public enum SQLPrebuiltStatements {
         return SQL;
     }
 
-    public String formatSQL(Object o) {
+    public String formatSQL(final Object o) {
         return String.format(SQL, o);
     }
 }

@@ -39,7 +39,7 @@ public final class AddressesCheck implements ChatCheck {
         this.values = values;
     }
 
-    public static AddressesCheck getInstance(Values values) {
+    public static AddressesCheck getInstance(final Values values) {
         if (instance == null) {
             instance = new AddressesCheck(values);
         }
