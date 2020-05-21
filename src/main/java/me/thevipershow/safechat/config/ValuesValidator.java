@@ -34,7 +34,7 @@ public final class ValuesValidator {
     }
 
     public boolean validateAll() {
-        boolean databaseType = Validator.validate(values.getDbType().toUpperCase(Locale.getDefault()), Throwable::printStackTrace, "SQLITE", "POSTGRESQL", "MYSQL");
+        boolean databaseType = Validator.validate(values.getDbType().toUpperCase(Locale.getDefault()), Throwable::printStackTrace, "SQLITE", "POSTGRESQL", "MYSQL", "MARIADB");
         boolean autoSaveCheck = Validator.validateInRange(values.getAutoSave(), Throwable::printStackTrace, NumberRange.process(1, Integer.MAX_VALUE));
         boolean portCheck = Validator.validateInRange(values.getPort(), Throwable::printStackTrace, NumberRange.process(0, 65535));
         boolean nullCheckBlacklistWords = Validator.validateNotNull(values.getBlacklistWords(), Throwable::printStackTrace);

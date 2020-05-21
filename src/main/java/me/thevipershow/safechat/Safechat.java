@@ -105,6 +105,8 @@ public final class Safechat extends JavaPlugin {
                 break;
             case "MYSQL":
                 databaseManager = MySQLDatabaseManager.getInstance(values.getAddress(), values.getPort(), values.getDatabase(), values.getUsername(), values.getPassword(), this);
+            case "MARIADB":
+                databaseManager = MariaDBDatabaseManager.getInstance(values.getAddress(), values.getPort(), values.getDatabase(), values.getUsername(), values.getPassword(), this);
         }
         sendInfo();
     }

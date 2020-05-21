@@ -28,6 +28,7 @@ public class HikariDatabaseUtils {
     public enum DatabaseType {
         POSTGRESQL,
         MYSQL,
+        MARIADB
     }
 
     /**
