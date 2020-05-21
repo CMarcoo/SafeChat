@@ -23,36 +23,63 @@ import java.sql.Driver;
 import java.util.HashMap;
 import java.util.UUID;
 import static me.thevipershow.safechat.sql.SQLPrebuiltStatements.*;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MySQLDatabaseManager implements DatabaseManager {
     private static MySQLDatabaseManager instance = null;
     private HikariDataSource source = null;
+    private final JavaPlugin plugin;
 
-    private MySQLDatabaseManager(final String address,final int port,final String database,final String username,final String password) {
+    private MySQLDatabaseManager(final String address,
+                                 final int port,
+                                 final String database,
+                                 final String username,
+                                 final String password,
+                                 final JavaPlugin plugin) {
+        this.plugin = plugin;
         try {
+            final Class<? extends Driver> mysqlDriver = (Class<? extends Driver>) Class.forName("com.mysql.jdbc.Driver");
             this.source = HikariDatabaseUtils.createDataSource(HikariDatabaseUtils.createConfig(
                     address,
                     port,
                     database,
                     username,
                     password,
-                    (Class<? extends Driver>) Class.forName("com.mysql.jdbc.Driver"),
+                    mysqlDriver,
                     HikariDatabaseUtils.DatabaseType.MYSQL));
+            this.createTable(e -> {
+                plugin.getLogger().warning("Safechat could not create the table successfully!");
+                e.printStackTrace();
+            });
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+
     }
 
-    private MySQLDatabaseManager(final String address,final String database,final String username,final String password) {
-        this(address, 5432, database, username, password);
+    private MySQLDatabaseManager(final String address,
+                                 final String database,
+                                 final String username,
+                                 final String password,
+                                 final JavaPlugin plugin) {
+        this(address, 5432, database, username, password, plugin);
     }
 
-    public static MySQLDatabaseManager getInstance(final String address,final String database,final String username,final String password) {
-        return instance != null ? instance : (instance = new MySQLDatabaseManager(address, database, username, password));
+    public static MySQLDatabaseManager getInstance(final String address,
+                                                   final String database,
+                                                   final String username,
+                                                   final String password,
+                                                   final JavaPlugin plugin) {
+        return instance != null ? instance : (instance = new MySQLDatabaseManager(address, database, username, password, plugin));
     }
 
-    public static MySQLDatabaseManager getInstance(final String address,final int port,final String database,final String username,final String password) {
-        return instance != null ? instance : (instance = new MySQLDatabaseManager(address, port, database, username, password));
+    public static MySQLDatabaseManager getInstance(final String address,
+                                                   final int port,
+                                                   final String database,
+                                                   final String username,
+                                                   final String password,
+                                                   final JavaPlugin plugin) {
+        return instance != null ? instance : (instance = new MySQLDatabaseManager(address, port, database, username, password, plugin));
     }
 
     @Override
@@ -66,7 +93,7 @@ public final class MySQLDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public void transferAllData(final ExceptionHandler handler,final HashMap<UUID, PlayerData> dataHashMap) {
+    public void transferAllData(final ExceptionHandler handler, final HashMap<UUID, PlayerData> dataHashMap) {
         SQLUtils.transferAllData(dataHashMap, source::getConnection, MYSQL_SAVE_ALL_DATA, handler);
     }
 }

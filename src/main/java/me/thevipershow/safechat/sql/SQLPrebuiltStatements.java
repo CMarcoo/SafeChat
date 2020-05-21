@@ -37,10 +37,10 @@ public enum SQLPrebuiltStatements {
             + "\tflags_words INT NOT NULL ,\n"
             + "\tflags_domains INT NOT NULL ,\n"
             + "\tflags_ipv4 INT NOT NULL);"),
-    POSTGRESQL_GET_ALL_DATA(SQLITE_GET_ALL_DATA.SQL),
-    POSTGRESQL_SAVE_ALL_DATA(SQLITE_SAVE_ALL_DATA.SQL),
-    MYSQL_CREATE_TABLE(SQLITE_CREATE_TABLE.SQL),
-    MYSQL_GET_ALL_DATA(SQLITE_GET_ALL_DATA.SQL),
+    POSTGRESQL_GET_ALL_DATA(SQLITE_GET_ALL_DATA.getSQL()),
+    POSTGRESQL_SAVE_ALL_DATA(SQLITE_SAVE_ALL_DATA.getSQL()),
+    MYSQL_CREATE_TABLE(SQLITE_CREATE_TABLE.getSQL()),
+    MYSQL_GET_ALL_DATA(SQLITE_GET_ALL_DATA.getSQL()),
     MYSQL_SAVE_ALL_DATA("INSERT INTO safechat_data (player_uuid, player_name, flags_domains, flags_ipv4, flags_words) VALUES (?,?,?,?,?)" +
             " ON DUPLICATE KEY UPDATE player_name = ?, flags_domains = ?, flags_ipv4 = ?, flags_words = ?;");
 
