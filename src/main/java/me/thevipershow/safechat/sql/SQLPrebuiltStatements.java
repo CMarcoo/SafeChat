@@ -32,7 +32,7 @@ public enum SQLPrebuiltStatements {
             " ON CONFLICT (player_uuid) DO UPDATE SET player_name = ?, flags_domains = ?, flags_ipv4 = ?, flags_words = ?;"),
     POSTGRESQL_CREATE_TABLE("CREATE TABLE IF NOT EXISTS safechat_data\n"
             + "(\n"
-            + "\tplayer_uuid UUID NOT NULL UNIQUE PRIMARY KEY ,\n"
+            + "\tplayer_uuid CHAR(36) NOT NULL UNIQUE PRIMARY KEY ,\n"
             + "\tplayer_name CHAR(16) NOT NULL ,\n"
             + "\tflags_words INT NOT NULL ,\n"
             + "\tflags_domains INT NOT NULL ,\n"

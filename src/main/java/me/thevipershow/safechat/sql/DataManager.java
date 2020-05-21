@@ -92,7 +92,7 @@ public final class DataManager {
     }
 
     public final List<EnumMap<CheckName, Integer>> getPlayerFlags(final String playerName) {
-        List<PlayerData> playerDataStream = this.playerData.values().stream().filter(e -> e.getUsername().equals(playerName)).collect(Collectors.toUnmodifiableList());
+        List<PlayerData> playerDataStream = this.playerData.values().stream().filter(e -> e.getUsername().equals(playerName)).collect(Collectors.toList());
         if (playerDataStream.size() > 0) {
             final List<EnumMap<CheckName, Integer>> enumMaps = new ArrayList<>();
             playerDataStream.forEach(c -> {
@@ -108,7 +108,7 @@ public final class DataManager {
     }
 
     public final List<PlayerData> getPlayerFlags(final String playerName, final CheckName checkName) {
-        List<PlayerData> playerData = this.playerData.values().stream().filter(e -> e.getUsername().equals(playerName)).collect(Collectors.toUnmodifiableList());
+        List<PlayerData> playerData = this.playerData.values().stream().filter(e -> e.getUsername().equals(playerName)).collect(Collectors.toList());
         if (playerData.size() > 0) {
             return playerData;
         }
@@ -122,7 +122,7 @@ public final class DataManager {
                     .filter(c -> c.getFlag(checkName) != 0)
                     .sorted(Comparator.comparingInt(o -> o.getFlag(checkName)))
                     .limit(top)
-                    .collect(Collectors.toUnmodifiableList());
+                    .collect(Collectors.toList());
         }
         return null;
     }

@@ -72,11 +72,11 @@ public enum EnumConfig {
     }
 
     public final List<WordsMatcher> getWordsMatcherList(final FileConfiguration configuration) {
-        return configuration.getMapList(value).stream().map(map -> WordsMatcher.deserialize((Map<String, Object>) map)).collect(Collectors.toUnmodifiableList());
+        return configuration.getMapList(value).stream().map(map -> WordsMatcher.deserialize((Map<String, Object>) map)).collect(Collectors.toList());
     }
 
     public final List<ExecutableObject> getExecutableObject(final FileConfiguration configuration) {
-        return configuration.getMapList(value).stream().map(map -> ExecutableObject.deserialize((Map<String, Object>) map)).collect(Collectors.toUnmodifiableList());
+        return configuration.getMapList(value).stream().map(map -> ExecutableObject.deserialize((Map<String, Object>) map)).collect(Collectors.toList());
     }
 
     EnumConfig(final String value) {
