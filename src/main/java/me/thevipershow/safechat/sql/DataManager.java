@@ -19,9 +19,6 @@
 package me.thevipershow.safechat.sql;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -30,9 +27,7 @@ import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.enums.CheckName;
 import me.thevipershow.safechat.enums.TicksConverter;
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class DataManager {

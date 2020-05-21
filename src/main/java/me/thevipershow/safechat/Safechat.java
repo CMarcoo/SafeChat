@@ -74,9 +74,9 @@ public final class Safechat extends JavaPlugin {
         int size = executableObject.getCommands().size();
         for (int i = 0; i < size; i++) {
             if (i != size - 1) {
-                stringBuilder.append("\t\t\t     " + executableObject.getCommands().get(i).concat("\n"));
+                stringBuilder.append("\t\t\t     ").append(executableObject.getCommands().get(i).concat("\n"));
             } else {
-                stringBuilder.append("\t\t\t     " + executableObject.getCommands().get(i));
+                stringBuilder.append("\t\t\t     ").append(executableObject.getCommands().get(i));
             }
         }
         return stringBuilder.toString();

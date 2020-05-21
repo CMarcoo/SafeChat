@@ -20,7 +20,6 @@ package me.thevipershow.safechat.config;
 
 import java.util.ArrayList;
 import java.util.List;
-import me.thevipershow.safechat.checks.WordsCheck;
 import me.thevipershow.safechat.checks.register.CheckRegister;
 import me.thevipershow.safechat.enums.EnumConfig;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -102,16 +101,18 @@ public final class Values {
     private List<String> wordsHover;
     private List<ExecutableObject> wordsExecutables;
 
-    public List<String> getListAndReplace(final List<String> list,final String placeholder,final String replace) {
+    public List<String> getListAndReplace(final List<String> list, final String placeholder, final String replace) {
         final List<String> stringList = new ArrayList<>();
-        for (final String string : list) {
-            stringList.add(string.replace(placeholder, replace));
-        }
+        for (final String string : list)
+            stringList.add(string.replaceAll(placeholder, replace));
         return stringList;
     }
 
-    public String[] getArrayAndReplace(final List<String> list,final String placeholder,final String replace) {
-        return getListAndReplace(list, placeholder, replace).toArray(String[]::new);
+    public String[] getArrayAndReplace(final List<String> list, final String placeholder, final String replace) {
+        final String[] strings = new String[list.size()];
+        for (int i = 0; i < strings.length; i++)
+            strings[i] = list.get(i).replaceAll(placeholder, replace);
+        return strings;
     }
 
     public int getSerialUID() {

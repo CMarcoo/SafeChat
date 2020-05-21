@@ -27,8 +27,6 @@ import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public final class AddressesCheck implements ChatCheck {
 

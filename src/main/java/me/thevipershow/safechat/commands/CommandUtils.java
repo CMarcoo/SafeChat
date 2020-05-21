@@ -89,12 +89,10 @@ public final class CommandUtils {
     private static void sqlSearch(final DataManager dataManager, final CommandSender sender, final String searchName) {
         final List<EnumMap<CheckName, Integer>> obtained = dataManager.getPlayerFlags(searchName);
         if (obtained != null) {
-            obtained.forEach(enumMap -> {
-                sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &8» &6Player " + searchName + " &fflags list:",
-                        "  &8[&6Domains Check&8]&7: &6" + enumMap.get(CheckName.DOMAINS) + " &fflags",
-                        "  &8[&6IPv4 Check&8]&7: &6" + enumMap.get(CheckName.ADDRESSES) + " &fflags",
-                        "  &8[&6Words Check&8]&7: &6" + enumMap.get(CheckName.WORDS) + " &fflags").color().getText());
-            });
+            obtained.forEach(enumMap -> sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &8» &6Player " + searchName + " &fflags list:",
+                    "  &8[&6Domains Check&8]&7: &6" + enumMap.get(CheckName.DOMAINS) + " &fflags",
+                    "  &8[&6IPv4 Check&8]&7: &6" + enumMap.get(CheckName.ADDRESSES) + " &fflags",
+                    "  &8[&6Words Check&8]&7: &6" + enumMap.get(CheckName.WORDS) + " &fflags").color().getText()));
         } else {
             sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: Player " + searchName + " was not found in the database!").color().getText());
         }

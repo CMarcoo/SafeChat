@@ -18,7 +18,6 @@
 package me.thevipershow.safechat.checks;
 
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.plugin.Plugin;
 
 @FunctionalInterface
 public interface ChatCheck {
