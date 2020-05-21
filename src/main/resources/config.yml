@@ -78,10 +78,10 @@ safechat:
     executables:
       - commands:
           - "tell %PLAYER% you just sent a forbidden address into the chat"
-          - "tell %PLAYER% the next time this happens, this will result in a ban"
+          - "tell %PLAYER% the next time this happens, this will result in a kick"
         flags: 1
       - commands:
-          - "ban %PLAYER%"
+          - "kick %PLAYER%"
         flags: 2
   addresses:
     enabled: true
@@ -109,10 +109,10 @@ safechat:
     executables:
       - commands:
           - "tell %PLAYER% you just sent a forbidden address into the chat"
-          - "tell %PLAYER% the next time this happens, this will result in a ban"
+          - "tell %PLAYER% the next time this happens, this will result in a kick"
         flags: 1
       - commands:
-          - "ban %PLAYER%"
+          - "kick %PLAYER%"
         flags: 2
   words:
     enabled: true
@@ -150,8 +150,8 @@ safechat:
     executables:
       - commands:
           - "tell %PLAYER% you just sent a forbidden word into the chat"
-          - "tell %PLAYER% the next time this happens, this will result in a ban"
+          - "tell %PLAYER% the next time this happens, this will result in a kick"
         flags: 2
       - commands:
-          - "ban %PLAYER%"
+          - "kick %PLAYER%"
         flags: 5

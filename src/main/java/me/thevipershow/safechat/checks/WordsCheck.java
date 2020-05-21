@@ -63,8 +63,8 @@ public final class WordsCheck implements ChatCheck {
             Bukkit.getPluginManager().callEvent(new FlagThrownEvent(flags, CheckName.WORDS, player.getUniqueId(), player.getName()));
 
             chatEvent.getPlayer().spigot().sendMessage(HoverMessageBuilder.buildHover(
-                    TextMessage.build(values.getArrayAndReplace(values.getDomainWarning(), "%PLAYER%", player.getName())).color(),
-                    TextMessage.build(values.getArrayAndReplace(values.getDomainHover(), "%PLAYER%", player.getName())).color()
+                    TextMessage.build(values.getArrayAndReplace(values.getWordsWarning(), "%PLAYER%", player.getName())).color(),
+                    TextMessage.build(values.getArrayAndReplace(values.getWordsHover(), "%PLAYER%", player.getName())).color()
             ));
             if (replaced > 0) {
                 chatEvent.setMessage(message);
