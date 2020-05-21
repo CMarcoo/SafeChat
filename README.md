@@ -133,7 +133,7 @@ The file is called config.yml and contains important settings that allow you to 
  - Be polite
  
  ## License
- This project is under the "GNU AFFERO GENERAL PUBLIC LICENSE", a copy of the license is given inside the current repository. You are free to do any action according to the just mentioned license.
+ This project is under the "GNU AFFERO GENERAL PUBLIC LICENSE", a copy of the license is given inside the current repository.
  
  ---
  Thank you , TheViperShow.
