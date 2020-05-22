@@ -21,6 +21,7 @@ package me.thevipershow.safechat.sql;
 import com.zaxxer.hikari.HikariDataSource;
 import java.util.HashMap;
 import java.util.UUID;
+import me.thevipershow.safechat.config.Values;
 import static me.thevipershow.safechat.sql.SQLPrebuiltStatements.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.postgresql.Driver;
@@ -30,43 +31,26 @@ public final class PostgreSQLDatabaseManager implements DatabaseManager {
     private final HikariDataSource source;
     private final JavaPlugin plugin;
 
-    private PostgreSQLDatabaseManager(final String address,
-                                      final int port,
-                                      final String database,
-                                      final String username,
-                                      final String password,
+    private PostgreSQLDatabaseManager(final Values values,
                                       final JavaPlugin plugin) {
         this.plugin = plugin;
-        this.source = HikariDatabaseUtils.createDataSource(HikariDatabaseUtils.createConfig(address, port, database, username, password, Driver.class, HikariDatabaseUtils.DatabaseType.POSTGRESQL));
+        this.source = HikariDatabaseUtils.createDataSource(HikariDatabaseUtils.createConfig(
+                values.getAddress(),
+                values.getPort(),
+                values.getDatabase(),
+                values.getUsername(),
+                values.getPassword(),
+                Driver.class,
+                HikariDatabaseUtils.DatabaseType.POSTGRESQL));
         this.createTable(e -> {
             plugin.getLogger().warning("SafeChat could not create the table successfully!");
             e.printStackTrace();
         });
     }
 
-    private PostgreSQLDatabaseManager(final String address,
-                                      final String database,
-                                      final String username,
-                                      final String password,
-                                      final JavaPlugin plugin) {
-        this(address, 5432, database, username, password, plugin);
-    }
-
-    public static PostgreSQLDatabaseManager getInstance(final String address,
-                                                        final int port,
-                                                        final String database,
-                                                        final String username,
-                                                        final String password,
+    public static PostgreSQLDatabaseManager getInstance(final Values values,
                                                         final JavaPlugin plugin) {
-        return instance != null ? instance : (instance = new PostgreSQLDatabaseManager(address, port, database, username, password, plugin));
-    }
-
-    public static PostgreSQLDatabaseManager getInstance(final String address,
-                                                        final String database,
-                                                        final String username,
-                                                        final String password,
-                                                        final JavaPlugin plugin) {
-        return instance != null ? instance : (instance = new PostgreSQLDatabaseManager(address, database, username, password, plugin));
+        return instance != null ? instance : (instance = new PostgreSQLDatabaseManager(values, plugin));
     }
 
     @Override

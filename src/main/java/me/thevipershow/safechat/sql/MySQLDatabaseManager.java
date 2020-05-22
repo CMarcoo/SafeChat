@@ -22,6 +22,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Driver;
 import java.util.HashMap;
 import java.util.UUID;
+import me.thevipershow.safechat.config.Values;
 import static me.thevipershow.safechat.sql.SQLPrebuiltStatements.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,21 +31,17 @@ public final class MySQLDatabaseManager implements DatabaseManager {
     private HikariDataSource source = null;
     private final JavaPlugin plugin;
 
-    private MySQLDatabaseManager(final String address,
-                                 final int port,
-                                 final String database,
-                                 final String username,
-                                 final String password,
+    private MySQLDatabaseManager(final Values values,
                                  final JavaPlugin plugin) {
         this.plugin = plugin;
         try {
             final Class<? extends Driver> mysqlDriver = (Class<? extends Driver>) Class.forName("com.mysql.jdbc.Driver");
             this.source = HikariDatabaseUtils.createDataSource(HikariDatabaseUtils.createConfig(
-                    address,
-                    port,
-                    database,
-                    username,
-                    password,
+                    values.getAddress(),
+                    values.getPort(),
+                    values.getDatabase(),
+                    values.getUsername(),
+                    values.getPassword(),
                     mysqlDriver,
                     HikariDatabaseUtils.DatabaseType.MYSQL));
             this.createTable(e -> {
@@ -57,29 +54,9 @@ public final class MySQLDatabaseManager implements DatabaseManager {
 
     }
 
-    private MySQLDatabaseManager(final String address,
-                                 final String database,
-                                 final String username,
-                                 final String password,
-                                 final JavaPlugin plugin) {
-        this(address, 5432, database, username, password, plugin);
-    }
-
-    public static MySQLDatabaseManager getInstance(final String address,
-                                                   final String database,
-                                                   final String username,
-                                                   final String password,
+    public static MySQLDatabaseManager getInstance(final Values values,
                                                    final JavaPlugin plugin) {
-        return instance != null ? instance : (instance = new MySQLDatabaseManager(address, database, username, password, plugin));
-    }
-
-    public static MySQLDatabaseManager getInstance(final String address,
-                                                   final int port,
-                                                   final String database,
-                                                   final String username,
-                                                   final String password,
-                                                   final JavaPlugin plugin) {
-        return instance != null ? instance : (instance = new MySQLDatabaseManager(address, port, database, username, password, plugin));
+        return instance != null ? instance : (instance = new MySQLDatabaseManager(values, plugin));
     }
 
     @Override

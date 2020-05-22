@@ -98,15 +98,15 @@ public final class Safechat extends JavaPlugin {
         // from here on values are assumed as safe
         switch (values.getDbType().toUpperCase(Locale.getDefault())) {
             case "POSTGRESQL":
-                databaseManager = PostgreSQLDatabaseManager.getInstance(values.getAddress(), values.getPort(), values.getDatabase(), values.getUsername(), values.getPassword(), this);
+                databaseManager = PostgreSQLDatabaseManager.getInstance(values, this);
                 break;
             case "SQLITE":
                 databaseManager = SQLiteDatabaseManager.getInstance(this);
                 break;
             case "MYSQL":
-                databaseManager = MySQLDatabaseManager.getInstance(values.getAddress(), values.getPort(), values.getDatabase(), values.getUsername(), values.getPassword(), this);
+                databaseManager = MySQLDatabaseManager.getInstance(values, this);
             case "MARIADB":
-                databaseManager = MariaDBDatabaseManager.getInstance(values.getAddress(), values.getPort(), values.getDatabase(), values.getUsername(), values.getPassword(), this);
+                databaseManager = MariaDBDatabaseManager.getInstance(values, this);
         }
         sendInfo();
     }
