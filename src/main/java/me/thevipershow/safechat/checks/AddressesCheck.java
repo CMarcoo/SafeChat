@@ -19,6 +19,7 @@ package me.thevipershow.safechat.checks;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.enums.CheckName;
 import me.thevipershow.safechat.events.FlagThrownEvent;
@@ -54,8 +55,10 @@ public final class AddressesCheck implements ChatCheck {
             final Player player = chatEvent.getPlayer();
             Bukkit.getPluginManager().callEvent(new FlagThrownEvent(1, CheckName.ADDRESSES, player.getUniqueId(), player.getName()));
             chatEvent.getPlayer().spigot().sendMessage(HoverMessageBuilder.buildHover(
-                    TextMessage.build(values.getArrayAndReplace(values.getIpv4Warning(), "%PLAYER%", player.getName())).color(),
-                    TextMessage.build(values.getArrayAndReplace(values.getIpv4Hover(), "%PLAYER%", player.getName())).color()
+                    TextMessage.build(values.getIpv4Warning().stream().map(s -> s.replaceAll("%PLAYER%", player.getName())).collect(Collectors.toList())).color(),
+                    TextMessage.build(values.getIpv4Hover().stream().map(s -> s.replaceAll("%PLAYER%", player.getName())).collect(Collectors.toList())).color()
+                    //TextMessage.build(values.getArrayAndReplace(values.getIpv4Warning(), "%PLAYER%", player.getName())).color(),
+                    //TextMessage.build(values.getArrayAndReplace(values.getIpv4Hover(), "%PLAYER%", player.getName())).color()
             ));
         }
     }
