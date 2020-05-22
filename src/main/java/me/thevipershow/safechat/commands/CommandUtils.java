@@ -65,7 +65,7 @@ public final class CommandUtils {
         if (commandSender instanceof Player) {
             final Player player = (Player) commandSender;
             player.spigot().sendMessage(HoverMessageBuilder.buildHover(
-                    TextMessage.build("&7> &6No arguments found &7. . .", ""
+                    TextMessage.build("&7» &6No arguments found &7. . .", ""
                             + "&7Hover &nhere &r&7to view all commands &8[&f*&8]").color(),
                     TextMessage.build(HoverMessages.NO_ARGS.getMessages()).color()
             ));
@@ -89,7 +89,7 @@ public final class CommandUtils {
     private static void sqlSearch(final DataManager dataManager, final CommandSender sender, final String searchName) {
         final List<EnumMap<CheckName, Integer>> obtained = dataManager.getPlayerFlags(searchName);
         if (obtained != null) {
-            obtained.forEach(enumMap -> sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &8� &6Player " + searchName + " &fflags list:",
+            obtained.forEach(enumMap -> sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &8» &6Player " + searchName + " &fflags list:",
                     "  &8[&6Domains Check&8]&7: &6" + enumMap.get(CheckName.DOMAINS) + " &fflags",
                     "  &8[&6IPv4 Check&8]&7: &6" + enumMap.get(CheckName.ADDRESSES) + " &fflags",
                     "  &8[&6Words Check&8]&7: &6" + enumMap.get(CheckName.WORDS) + " &fflags").color().getText()));
@@ -104,7 +104,7 @@ public final class CommandUtils {
             obtained.forEach(n ->
                     sender.sendMessage(
                             TextMessage
-                                    .build("&8[&6SafeChat&8]&7: &8> &6Player &f" + searchName + " &7has &6" + n.getFlag(checkName) + " &7" + checkName.name() + " flags")
+                                    .build("&8[&6SafeChat&8]&7: &8» &6Player &f" + searchName + " &7has &6" + n.getFlag(checkName) + " &7" + checkName.name() + " flags")
                                     .color()
                                     .getText())
             );
