@@ -48,6 +48,35 @@ public final class PlayerData {
         return new PlayerData(this.domainFlags, this.ipv4Flags, this.wordFlags, username);
     }
 
+    public final PlayerData decrementFlag(final CheckName checkName, final int severity, final String username) {
+        switch (checkName) {
+            case DOMAINS:
+                this.domainFlags -= severity;
+                break;
+            case ADDRESSES:
+                this.ipv4Flags -= severity;
+                break;
+            case WORDS:
+                this.wordFlags -= severity;
+                break;
+        }
+        return new PlayerData(this.domainFlags, this.ipv4Flags, this.wordFlags, username);
+    }
+
+    public final void resetFlag(final CheckName checkName) {
+        switch (checkName) {
+            case WORDS:
+                this.wordFlags = 0;
+                break;
+            case DOMAINS:
+                this.domainFlags = 0;
+                break;
+            case ADDRESSES:
+                this.ipv4Flags = 0;
+                break;
+        }
+    }
+
     public final int getFlag(final CheckName checkName) {
         switch (checkName) {
             case WORDS:

@@ -116,12 +116,12 @@ public final class Safechat extends JavaPlugin {
         dataManager = DataManager.getInstance(databaseManager, this, values);
         if (CommodoreProvider.isSupported()) {
             commodore = CommodoreProvider.getCommodore(this);
+            CommandUtils.registerCompletions(commodore, this, e -> {
+                logger.log(Level.WARNING, "Something went wrong when enabling command completion");
+                e.printStackTrace();
+            });
         }
         Objects.requireNonNull(safechatPluginCommand = getCommand("safechat")).setExecutor(safechatCommand = SafechatCommand.getInstance(dataManager, values));
-        CommandUtils.registerCompletions(commodore, this, e -> {
-            logger.log(Level.WARNING, "Something went wrong when enabling command completion");
-            e.printStackTrace();
-        });
         pluginManager.registerEvents(FlagListener.getInstance(logger, values, dataManager, getServer().getConsoleSender(), this), this);
         pluginManager.registerEvents(checkRegister = CheckRegister.getInstance(values), this);
     }

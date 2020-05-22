@@ -19,6 +19,7 @@
 package me.thevipershow.safechat.sql;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -81,6 +82,28 @@ public final class DataManager {
 
     private void startAutomatedSaving() {
         plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, this::transferAllData, TicksConverter.MINUTES.convert(values.getAutoSave()), TicksConverter.MINUTES.convert(values.getAutoSave()));
+    }
+
+    public int removeAllPlayer(final String username) {
+        int removed = 0;
+        for (final Map.Entry<UUID, PlayerData> entry : this.playerData.entrySet()) {
+            if (entry.getValue().getUsername().equals(username)) {
+                this.playerData.remove(entry.getKey());
+                removed++;
+            }
+        }
+        return removed;
+    }
+
+    public int removeAllPlayer(final String username, final CheckName checkName) {
+        int modified = 0;
+        for (final Map.Entry<UUID, PlayerData> entry : this.playerData.entrySet()) {
+            if (entry.getValue().getUsername().equals(username)) {
+                this.playerData.get(entry.getKey()).resetFlag(checkName);
+                modified++;
+            }
+        }
+        return modified;
     }
 
     public final void addPlayerData(final UUID uuid, final String username, final PlayerData playerData, final CheckName checkName, final int severity) {

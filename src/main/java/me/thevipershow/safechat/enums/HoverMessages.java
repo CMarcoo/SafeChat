@@ -19,14 +19,20 @@ package me.thevipershow.safechat.enums;
 
 public enum HoverMessages {
 
-    NO_ARGS("&6SafeChat &7syntax:",
-            "&6Open this help page&7:",
+    NO_ARGS("&8[&6SafeChat&8]&7: syntax:",
+            "&8Open this help page&7:",
             "- &7/safechat",
-            "&6Get stored data of a certain player&7:",
-            "- &7/safechat sql search &8[&6ipv4&7|&6domains&7|&6words&8] &8<&6player&8>",
-            "&6Get &o&nX&r &6players with the highest flags count&7:",
-            "- &7/safechat sql top &8<&6number&8> &8[&6ipv4&7|&6domains&7|&6words&8]",
-            "&6Reload all the values from the config.yml",
+            "&8Get all stored data of a certain player&7:",
+            "- &7/safechat search &8[&6ipv4&7|&6domains&7|&6words&8] &8<&6player&8>",
+            "&8Get flag count of a certain player&7:",
+            "- &7/safechat search &8<&6player&8>",
+            "&8Get &o&nX&r &8players with the highest flags count&7:",
+            "- &7/safechat top &8<&6number&8> &8[&6ipv4&7|&6domains&7|&6words&8]",
+            "&8Clear all data of a certain player",
+            "- &7/safechat clear &8<&6player&8>",
+            "&8Clear specific flags of a certain player",
+            "- &7/safechat clear &8<&6player&8> &8[&6ipv4&7|&6domains&7|&6words&8]",
+            "&8Reload all the values from the config.yml",
             "- &7/safechat reload");
 
     private final String[] messages;

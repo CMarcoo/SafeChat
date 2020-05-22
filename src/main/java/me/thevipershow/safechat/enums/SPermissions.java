@@ -17,13 +17,18 @@
  */
 package me.thevipershow.safechat.enums;
 
+import java.util.function.Predicate;
+import org.bukkit.entity.Player;
+
 public enum SPermissions {
 
+    COMMAND("safechat.command"),
     BYPASS("safechat.bypass"),
-    HELP("safechat.help"),
-    RELOAD("safechat.reload"),
-    TOP("safechat.top"),
-    SEARCH("safechat.search");
+    HELP("safechat.command.help"),
+    RELOAD("safechat.command.reload"),
+    TOP("safechat.command.top"),
+    SEARCH("safechat.command.search"),
+    CLEAR("safechat.command.clear");
 
     private final String string;
 
@@ -37,5 +42,9 @@ public enum SPermissions {
 
     public final String getPermission() {
         return string;
+    }
+
+    public final Predicate<Player> toPredicate() {
+        return player -> player.hasPermission(string);
     }
 }

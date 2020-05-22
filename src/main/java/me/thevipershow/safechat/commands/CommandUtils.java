@@ -17,14 +17,14 @@
  */
 package me.thevipershow.safechat.commands;
 
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import java.io.IOException;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 import me.lucko.commodore.Commodore;
-import me.lucko.commodore.file.CommodoreFileFormat;
 import me.thevipershow.safechat.config.Values;
 import me.thevipershow.safechat.enums.CheckName;
 import me.thevipershow.safechat.enums.HoverMessages;
@@ -36,6 +36,7 @@ import me.thevipershow.safechat.sql.PlayerData;
 import me.thevipershow.spigotchatlib.chat.TextMessage;
 import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -45,12 +46,33 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class CommandUtils {
 
     public static void registerCompletions(final Commodore commodore, final JavaPlugin plugin, final ExceptionHandler handler) {
-        try {
-            LiteralCommandNode<?> safechatCommand = CommodoreFileFormat.parse(Objects.requireNonNull(plugin.getResource("safechat.commodore")));
-            commodore.register(safechatCommand);
-        } catch (IOException e) {
-            handler.handle(e);
-        }
+        final PluginCommand safechatCommand = plugin.getCommand("safechat");
+        final LiteralArgumentBuilder<?> safechat = LiteralArgumentBuilder.literal("safechat");
+
+        final LiteralCommandNode<?> reload = safechat.then(LiteralArgumentBuilder.literal("reload")).build();
+        commodore.register(safechatCommand, reload, RELOAD.toPredicate());
+
+        final LiteralCommandNode<?> command = safechat.then(LiteralArgumentBuilder.literal("top"))
+                .then(RequiredArgumentBuilder.argument("count", IntegerArgumentType.integer(1, 250)))
+                .then(LiteralArgumentBuilder.literal("ipv4"))
+                .then(LiteralArgumentBuilder.literal("domains"))
+                .then(LiteralArgumentBuilder.literal("words")).then(LiteralArgumentBuilder.literal("search"))
+                .then(LiteralArgumentBuilder.literal("ipv4"))
+                .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word()))
+                .then(LiteralArgumentBuilder.literal("words"))
+                .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word()))
+                .then(LiteralArgumentBuilder.literal("domains"))
+                .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word()))
+                .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word())).build();
+
+        commodore.register(safechatCommand, command, COMMAND.toPredicate());
+               /* try {
+                    LiteralCommandNode<?> node = CommodoreFileFormat.parse(plugin.getResource("safechat.commodore"));
+                    commodore.register(safechatCommand, node, COMMAND.toPredicate());
+                } catch (IOException e) {
+                    handler.handle(e);
+                }
+                */
     }
 
     private static void permissionCheck(final CommandSender sender, final SPermissions permission, final Action action) {
@@ -61,17 +83,26 @@ public final class CommandUtils {
         }
     }
 
-    private static void noArguments(final CommandSender commandSender) {
-        if (commandSender instanceof Player) {
-            final Player player = (Player) commandSender;
-            player.spigot().sendMessage(HoverMessageBuilder.buildHover(
-                    TextMessage.build("&7» &6No arguments found &7. . .", ""
-                            + "&7Hover &nhere &r&7to view all commands &8[&f*&8]").color(),
-                    TextMessage.build(HoverMessages.NO_ARGS.getMessages()).color()
-            ));
+    private static void clearPlayer(final String username, final CommandSender sender, final DataManager dataManager) {
+        final int removed = dataManager.removeAllPlayer(username);
+        if (removed == 0) {
+            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &7No player with name &e" + username + " &7could be found!").color().getText());
         } else {
-            commandSender.sendMessage(TextMessage.build(HoverMessages.NO_ARGS.getMessages()).color().getText());
+            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &7Found &e" + removed + " &7players with name &e" + username + " &7and cleaned their data!").color().getText());
         }
+    }
+
+    private static void clearPlayer(final String username, final CommandSender sender, final DataManager dataManager, final CheckName checkName) {
+        final int removed = dataManager.removeAllPlayer(username, checkName);
+        if (removed == 0) {
+            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &7No player with name &e" + username + " &7could be found!").color().getText());
+        } else {
+            sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &7Found &e" + removed + " &7players with name &e" + username + " &7and cleaned their data!").color().getText());
+        }
+    }
+
+    private static void noArguments(final CommandSender commandSender) {
+        commandSender.sendMessage(TextMessage.build(HoverMessages.NO_ARGS.getMessages()).color().getText());
     }
 
     private static void sendWarning(final CommandSender commandSender, final String error) {
@@ -134,70 +165,80 @@ public final class CommandUtils {
         sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &aSuccessfully reloaded the config.yml values").color().getText());
     }
 
+    private static CheckName stringToCheckName(final String s) {
+        switch (s.toLowerCase()) {
+            case "ipv4":
+                return CheckName.ADDRESSES;
+            case "domains":
+                return CheckName.DOMAINS;
+            case "words":
+                return CheckName.WORDS;
+            default:
+                return null;
+        }
+    }
+
     public static void processCommand(final DataManager dataManager, final String[] args, final CommandSender sender, Values values) {
         final int length = args.length;
         if (length == 0) {
             permissionCheck(sender, HELP, () -> noArguments(sender));
-        } else if (args[0].equalsIgnoreCase("reload") && length == 1) {
-            permissionCheck(sender, RELOAD, () -> reload(sender, values));
-        } else if (args[0].equalsIgnoreCase("sql")) {
-            if (length == 3) {
-                if (args[1].equalsIgnoreCase("search")) {
-                    permissionCheck(sender, SEARCH, () -> {
-                        final String playerName = args[2];
-                        sqlSearch(dataManager, sender, playerName);
-                    });
-                } else {
-                    permissionCheck(sender, SEARCH, () -> sendWarning(sender, "'&7" + args[1] + "&f' is an invalid argument"));
-                }
-            } else if (length == 4) {
-                if (args[1].equalsIgnoreCase("search")) {
-                    permissionCheck(sender, SEARCH, () -> {
-                        final String playerName = args[3];
-                        final String checkType = args[2].toLowerCase(Locale.getDefault());
-                        switch (checkType) {
-                            case "words":
-                                sqlSearch(dataManager, sender, playerName, CheckName.WORDS);
-                                break;
-                            case "domains":
-                                sqlSearch(dataManager, sender, playerName, CheckName.DOMAINS);
-                                break;
-                            case "ipv4":
-                                sqlSearch(dataManager, sender, playerName, CheckName.ADDRESSES);
-                                break;
-                            default:
-                                sendWarning(sender, "`&7" + checkType + "&f` is an invalid check type");
-                                break;
-                        }
-                    });
-                } else if (args[1].equalsIgnoreCase("top")) {
-                    permissionCheck(sender, TOP, () -> {
-                        if (args[2].matches("[0-9]+")) {
-                            int search = Integer.parseInt(args[2]);
-                            final String checkType = args[3];
-                            switch (checkType) {
-                                case "words":
-                                    topSearch(sender, dataManager, search, CheckName.WORDS);
-                                    break;
-                                case "domains":
-                                    topSearch(sender, dataManager, search, CheckName.DOMAINS);
-                                    break;
-                                case "ipv4":
-                                    topSearch(sender, dataManager, search, CheckName.ADDRESSES);
-                                    break;
-                                default:
-                                    sendWarning(sender, "`&7" + checkType + "&f` is an invalid check type");
-                                    break;
-                            }
+        } else {
+            if (length <= 3) {
+                if (length > 1) {
+                    final String arg1 = args[0];
+                    if (arg1.equalsIgnoreCase("search")) {
+                        if (length == 2) {
+                            permissionCheck(sender, SEARCH, () -> sqlSearch(dataManager, sender, args[1]));
                         } else {
-                            sendWarning(sender, "'&7" + args[2] + "&f' is not a number!");
+                            permissionCheck(sender, SEARCH, () -> {
+                                final CheckName checkName = stringToCheckName(args[1]); // Nullable
+                                if (checkName != null) {
+                                    sqlSearch(dataManager, sender, args[2], checkName);
+                                } else {
+                                    sendWarning(sender, args[1] + " is an invalid check type!");
+                                }
+                            });
                         }
-                    });
-                } else {
-                    sendWarning(sender, "'&7" + args[1] + "&f' is an invalid argument");
+                    } else if (arg1.equalsIgnoreCase("top")) {
+                        if (length == 3) {
+                            permissionCheck(sender, TOP, () -> {
+                                final String numberString = args[1];
+                                try {
+                                    final int intFromString = Integer.parseInt(numberString);
+                                    final CheckName checkName = stringToCheckName(args[2]);
+                                    if (checkName != null) {
+                                        topSearch(sender, dataManager, intFromString, checkName);
+                                    } else {
+                                        sendWarning(sender, args[2] + " is an invalid check type!");
+                                    }
+                                } catch (final NumberFormatException formatException) {
+                                    sendWarning(sender, "Invalid number (" + numberString + ")!");
+                                }
+                            });
+                        } else {
+                            permissionCheck(sender, TOP, () -> sendWarning(sender, "Too few arguments for top command!"));
+                        }
+                    } else if (arg1.equalsIgnoreCase("clear")) {
+                        if (length == 2) {
+                            permissionCheck(sender, CLEAR, () -> clearPlayer(args[1], sender, dataManager));
+                        } else {
+                            permissionCheck(sender, CLEAR, () -> {
+                                final CheckName checkName = stringToCheckName(args[2]);
+                                if (checkName != null) {
+                                    clearPlayer(args[1], sender, dataManager, checkName);
+                                } else {
+                                    sendWarning(sender, args[2] + " is an invalid check type!");
+                                }
+                            });
+                        }
+                    } else {
+                        permissionCheck(sender, COMMAND, () -> sendWarning(sender, "Unknown command!"));
+                    }
+                } else if (args[0].equalsIgnoreCase("reload")) {
+                    permissionCheck(sender, RELOAD, () -> reload(sender, values));
                 }
             } else {
-                sendWarning(sender, "Invalid args number");
+                permissionCheck(sender, COMMAND, () -> sendWarning(sender, "Invalid arguments number (" + length + ")!"));
             }
         }
     }
