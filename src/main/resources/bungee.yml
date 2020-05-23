@@ -1,0 +1,5 @@
+name: 'SafeChat'
+main: me.thevipershow.safechat.bungeecord.SafeChatBungeecord
+description: 'Keep your chat safe!'
+author: 'TheViperShow'
+version: @version@

@@ -1,8 +1,8 @@
 name: 'SafeChat'
 version: @version@
-main: me.thevipershow.safechat.Safechat
-authors: [TheViperShow]
-description: 'Make your chat safe.'
+main: me.thevipershow.safechat.spigot.SafeChatSpigot
+author: 'TheViperShow'
+description: 'Keep your chat safe!'
 api-version: '1.13'
 commands:
   safechat:
