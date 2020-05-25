@@ -92,6 +92,7 @@ public final class SafeChatSpigot extends JavaPlugin {
         ConfigurationSerialization.registerClass(ExecutableObject.class, "ExecutableObject");
         saveDefaultConfig();
         values = SpigotValues.getInstance(getConfig(), this);
+        values.updateAll();
         valuesValidator = ValuesValidator.getInstance(values);
         valuesValidator.validateAll();
         // from here on values are assumed as safe

@@ -57,9 +57,7 @@ public final class AddressesCheck implements ChatCheck {
             chatEvent.getPlayer().spigot().sendMessage(HoverMessageBuilder.buildHover(
                     TextMessage.build(values.getIpv4Warning().stream().map(s -> s.replaceAll("%PLAYER%", player.getName())).collect(Collectors.toList())).color(),
                     TextMessage.build(values.getIpv4Hover().stream().map(s -> s.replaceAll("%PLAYER%", player.getName())).collect(Collectors.toList())).color()
-                    //TextMessage.build(values.getArrayAndReplace(values.getIpv4Warning(), "%PLAYER%", player.getName())).color(),
-                    //TextMessage.build(values.getArrayAndReplace(values.getIpv4Hover(), "%PLAYER%", player.getName())).color()
-            ));
+                    ));
         }
     }
 }

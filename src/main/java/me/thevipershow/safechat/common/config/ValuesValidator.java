@@ -19,17 +19,18 @@
 package me.thevipershow.safechat.common.config;
 
 import java.util.Locale;
+import me.thevipershow.safechat.spigot.config.SpigotValues;
 
 public final class ValuesValidator {
 
     public static ValuesValidator instance = null;
-    private final AbstractValues values;
+    private final SpigotValues values;
 
-    private ValuesValidator(final AbstractValues values) {
+    private ValuesValidator(final SpigotValues values) {
         this.values = values;
     }
 
-    public static ValuesValidator getInstance(final AbstractValues values) {
+    public static ValuesValidator getInstance(final SpigotValues values) {
         return instance != null ? instance : (instance = new ValuesValidator(values));
     }
 
