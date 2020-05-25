@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.thevipershow.safechat.common.gui;
+package me.thevipershow.safechat.spigot.gui;
 
 import java.util.HashSet;
 import org.bukkit.inventory.Inventory;

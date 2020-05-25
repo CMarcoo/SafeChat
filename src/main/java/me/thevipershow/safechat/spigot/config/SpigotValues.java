@@ -18,7 +18,7 @@
 
 package me.thevipershow.safechat.spigot.config;
 
-import me.thevipershow.safechat.common.checks.register.CheckRegister;
+import me.thevipershow.safechat.spigot.checks.CheckRegister;
 import me.thevipershow.safechat.common.config.AbstractValues;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.java.JavaPlugin;

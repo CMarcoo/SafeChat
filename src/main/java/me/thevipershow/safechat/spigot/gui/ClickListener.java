@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.thevipershow.safechat.common.gui;
+package me.thevipershow.safechat.spigot.gui;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

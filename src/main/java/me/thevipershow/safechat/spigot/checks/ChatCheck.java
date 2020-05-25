@@ -1,6 +1,6 @@
 /*
  * SafeChat - A Minecraft plugin to keep your chat safe.
- *  Copyright (C) 2020 TheViperShow
+ * Copyright (C) 2020 TheViperShow
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package me.thevipershow.safechat.common.checks;
+package me.thevipershow.safechat.spigot.checks;
 
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 

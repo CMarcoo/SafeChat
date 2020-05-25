@@ -24,7 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.lucko.commodore.Commodore;
 import me.lucko.commodore.CommodoreProvider;
-import me.thevipershow.safechat.common.checks.register.CheckRegister;
+import me.thevipershow.safechat.spigot.checks.CheckRegister;
 import me.thevipershow.safechat.common.config.*;
 import me.thevipershow.safechat.spigot.commands.CommandUtils;
 import me.thevipershow.safechat.spigot.commands.SafechatCommand;
