@@ -74,6 +74,7 @@ This plugin uses databases in order to store player flags, the default one is **
 There also is support for other databases, such as:
 - MySQL
 - PostgreSQL
+- MariaDB
 - MongoDB (coming soon)
 
 In order to properly use any of these you'll need to configure the database access and credentials sections.
@@ -100,18 +101,24 @@ What this does is enabling a basic logging info for failed checks. Every check ,
 
 This plugin comes with in-game or console commands in order to help the users read their data.
 Every command starts with `safechat` and can be used from both console and in-game.
-
+<br> ![commands](https://i.imgur.com/Qc7zafL.png)
 * sql search
 <br> - This command allows you to search for a specific player and get his current flags.
 <br> You can use this syntax in order to retrieve a specific flag count from the player
-<br> - Usage: `/safechat sql search [ipv4|domains|words] <player>`
+<br> - Usage: `/safechat search [ipv4|domains|words] <player>`
 <br> You can user this other syntax to get all flags from the player
-<br> - Usage: `/safechat sql search <player>`
+<br> - Usage: `/safechat search <player>`
 <br> ![search](https://i.imgur.com/tYJTokW.png)
 * sql top
 <br> - This comand allows you to get a list of the user with the highest count of the specified flag
-<br> - Usage: `/safechat sql top <number> [ipv4|domains|words]`
+<br> - Usage: `/safechat top <number> [ipv4|domains|words]`
 <br> ![top](https://i.imgur.com/fGTvoID.png)
+* clear
+<br> - This commands allows you to clear a specific flag count or all the flags of a player
+<br> - Usage: `/safechat clear <player>`
+<br> - This command allows you to clear all data of a player
+<br> - Usage: `/safechat clear <player> [ipv4|domains|words]`
+<br> ![clear](https://i.imgur.com/kPPY3qe.png)
 
 # Incoming features
 
