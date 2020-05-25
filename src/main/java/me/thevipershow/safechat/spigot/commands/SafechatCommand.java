@@ -17,7 +17,7 @@
  */
 package me.thevipershow.safechat.spigot.commands;
 
-import me.thevipershow.safechat.common.config.Values;
+import me.thevipershow.safechat.common.config.AbstractValues;
 import me.thevipershow.safechat.common.sql.DataManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -27,14 +27,14 @@ public final class SafechatCommand implements CommandExecutor {
     private final DataManager dataManager;
 
     private static SafechatCommand instance = null;
-    private final Values values;
+    private final AbstractValues values;
 
-    private SafechatCommand(final DataManager dataManager,final Values values) {
+    private SafechatCommand(final DataManager dataManager,final AbstractValues values) {
         this.values = values;
         this.dataManager = dataManager;
     }
 
-    public static SafechatCommand getInstance(final DataManager dataManager,final Values values) {
+    public static SafechatCommand getInstance(final DataManager dataManager,final AbstractValues values) {
         if (instance == null) {
             instance = new SafechatCommand(dataManager, values);
         }

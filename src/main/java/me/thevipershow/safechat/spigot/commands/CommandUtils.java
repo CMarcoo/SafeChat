@@ -25,7 +25,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.EnumMap;
 import java.util.List;
 import me.lucko.commodore.Commodore;
-import me.thevipershow.safechat.common.config.Values;
+import me.thevipershow.safechat.common.config.AbstractValues;
 import me.thevipershow.safechat.common.enums.CheckName;
 import me.thevipershow.safechat.common.enums.HoverMessages;
 import me.thevipershow.safechat.common.enums.SPermissions;
@@ -160,7 +160,7 @@ public final class CommandUtils {
         }
     }
 
-    private static void reload(final CommandSender sender, final Values values) {
+    private static void reload(final CommandSender sender, final AbstractValues values) {
         values.updateAll();
         sender.sendMessage(TextMessage.build("&8[&6SafeChat&8]&7: &aSuccessfully reloaded the config.yml values").color().getText());
     }
@@ -178,7 +178,7 @@ public final class CommandUtils {
         }
     }
 
-    public static void processCommand(final DataManager dataManager, final String[] args, final CommandSender sender, Values values) {
+    public static void processCommand(final DataManager dataManager, final String[] args, final CommandSender sender, AbstractValues values) {
         final int length = args.length;
         if (length == 0) {
             permissionCheck(sender, HELP, () -> noArguments(sender));

@@ -21,7 +21,7 @@ package me.thevipershow.safechat.common.sql;
 import com.zaxxer.hikari.HikariDataSource;
 import java.util.HashMap;
 import java.util.UUID;
-import me.thevipershow.safechat.common.config.Values;
+import me.thevipershow.safechat.common.config.AbstractValues;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mariadb.jdbc.Driver;
 import static me.thevipershow.safechat.common.sql.SQLPrebuiltStatements.*;
@@ -31,7 +31,7 @@ public class MariaDBDatabaseManager implements DatabaseManager {
     private final JavaPlugin plugin;
     private final HikariDataSource source;
 
-    private MariaDBDatabaseManager(final Values values,
+    private MariaDBDatabaseManager(final AbstractValues values,
                                    final JavaPlugin plugin) {
         this.plugin = plugin;
         this.source = HikariDatabaseUtils.createDataSource(HikariDatabaseUtils.createConfig(
@@ -48,7 +48,7 @@ public class MariaDBDatabaseManager implements DatabaseManager {
         });
     }
 
-    public static MariaDBDatabaseManager getInstance(final Values values,
+    public static MariaDBDatabaseManager getInstance(final AbstractValues values,
                                                      final JavaPlugin plugin) {
         return instance != null ? instance : (new MariaDBDatabaseManager(values, plugin));
     }

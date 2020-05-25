@@ -21,7 +21,7 @@ package me.thevipershow.safechat.common.sql;
 import com.zaxxer.hikari.HikariDataSource;
 import java.util.HashMap;
 import java.util.UUID;
-import me.thevipershow.safechat.common.config.Values;
+import me.thevipershow.safechat.common.config.AbstractValues;
 import static me.thevipershow.safechat.common.sql.SQLPrebuiltStatements.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.postgresql.Driver;
@@ -31,7 +31,7 @@ public final class PostgreSQLDatabaseManager implements DatabaseManager {
     private final HikariDataSource source;
     private final JavaPlugin plugin;
 
-    private PostgreSQLDatabaseManager(final Values values,
+    private PostgreSQLDatabaseManager(final AbstractValues values,
                                       final JavaPlugin plugin) {
         this.plugin = plugin;
         this.source = HikariDatabaseUtils.createDataSource(HikariDatabaseUtils.createConfig(
@@ -48,7 +48,7 @@ public final class PostgreSQLDatabaseManager implements DatabaseManager {
         });
     }
 
-    public static PostgreSQLDatabaseManager getInstance(final Values values,
+    public static PostgreSQLDatabaseManager getInstance(final AbstractValues values,
                                                         final JavaPlugin plugin) {
         return instance != null ? instance : (instance = new PostgreSQLDatabaseManager(values, plugin));
     }

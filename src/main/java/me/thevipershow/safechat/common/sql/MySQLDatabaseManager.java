@@ -22,7 +22,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Driver;
 import java.util.HashMap;
 import java.util.UUID;
-import me.thevipershow.safechat.common.config.Values;
+import me.thevipershow.safechat.common.config.AbstractValues;
 import static me.thevipershow.safechat.common.sql.SQLPrebuiltStatements.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,7 +31,7 @@ public final class MySQLDatabaseManager implements DatabaseManager {
     private HikariDataSource source = null;
     private final JavaPlugin plugin;
 
-    private MySQLDatabaseManager(final Values values,
+    private MySQLDatabaseManager(final AbstractValues values,
                                  final JavaPlugin plugin) {
         this.plugin = plugin;
         try {
@@ -54,7 +54,7 @@ public final class MySQLDatabaseManager implements DatabaseManager {
 
     }
 
-    public static MySQLDatabaseManager getInstance(final Values values,
+    public static MySQLDatabaseManager getInstance(final AbstractValues values,
                                                    final JavaPlugin plugin) {
         return instance != null ? instance : (instance = new MySQLDatabaseManager(values, plugin));
     }

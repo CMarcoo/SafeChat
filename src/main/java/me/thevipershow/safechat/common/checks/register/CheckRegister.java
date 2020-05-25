@@ -24,7 +24,7 @@ import me.thevipershow.safechat.common.checks.AddressesCheck;
 import me.thevipershow.safechat.common.checks.ChatCheck;
 import me.thevipershow.safechat.common.checks.DomainsCheck;
 import me.thevipershow.safechat.common.checks.WordsCheck;
-import me.thevipershow.safechat.common.config.Values;
+import me.thevipershow.safechat.common.config.AbstractValues;
 import me.thevipershow.safechat.common.enums.SPermissions;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -36,9 +36,9 @@ public final class CheckRegister implements Listener {
     private static CheckRegister instance = null;
 
     private final Set<ChatCheck> chatChecks = new HashSet<>();
-    private final Values values;
+    private final AbstractValues values;
 
-    private CheckRegister(final Values values) {
+    private CheckRegister(final AbstractValues values) {
         this.values = values;
         if (instance == null) {
             update();
@@ -66,7 +66,7 @@ public final class CheckRegister implements Listener {
         return chatChecks.remove(chatCheck);
     }
 
-    public static CheckRegister getInstance(final Values values) {
+    public static CheckRegister getInstance(final AbstractValues values) {
         return instance != null ? instance : (instance = new CheckRegister(values));
     }
 

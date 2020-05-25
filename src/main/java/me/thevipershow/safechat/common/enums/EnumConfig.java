@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import me.thevipershow.safechat.common.config.ExecutableObject;
 import me.thevipershow.safechat.common.config.WordsMatcher;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.Configuration;
 
 public enum EnumConfig {
     SERIAL_UID("serialUID"),
@@ -55,28 +55,42 @@ public enum EnumConfig {
 
     private final String value;
 
-    public final String getString(final FileConfiguration configuration) {
+    public final String getString(final Configuration configuration) {
         return configuration.getString(value);
     }
 
-    public final int getInt(final FileConfiguration configuration) {
+    public final String getString(final net.md_5.bungee.config.Configuration configuration) {
+        return configuration.getString(value);
+    }
+
+    public final int getInt(final Configuration configuration) {
         return configuration.getInt(value);
     }
 
-    public final boolean getBool(final FileConfiguration configuration) {
+    public final int getInt(final net.md_5.bungee.config.Configuration configuration) {
+        return configuration.getInt(value);
+    }
+
+    public final boolean getBool(final Configuration configuration) {
         return configuration.getBoolean(value);
     }
 
-    public final List<String> getStringList(final FileConfiguration configuration) {
+    public final boolean getBool(final net.md_5.bungee.config.Configuration configuration) {
+        return configuration.getBoolean(value);
+    }
+
+    public final List<String> getStringList(final Configuration configuration) {
         return configuration.getStringList(value);
     }
 
-    public final List<WordsMatcher> getWordsMatcherList(final FileConfiguration configuration) {
+    public final List<WordsMatcher> getWordsMatcherList(final Configuration configuration) {
         return configuration.getMapList(value).stream().map(map -> WordsMatcher.deserialize((Map<String, Object>) map)).collect(Collectors.toList());
     }
 
-    public final List<ExecutableObject> getExecutableObject(final FileConfiguration configuration) {
-        return configuration.getMapList(value).stream().map(map -> ExecutableObject.deserialize((Map<String, Object>) map)).collect(Collectors.toList());
+    public final List<ExecutableObject> getExecutableObject(final Configuration configuration) {
+        return configuration.getMapList(value).stream()
+                .map(map -> ExecutableObject.deserialize((Map<String, Object>) map)).
+                        collect(Collectors.toList());
     }
 
     EnumConfig(final String value) {

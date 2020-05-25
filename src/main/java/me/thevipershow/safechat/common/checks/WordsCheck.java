@@ -20,7 +20,7 @@ package me.thevipershow.safechat.common.checks;
 
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
-import me.thevipershow.safechat.common.config.Values;
+import me.thevipershow.safechat.common.config.AbstractValues;
 import me.thevipershow.safechat.common.config.WordsMatcher;
 import me.thevipershow.safechat.common.enums.CheckName;
 import me.thevipershow.safechat.common.events.FlagThrownEvent;
@@ -32,15 +32,15 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public final class WordsCheck implements ChatCheck {
 
-    private final Values values;
+    private final AbstractValues values;
 
     private static WordsCheck instance = null;
 
-    private WordsCheck(final Values values) {
+    private WordsCheck(final AbstractValues values) {
         this.values = values;
     }
 
-    public static WordsCheck getInstance(final Values values) {
+    public static WordsCheck getInstance(final AbstractValues values) {
         return instance != null ? instance : (instance = new WordsCheck(values));
     }
 

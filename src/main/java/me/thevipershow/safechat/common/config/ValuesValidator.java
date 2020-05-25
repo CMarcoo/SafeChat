@@ -23,13 +23,13 @@ import java.util.Locale;
 public final class ValuesValidator {
 
     public static ValuesValidator instance = null;
-    private final Values values;
+    private final AbstractValues values;
 
-    private ValuesValidator(final Values values) {
+    private ValuesValidator(final AbstractValues values) {
         this.values = values;
     }
 
-    public static ValuesValidator getInstance(final Values values) {
+    public static ValuesValidator getInstance(final AbstractValues values) {
         return instance != null ? instance : (instance = new ValuesValidator(values));
     }
 

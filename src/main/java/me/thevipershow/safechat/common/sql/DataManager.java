@@ -23,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import me.thevipershow.safechat.common.config.ExecutableObject;
-import me.thevipershow.safechat.common.config.Values;
+import me.thevipershow.safechat.common.config.AbstractValues;
 import me.thevipershow.safechat.common.enums.CheckName;
 import me.thevipershow.safechat.common.enums.TicksConverter;
 import org.bukkit.Bukkit;
@@ -36,10 +36,10 @@ public final class DataManager {
     private final HashMap<UUID, PlayerData> playerData;
     private final JavaPlugin plugin;
     private final Logger logger;
-    private final Values values;
+    private final AbstractValues values;
     private boolean working = false;
 
-    private DataManager(final DatabaseManager databaseManager, final JavaPlugin plugin, final Values values) {
+    private DataManager(final DatabaseManager databaseManager, final JavaPlugin plugin, final AbstractValues values) {
         this.databaseManager = databaseManager;
         this.plugin = plugin;
         this.logger = plugin.getLogger();
@@ -51,7 +51,7 @@ public final class DataManager {
         startAutomatedSaving();
     }
 
-    public static DataManager getInstance(final DatabaseManager databaseManager, final JavaPlugin plugin, final Values values) {
+    public static DataManager getInstance(final DatabaseManager databaseManager, final JavaPlugin plugin, final AbstractValues values) {
         return instance != null ? instance : (instance = new DataManager(databaseManager, plugin, values));
     }
 

@@ -20,7 +20,7 @@ package me.thevipershow.safechat.common.checks;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import me.thevipershow.safechat.common.config.Values;
+import me.thevipershow.safechat.common.config.AbstractValues;
 import me.thevipershow.safechat.common.enums.CheckName;
 import me.thevipershow.safechat.common.events.FlagThrownEvent;
 import me.thevipershow.spigotchatlib.chat.TextMessage;
@@ -31,15 +31,15 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public final class DomainsCheck implements ChatCheck {
 
-    private final Values values;
+    private final AbstractValues values;
 
     private static DomainsCheck instance = null;
 
-    private DomainsCheck(final Values values) {
+    private DomainsCheck(final AbstractValues values) {
         this.values = values;
     }
 
-    public static DomainsCheck getInstance(final Values values) {
+    public static DomainsCheck getInstance(final AbstractValues values) {
         if (instance == null) {
             instance = new DomainsCheck(values);
         }

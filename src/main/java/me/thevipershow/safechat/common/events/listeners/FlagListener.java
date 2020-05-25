@@ -19,7 +19,7 @@
 package me.thevipershow.safechat.common.events.listeners;
 
 import java.util.logging.Logger;
-import me.thevipershow.safechat.common.config.Values;
+import me.thevipershow.safechat.common.config.AbstractValues;
 import me.thevipershow.safechat.common.events.FlagThrownEvent;
 import me.thevipershow.safechat.common.sql.DataManager;
 import org.bukkit.command.ConsoleCommandSender;
@@ -31,12 +31,12 @@ public final class FlagListener implements Listener {
     private static FlagListener instance = null;
     private final DataManager dataManager;
     private final Logger logger;
-    private final Values values;
+    private final AbstractValues values;
     private final ConsoleCommandSender consoleCommandSender;
     private final JavaPlugin plugin;
 
     private FlagListener(final Logger logger,
-                         final Values values,
+                         final AbstractValues values,
                          final DataManager manager,
                          final ConsoleCommandSender consoleCommandSender,
                          final JavaPlugin plugin) {
@@ -48,7 +48,7 @@ public final class FlagListener implements Listener {
     }
 
     public static FlagListener getInstance(final Logger logger,
-                                           final Values values,
+                                           final AbstractValues values,
                                            final DataManager manager,
                                            final ConsoleCommandSender console,
                                            final JavaPlugin plugin) {

@@ -31,7 +31,7 @@ public final class ExecutableObject implements ConfigurationSerializable {
     private final List<String> commands;
     private final int flags;
 
-    public ExecutableObject(final List<String> commands,final int flags) {
+    public ExecutableObject(final List<String> commands, final int flags) {
         this.commands = commands;
         this.flags = flags;
     }

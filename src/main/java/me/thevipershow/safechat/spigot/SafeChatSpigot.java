@@ -25,16 +25,14 @@ import java.util.logging.Logger;
 import me.lucko.commodore.Commodore;
 import me.lucko.commodore.CommodoreProvider;
 import me.thevipershow.safechat.common.checks.register.CheckRegister;
+import me.thevipershow.safechat.common.config.*;
 import me.thevipershow.safechat.spigot.commands.CommandUtils;
 import me.thevipershow.safechat.spigot.commands.SafechatCommand;
-import me.thevipershow.safechat.common.config.ExecutableObject;
-import me.thevipershow.safechat.common.config.Values;
-import me.thevipershow.safechat.common.config.ValuesValidator;
-import me.thevipershow.safechat.common.config.WordsMatcher;
 import me.thevipershow.safechat.common.enums.ANSIColor;
 import me.thevipershow.safechat.common.enums.CheckName;
 import me.thevipershow.safechat.common.events.listeners.FlagListener;
 import me.thevipershow.safechat.common.sql.*;
+import me.thevipershow.safechat.spigot.config.SpigotValues;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -44,7 +42,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class SafeChatSpigot extends JavaPlugin {
 
     private final PluginManager pluginManager = Bukkit.getPluginManager();
-    private Values values;
+    private SpigotValues values;
     private ValuesValidator valuesValidator;
     private CheckRegister checkRegister;
     private final Logger logger = getLogger();
@@ -93,7 +91,7 @@ public final class SafeChatSpigot extends JavaPlugin {
         ConfigurationSerialization.registerClass(WordsMatcher.class, "WordsMatcher");
         ConfigurationSerialization.registerClass(ExecutableObject.class, "ExecutableObject");
         saveDefaultConfig();
-        values = Values.getInstance(this);
+        values = SpigotValues.getInstance(getConfig(), this);
         valuesValidator = ValuesValidator.getInstance(values);
         valuesValidator.validateAll();
         // from here on values are assumed as safe
