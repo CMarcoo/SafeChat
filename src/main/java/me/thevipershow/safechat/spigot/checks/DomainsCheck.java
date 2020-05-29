@@ -51,7 +51,6 @@ public final class DomainsCheck implements ChatCheck {
 
         final String stringToCheck = message.replaceAll(values.getDomainWhitelist(), "");
         final Matcher matcher = Pattern.compile(values.getDomainRegex()).matcher(stringToCheck);
-
         if (matcher.find()) {
             final Player player = chatEvent.getPlayer();
             chatEvent.setCancelled(true);

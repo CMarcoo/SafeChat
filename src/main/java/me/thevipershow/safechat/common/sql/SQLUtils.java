@@ -39,19 +39,17 @@ public final class SQLUtils {
 
     public static HashMap<UUID, PlayerData> getAllData(final ConnectionProvider provider, final SQLPrebuiltStatements sql, final ExceptionHandler handler) {
         final HashMap<UUID, PlayerData> data = new HashMap<>();
-        try (final Connection connection = provider.findConnection()) {
-            try (final PreparedStatement statement = connection.prepareStatement(sql.getSQL())) {
-                try (final ResultSet resultSet = statement.executeQuery()) {
-                    while (resultSet.next()) {
-                        final UUID playerUuid = UUID.fromString(resultSet.getString(TableColumn.UUID_COLUMN.getName()));
-                        final String playerName = resultSet.getString(TableColumn.PLAYER_NAME.getName());
-                        final int flagsDomain = resultSet.getInt(TableColumn.FLAGS_DOMAINS.getName());
-                        final int flagsIpv4 = resultSet.getInt(TableColumn.FLAGS_IPV4.getName());
-                        final int flagsWords = resultSet.getInt(TableColumn.FLAGS_WORDS.getName());
-                        final PlayerData playerData = new PlayerData(flagsDomain, flagsIpv4, flagsWords, playerName);
-                        data.put(playerUuid, playerData);
-                    }
-                }
+        try (final Connection connection = provider.findConnection();
+             final PreparedStatement statement = connection.prepareStatement(sql.getSQL());
+             final ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                final UUID playerUuid = UUID.fromString(resultSet.getString(TableColumn.UUID_COLUMN.getName()));
+                final String playerName = resultSet.getString(TableColumn.PLAYER_NAME.getName());
+                final int flagsDomain = resultSet.getInt(TableColumn.FLAGS_DOMAINS.getName());
+                final int flagsIpv4 = resultSet.getInt(TableColumn.FLAGS_IPV4.getName());
+                final int flagsWords = resultSet.getInt(TableColumn.FLAGS_WORDS.getName());
+                final PlayerData playerData = new PlayerData(flagsDomain, flagsIpv4, flagsWords, playerName);
+                data.put(playerUuid, playerData);
             }
         } catch (SQLException e) {
             handler.handle(e);
@@ -64,24 +62,22 @@ public final class SQLUtils {
             final ConnectionProvider provider,
             final SQLPrebuiltStatements sql,
             final ExceptionHandler handler) {
-        try (final Connection connection = provider.findConnection()) {
-            for (Map.Entry<UUID, PlayerData> entry : data.entrySet()) {
-                try (final PreparedStatement statement = connection.prepareStatement(sql.getSQL())) {
-                    statement.setString(1, entry.getKey().toString());
-                    statement.setString(2, entry.getValue().getUsername());
-                    statement.setInt(3, entry.getValue().getDomainFlags());
-                    statement.setInt(4, entry.getValue().getIpv4Flags());
-                    statement.setInt(5, entry.getValue().getWordFlags());
-                    statement.setString(6, entry.getValue().getUsername());
-                    statement.setInt(7, entry.getValue().getDomainFlags());
-                    statement.setInt(8, entry.getValue().getIpv4Flags());
-                    statement.setInt(9, entry.getValue().getWordFlags());
-                    int success = statement.executeUpdate();
-                }
+        try (final Connection connection = provider.findConnection();
+             final PreparedStatement statement = connection.prepareStatement(sql.getSQL())) {
+            for (final Map.Entry<UUID, PlayerData> entry : data.entrySet()) {
+                statement.setString(1, entry.getKey().toString());
+                statement.setString(2, entry.getValue().getUsername());
+                statement.setInt(3, entry.getValue().getDomainFlags());
+                statement.setInt(4, entry.getValue().getIpv4Flags());
+                statement.setInt(5, entry.getValue().getWordFlags());
+                statement.setString(6, entry.getValue().getUsername());
+                statement.setInt(7, entry.getValue().getDomainFlags());
+                statement.setInt(8, entry.getValue().getIpv4Flags());
+                statement.setInt(9, entry.getValue().getWordFlags());
+                int success = statement.executeUpdate();
             }
         } catch (SQLException e) {
             handler.handle(e);
         }
-
     }
 }
