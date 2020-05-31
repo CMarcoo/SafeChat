@@ -47,32 +47,32 @@ public final class CommandUtils {
 
     public static void registerCompletions(final Commodore commodore, final JavaPlugin plugin, final ExceptionHandler handler) {
         final PluginCommand safechatCommand = plugin.getCommand("safechat");
-        final LiteralArgumentBuilder<?> safechat = LiteralArgumentBuilder.literal("safechat");
+        LiteralCommandNode<?> safechatCommandNode = LiteralArgumentBuilder.literal("safechat")
+                .then(LiteralArgumentBuilder.literal("reload")
+                        .requires(o -> commodore.getBukkitSender(o).hasPermission(RELOAD.getPermission())))
+                .then(LiteralArgumentBuilder.literal("clear")
+                        .requires(o -> commodore.getBukkitSender(o).hasPermission(CLEAR.getPermission()))
+                        .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word())
+                        .then(LiteralArgumentBuilder.literal("ipv4"))
+                        .then(LiteralArgumentBuilder.literal("domains"))
+                        .then(LiteralArgumentBuilder.literal("words"))))
+                .then(LiteralArgumentBuilder.literal("search")
+                        .requires(o -> commodore.getBukkitSender(o).hasPermission(SEARCH.getPermission()))
+                        .then(LiteralArgumentBuilder.literal("words")
+                                .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word())))
+                        .then(LiteralArgumentBuilder.literal("domains")
+                                .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word())))
+                        .then(LiteralArgumentBuilder.literal("ipv4")
+                                .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word())))
+                        .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word())))
+                .then(LiteralArgumentBuilder.literal("top").requires(o -> commodore.getBukkitSender(o).hasPermission(TOP.getPermission()))
+                        .then(RequiredArgumentBuilder.argument("count", IntegerArgumentType.integer(1, 250))
+                                .then(LiteralArgumentBuilder.literal("ipv4"))
+                                .then(LiteralArgumentBuilder.literal("words"))
+                                .then(LiteralArgumentBuilder.literal("domains"))))
+                .build();
 
-        final LiteralCommandNode<?> reload = safechat.then(LiteralArgumentBuilder.literal("reload")).build();
-        commodore.register(safechatCommand, reload, RELOAD.toPredicate());
-
-        final LiteralCommandNode<?> command = safechat.then(LiteralArgumentBuilder.literal("top"))
-                .then(RequiredArgumentBuilder.argument("count", IntegerArgumentType.integer(1, 250)))
-                .then(LiteralArgumentBuilder.literal("ipv4"))
-                .then(LiteralArgumentBuilder.literal("domains"))
-                .then(LiteralArgumentBuilder.literal("words")).then(LiteralArgumentBuilder.literal("search"))
-                .then(LiteralArgumentBuilder.literal("ipv4"))
-                .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word()))
-                .then(LiteralArgumentBuilder.literal("words"))
-                .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word()))
-                .then(LiteralArgumentBuilder.literal("domains"))
-                .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word()))
-                .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word())).build();
-
-        commodore.register(safechatCommand, command, COMMAND.toPredicate());
-               /* try {
-                    LiteralCommandNode<?> node = CommodoreFileFormat.parse(plugin.getResource("safechat.commodore"));
-                    commodore.register(safechatCommand, node, COMMAND.toPredicate());
-                } catch (IOException e) {
-                    handler.handle(e);
-                }
-                */
+        commodore.register(safechatCommand, safechatCommandNode);
     }
 
     private static void permissionCheck(final CommandSender sender, final SPermissions permission, final Action action) {

@@ -18,7 +18,6 @@
 package me.thevipershow.safechat.common.enums;
 
 public enum HoverMessages {
-
     NO_ARGS("&8[&6SafeChat&8]&7: syntax:",
             "&8Open this help page&7:",
             "&f- &7/safechat",
