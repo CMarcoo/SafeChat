@@ -18,10 +18,15 @@
 package me.thevipershow.safechat.spigot.commands;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import static com.mojang.brigadier.arguments.IntegerArgumentType.*;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import static com.mojang.brigadier.arguments.StringArgumentType.*;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import static com.mojang.brigadier.builder.LiteralArgumentBuilder.*;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import static com.mojang.brigadier.builder.RequiredArgumentBuilder.*;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import static com.mojang.brigadier.tree.LiteralCommandNode.*;
 import java.util.EnumMap;
 import java.util.List;
 import me.lucko.commodore.Commodore;
@@ -31,7 +36,6 @@ import me.thevipershow.safechat.common.enums.HoverMessages;
 import me.thevipershow.safechat.common.enums.SPermissions;
 import static me.thevipershow.safechat.common.enums.SPermissions.*;
 import me.thevipershow.safechat.common.sql.DataManager;
-import me.thevipershow.safechat.common.sql.ExceptionHandler;
 import me.thevipershow.safechat.common.sql.PlayerData;
 import me.thevipershow.spigotchatlib.chat.TextMessage;
 import me.thevipershow.spigotchatlib.chat.builders.HoverMessageBuilder;
@@ -45,31 +49,31 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public final class CommandUtils {
 
-    public static void registerCompletions(final Commodore commodore, final JavaPlugin plugin, final ExceptionHandler handler) {
+    public static void registerCompletions(final Commodore commodore, final JavaPlugin plugin) {
         final PluginCommand safechatCommand = plugin.getCommand("safechat");
-        LiteralCommandNode<?> safechatCommandNode = LiteralArgumentBuilder.literal("safechat")
-                .then(LiteralArgumentBuilder.literal("reload")
+        LiteralCommandNode<?> safechatCommandNode = literal("safechat")
+                .then(literal("reload")
                         .requires(o -> commodore.getBukkitSender(o).hasPermission(RELOAD.getPermission())))
-                .then(LiteralArgumentBuilder.literal("clear")
+                .then(literal("clear")
                         .requires(o -> commodore.getBukkitSender(o).hasPermission(CLEAR.getPermission()))
-                        .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word())
-                        .then(LiteralArgumentBuilder.literal("ipv4"))
-                        .then(LiteralArgumentBuilder.literal("domains"))
-                        .then(LiteralArgumentBuilder.literal("words"))))
-                .then(LiteralArgumentBuilder.literal("search")
+                        .then(argument("player", word())
+                                .then(literal("ipv4"))
+                                .then(literal("domains"))
+                                .then(literal("words"))))
+                .then(literal("search")
                         .requires(o -> commodore.getBukkitSender(o).hasPermission(SEARCH.getPermission()))
-                        .then(LiteralArgumentBuilder.literal("words")
-                                .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word())))
-                        .then(LiteralArgumentBuilder.literal("domains")
-                                .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word())))
-                        .then(LiteralArgumentBuilder.literal("ipv4")
-                                .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word())))
-                        .then(RequiredArgumentBuilder.argument("player", StringArgumentType.word())))
-                .then(LiteralArgumentBuilder.literal("top").requires(o -> commodore.getBukkitSender(o).hasPermission(TOP.getPermission()))
-                        .then(RequiredArgumentBuilder.argument("count", IntegerArgumentType.integer(1, 250))
-                                .then(LiteralArgumentBuilder.literal("ipv4"))
-                                .then(LiteralArgumentBuilder.literal("words"))
-                                .then(LiteralArgumentBuilder.literal("domains"))))
+                        .then(literal("words")
+                                .then(argument("player", word())))
+                        .then(literal("domains")
+                                .then(argument("player", word())))
+                        .then(literal("ipv4")
+                                .then(argument("player", word())))
+                        .then(argument("player", word())))
+                .then(literal("top").requires(o -> commodore.getBukkitSender(o).hasPermission(TOP.getPermission()))
+                        .then(argument("count", integer(1, 250))
+                                .then(literal("ipv4"))
+                                .then(literal("words"))
+                                .then(literal("domains"))))
                 .build();
 
         commodore.register(safechatCommand, safechatCommandNode);

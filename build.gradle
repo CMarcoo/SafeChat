@@ -32,7 +32,7 @@ repositories {
 }
 
 shadowJar {
-    archiveName = 'SafeChat-1.0.2.jar'
+    archiveName = 'SafeChat-1.0.3.jar'
     dependencies {
         exclude(dependency("com.mojang:brigadier:.*"))
         exclude(dependency("org.slf4j:.*"))

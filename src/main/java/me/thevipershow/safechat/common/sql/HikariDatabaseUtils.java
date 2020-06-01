@@ -70,7 +70,10 @@ public class HikariDatabaseUtils {
      * @param config   the HikariConfig that will be modified
      * @return a modified version of the HikariConfig
      */
-    public static HikariConfig getHikariConfig(final String username, final String password, final HikariConfig config, final Class<? extends Driver> driverClass) {
+    public static HikariConfig getHikariConfig(final String username,
+                                               final String password,
+                                               final HikariConfig config,
+                                               final Class<? extends Driver> driverClass) {
         config.setUsername(username);
         config.setPassword(password);
         config.setDriverClassName(driverClass.getCanonicalName());

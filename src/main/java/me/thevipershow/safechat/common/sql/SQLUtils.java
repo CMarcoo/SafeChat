@@ -37,7 +37,9 @@ public final class SQLUtils {
         }
     }
 
-    public static HashMap<UUID, PlayerData> getAllData(final ConnectionProvider provider, final SQLPrebuiltStatements sql, final ExceptionHandler handler) {
+    public static HashMap<UUID, PlayerData> getAllData(final ConnectionProvider provider,
+                                                       final SQLPrebuiltStatements sql,
+                                                       final ExceptionHandler handler) {
         final HashMap<UUID, PlayerData> data = new HashMap<>();
         try (final Connection connection = provider.findConnection();
              final PreparedStatement statement = connection.prepareStatement(sql.getSQL());
@@ -51,7 +53,7 @@ public final class SQLUtils {
                 final PlayerData playerData = new PlayerData(flagsDomain, flagsIpv4, flagsWords, playerName);
                 data.put(playerUuid, playerData);
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             handler.handle(e);
         }
         return data;

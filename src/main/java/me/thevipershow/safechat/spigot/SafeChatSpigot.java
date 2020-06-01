@@ -116,10 +116,7 @@ public final class SafeChatSpigot extends JavaPlugin {
         dataManager = DataManager.getInstance(databaseManager, this, values);
         if (CommodoreProvider.isSupported()) {
             commodore = CommodoreProvider.getCommodore(this);
-            CommandUtils.registerCompletions(commodore, this, e -> {
-                logger.log(Level.WARNING, "Something went wrong when enabling command completion");
-                e.printStackTrace();
-            });
+            CommandUtils.registerCompletions(commodore, this);
         }
         Objects.requireNonNull(safechatPluginCommand = getCommand("safechat")).setExecutor(safechatCommand = SafechatCommand.getInstance(dataManager, values));
         pluginManager.registerEvents(FlagListener.getInstance(logger, values, dataManager, getServer().getConsoleSender(), this), this);
