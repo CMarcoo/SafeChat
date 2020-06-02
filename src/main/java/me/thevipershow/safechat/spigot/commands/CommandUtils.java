@@ -17,16 +17,11 @@
  */
 package me.thevipershow.safechat.spigot.commands;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import static com.mojang.brigadier.arguments.IntegerArgumentType.*;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import static com.mojang.brigadier.arguments.StringArgumentType.*;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import static com.mojang.brigadier.builder.LiteralArgumentBuilder.*;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import static com.mojang.brigadier.builder.RequiredArgumentBuilder.*;
+import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static com.mojang.brigadier.arguments.StringArgumentType.word;
+import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
+import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import static com.mojang.brigadier.tree.LiteralCommandNode.*;
 import java.util.EnumMap;
 import java.util.List;
 import me.lucko.commodore.Commodore;

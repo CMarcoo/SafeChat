@@ -106,7 +106,7 @@ public final class SafeChatSpigot extends JavaPlugin {
             case "MYSQL":
                 databaseManager = MySQLDatabaseManager.getInstance(values, this);
             case "MARIADB":
-                databaseManager = MariaDBDatabaseManager.getInstance(values, this);
+                databaseManager = MySQLDatabaseManager.getInstance(values, this);
         }
         sendInfo();
     }
