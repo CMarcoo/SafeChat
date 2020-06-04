@@ -65,6 +65,8 @@ public final class DataManager {
                     if (waited >= 1500) {
                         logger.warning("Database is not responding correctly, closing connections.");
                         plugin.getServer().getScheduler().cancelTasks(plugin);
+                        logger.warning("The plugin will disable itself to prevent further issues.");
+                        plugin.onDisable();
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();

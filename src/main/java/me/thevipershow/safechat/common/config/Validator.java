@@ -18,38 +18,46 @@
 
 package me.thevipershow.safechat.common.config;
 
-import me.thevipershow.safechat.common.sql.ExceptionHandler;
-import org.yaml.snakeyaml.error.YAMLException;
+import me.thevipershow.safechat.spigot.config.SpigotValues;
 
 public final class Validator {
 
-    @SafeVarargs
-    public static <T> boolean validate(final T subject,final ExceptionHandler handler,final T... validOptions) {
-        for (T t : validOptions) {
-            if (t.equals(subject)) {
+    public static boolean equalsToAny(String s ,String... strings) {
+        for (String string : strings)
+            if (s.equalsIgnoreCase(string))
                 return true;
-            }
-        }
-        final YAMLException e = new YAMLException("The value was invalid »" + subject.toString());
-        handler.handle(e);
-        throw e;
+
+        return false;
     }
 
-    public static <N extends Number & Comparable<N>> boolean validateInRange(final N number,final ExceptionHandler handler,final NumberRange<N> range) {
-        if (range.isInRange(number)) {
-            return true;
-        }
-        final YAMLException e = new YAMLException("The number is outside valid range [" + range.lowerBound + "-" + range.upperBound + "]");
-        handler.handle(e);
-        throw e;
-    }
+    public static void validateConfig(SpigotValues values) throws RuntimeException {
+        if (values.address == null)
+            throw new RuntimeException("Address in config.yml is invalid!");
+        if (values.database == null)
+            throw new RuntimeException("Database in config.yml is invalid!");
+        if (!equalsToAny(values.dbType, "sqlite","mariadb","postgresql","mysql"))
+            throw new RuntimeException("Database type in config.yml is invalid!");
+        if (values.domainRegex == null)
+            throw new RuntimeException("Domains regex in config.yml is invalid!");
+        if (values.domainWhitelist == null)
+            throw new RuntimeException("Domains whitelist in config.yml is invalid");
+        if (values.username == null)
+            throw new RuntimeException("Username in config.yml is invalid");
+        if (values.password == null)
+            throw new RuntimeException("Password in config.yml is invalid");
+        if (values.ipv4Regex == null)
+            throw new RuntimeException("IPv4 RegEx in config.yml is invalid");
+        if (values.ipv4Whitelist == null)
+            throw new RuntimeException("IPv4 Whitelist in config.yml is invalid");
 
-    public static boolean validateNotNull(final Object o,final ExceptionHandler handler) {
-        if (o != null) {
-            return true;
-        }
-        final YAMLException e = new YAMLException("List inside the config.yml can't be null!");
-        handler.handle(e);
-        throw e;
+        if (values.domainWarning.isEmpty() && !values.domainHover.isEmpty())
+            throw new RuntimeException("Domain hover can't be enabled while message is disabled!");
+        if (values.ipv4Whitelist.isEmpty() && !values.ipv4Hover.isEmpty())
+            throw new RuntimeException("IPv4 hover can't be enabled while message is disabled!");
+        if (values.wordsWarning.isEmpty() && !values.wordsHover.isEmpty())
+            throw new RuntimeException("Words hover can't be enabled while message is disabled");
+
+        if (values.port < 1 || values.port > 65535)
+            throw new RuntimeException("Port value must be in range 1-65535");
     }
 }

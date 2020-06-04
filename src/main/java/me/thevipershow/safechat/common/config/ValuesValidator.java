@@ -18,31 +18,30 @@
 
 package me.thevipershow.safechat.common.config;
 
-import java.util.Locale;
 import me.thevipershow.safechat.spigot.config.SpigotValues;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public final class ValuesValidator {
 
     public static ValuesValidator instance = null;
     private final SpigotValues values;
+    private final JavaPlugin plugin;
 
-    private ValuesValidator(final SpigotValues values) {
+    private ValuesValidator(final SpigotValues values, JavaPlugin plugin) {
         this.values = values;
+        this.plugin = plugin;
     }
 
-    public static ValuesValidator getInstance(final SpigotValues values) {
-        return instance != null ? instance : (instance = new ValuesValidator(values));
+    public static ValuesValidator getInstance(final SpigotValues values, final JavaPlugin plugin) {
+        return instance != null ? instance : (instance = new ValuesValidator(values, plugin));
     }
 
-    public boolean validateAll() {
-        boolean databaseType = Validator.validate(values.getDbType().toUpperCase(Locale.getDefault()), Throwable::printStackTrace, "SQLITE", "POSTGRESQL", "MYSQL", "MARIADB");
-        boolean autoSaveCheck = Validator.validateInRange(values.getAutoSave(), Throwable::printStackTrace, NumberRange.process(1, Integer.MAX_VALUE));
-        boolean portCheck = Validator.validateInRange(values.getPort(), Throwable::printStackTrace, NumberRange.process(0, 65535));
-        boolean nullCheckBlacklistWords = Validator.validateNotNull(values.getBlacklistWords(), Throwable::printStackTrace);
-        boolean nullCheckDomainHover = Validator.validateNotNull(values.getDomainHover(), Throwable::printStackTrace);
-        boolean nullCheckDomainWarning = Validator.validateNotNull(values.getDomainWarning(), Throwable::printStackTrace);
-        boolean nullCheckWordsWarning = Validator.validateNotNull(values.getWordsWarning(), Throwable::printStackTrace);
-        boolean nullCheckWordsHover = Validator.validateNotNull(values.getWordsHover(), Throwable::printStackTrace);
-        return databaseType && autoSaveCheck && portCheck && nullCheckBlacklistWords && nullCheckDomainHover && nullCheckDomainWarning && nullCheckWordsHover && nullCheckWordsWarning;
+    public void validateAll() {
+        try {
+            Validator.validateConfig(values);
+        } catch (RuntimeException e) {
+            plugin.getLogger().warning("Something is wrong in the config.yml , you should correct it.");
+            plugin.getLogger().warning("Issue: " + e.getMessage());
+        }
     }
 }
