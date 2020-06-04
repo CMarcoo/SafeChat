@@ -1,6 +1,6 @@
 /*
  * SafeChat - A Minecraft plugin to keep your chat safe.
- *  Copyright (C) 2020 TheViperShow
+ * Copyright (C) 2020 TheViperShow
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -16,45 +16,38 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.thevipershow.safechat.common.config;
+package me.thevipershow.safechat.common.configuration.objects;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
+import org.jetbrains.annotations.NotNull;
 
-@SerializableAs("ExecutableObject")
-public final class ExecutableObject implements ConfigurationSerializable {
-    private final long serialVersionUID = 1L;
-    private final List<String> commands;
-    private final int flags;
-
-    public ExecutableObject(final List<String> commands, final int flags) {
-        this.commands = commands;
-        this.flags = flags;
-    }
-
-    public List<String> getCommands() {
-        return commands;
-    }
-
-    public int getFlags() {
-        return flags;
-    }
+@SerializableAs("WordsMatcher")
+@RequiredArgsConstructor
+@Getter
+public final class WordsMatcher implements ConfigurationSerializable, Cloneable {
+    private final @NotNull String pattern;
+    private final @NotNull String replace;
 
     @Override
+    @NotNull
     public final Map<String, Object> serialize() {
         final Map<String, Object> result = new HashMap<>();
-        result.put("commands", Objects.requireNonNull(commands));
-        result.put("flags", flags);
+        result.put("pattern", Objects.requireNonNull(pattern));
+        result.put("replace", Objects.requireNonNull(replace));
         return result;
     }
 
-    public static ExecutableObject deserialize(final Map<String, Object> objectMap) {
-        final List<String> commands = (List<String>) objectMap.get("commands");
-        final int flags = (int) objectMap.get("flags");
-        return new ExecutableObject(commands, flags);
+    @NotNull
+    public static WordsMatcher deserialize(Map<String, Object> map) {
+        return new WordsMatcher(
+                (String) map.get("pattern"),
+                (String) map.get("replace")
+        );
     }
 }

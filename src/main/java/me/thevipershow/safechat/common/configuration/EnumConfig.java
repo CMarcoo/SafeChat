@@ -1,6 +1,6 @@
 /*
  * SafeChat - A Minecraft plugin to keep your chat safe.
- *  Copyright (C) 2020 TheViperShow
+ * Copyright (C) 2020 TheViperShow
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -15,13 +15,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package me.thevipershow.safechat.common.enums;
+
+package me.thevipershow.safechat.common.configuration;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import me.thevipershow.safechat.common.config.ExecutableObject;
-import me.thevipershow.safechat.common.config.WordsMatcher;
+import me.thevipershow.safechat.common.configuration.objects.WordsMatcher;
 import org.bukkit.configuration.Configuration;
 
 public enum EnumConfig {
@@ -55,46 +55,37 @@ public enum EnumConfig {
 
     private final String value;
 
-    public final String getString(final Configuration configuration) {
+    public String getString(Configuration configuration) {
         return configuration.getString(value);
     }
 
-    public final String getString(final net.md_5.bungee.config.Configuration configuration) {
-        return configuration.getString(value);
-    }
-
-    public final int getInt(final Configuration configuration) {
+    public int getInt(Configuration configuration) {
         return configuration.getInt(value);
     }
 
-    public final int getInt(final net.md_5.bungee.config.Configuration configuration) {
-        return configuration.getInt(value);
-    }
-
-    public final boolean getBool(final Configuration configuration) {
+    public boolean getBool(Configuration configuration) {
         return configuration.getBoolean(value);
     }
 
-    public final boolean getBool(final net.md_5.bungee.config.Configuration configuration) {
-        return configuration.getBoolean(value);
-    }
-
-    public final List<String> getStringList(final Configuration configuration) {
+    public List<String> getStringList(Configuration configuration) {
         return configuration.getStringList(value);
     }
 
-    public final List<WordsMatcher> getWordsMatcherList(final Configuration configuration) {
-        return configuration.getMapList(value).stream().map(map -> WordsMatcher.deserialize((Map<String, Object>) map)).collect(Collectors.toList());
+    public List<?> get(Configuration configuration) {
+        return configuration.getList(value);
     }
 
-    public final List<ExecutableObject> getExecutableObject(final Configuration configuration) {
-        return configuration.getMapList(value).stream()
-                .map(map -> ExecutableObject.deserialize((Map<String, Object>) map)).
-                        collect(Collectors.toList());
-    }
+//    public final List<WordsMatcher> getWordsMatcherList(final Configuration configuration) {
+//        return configuration.getMapList(value).stream().map(map -> WordsMatcher.deserialize((Map<String, Object>) map)).collect(Collectors.toList());
+//    }
+//
+//    public final List<ExecutableObject> getExecutableObject(final Configuration configuration) {
+//        return configuration.getMapList(value).stream()
+//                .map(map -> ExecutableObject.deserialize((Map<String, Object>) map)).
+//                        collect(Collectors.toList());
+//    }
 
     EnumConfig(final String value) {
         this.value = value;
     }
 }
-

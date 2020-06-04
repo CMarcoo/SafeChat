@@ -16,31 +16,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.thevipershow.safechat.spigot.config;
+package me.thevipershow.safechat.common.configuration;
 
-import me.thevipershow.safechat.spigot.checks.CheckRegister;
-import me.thevipershow.safechat.common.config.AbstractValues;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class SpigotValues extends AbstractValues {
+public final class ValuesImplementation extends AbstractValues {
     private final JavaPlugin plugin;
 
-    private SpigotValues(final Configuration configuration, final JavaPlugin plugin) {
-        super(configuration);
-        this.plugin = plugin;
+    private static ValuesImplementation instance;
+
+    public static ValuesImplementation getInstance(Configuration configuration, JavaPlugin plugin) {
+        return instance != null ? instance : (instance = new ValuesImplementation(configuration, plugin));
     }
 
-    private static SpigotValues instance = null;
-
-    public static SpigotValues getInstance(final Configuration configuration, final JavaPlugin plugin) {
-        return instance == null ? (instance = new SpigotValues(configuration, plugin)) : instance;
+    public ValuesImplementation(Configuration configuration, JavaPlugin plugin) {
+        super(configuration);
+        this.plugin = plugin;
     }
 
     @Override
     public void updateAll() {
         plugin.reloadConfig();
         super.updateConfigValues();
-        CheckRegister.getInstance(this).update();
     }
 }
