@@ -93,7 +93,7 @@ public final class SafeChatSpigot extends JavaPlugin {
         saveDefaultConfig();
         values = SpigotValues.getInstance(getConfig(), this);
         values.updateAll();
-        valuesValidator = ValuesValidator.getInstance(values);
+        valuesValidator = ValuesValidator.getInstance(values, this);
         valuesValidator.validateAll();
         // from here on values are assumed as safe
         switch (values.getDbType().toUpperCase(Locale.getDefault())) {
