@@ -122,7 +122,8 @@ safechat:
     # you can set the matcher using a RegEx , and the replace string, which will
     # be replaced into matched zone if found in the messages.
     # "What if I don't want to replace the messages?":
-    # You can set the 'replace' parameter to "NONE"
+    # You can set the 'replace' parameter to "CANCEL_EVENT" to cancel the message instead of
+    # sending a modified one.
     blacklisted:
       - pattern: "(?i)f(?=u(?=c(?=k)))"
         replace: 'd'

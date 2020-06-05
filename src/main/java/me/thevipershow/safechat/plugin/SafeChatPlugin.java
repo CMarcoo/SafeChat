@@ -18,6 +18,8 @@
 
 package me.thevipershow.safechat.plugin;
 
+import me.thevipershow.safechat.common.checks.CheckManager;
+import me.thevipershow.safechat.common.configuration.AbstractValues;
 import me.thevipershow.safechat.common.configuration.ValuesImplementation;
 import me.thevipershow.safechat.common.configuration.objects.ExecutableObject;
 import me.thevipershow.safechat.common.configuration.objects.WordsMatcher;
@@ -35,10 +37,22 @@ public final class SafeChatPlugin extends JavaPlugin {
         ConfigurationSerialization.registerClass(WordsMatcher.class);
     }
 
+    /**
+     * This methods creates a new instance of the {@link AbstractValues} class
+     * It also checks for eventual issues in the configuration and prints an error
+     * if something has gone wrong
+     *
+     * @return a new AbstractValues object.
+     */
     @NotNull
-    private ValuesImplementation getAndUpdate() {
-        ValuesImplementation values = ValuesImplementation.getInstance(getConfig(), this);
-        values.updateAll();
+    private AbstractValues getAndUpdate() {
+        AbstractValues values = ValuesImplementation.getInstance(getConfig(), this);
+        try {
+            values.updateAll();
+        } catch (IllegalArgumentException e) {
+            getLogger().warning("Something has went wrong while updating the config.yml");
+            e.printStackTrace();
+        }
         return values;
     }
 
@@ -46,6 +60,7 @@ public final class SafeChatPlugin extends JavaPlugin {
     public final void onEnable() { // startup logic:
         registerConfigurationSerializer();
         saveDefaultConfig();
-        ValuesImplementation values = getAndUpdate();
+        AbstractValues values = getAndUpdate();
+        CheckManager checkManager = CheckManager.getInstance(this, values);
     }
 }

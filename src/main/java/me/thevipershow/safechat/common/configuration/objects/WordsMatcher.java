@@ -34,8 +34,8 @@ public final class WordsMatcher implements ConfigurationSerializable, Cloneable 
     private final @NotNull String pattern;
     private final @NotNull String replace;
 
-    @Override
     @NotNull
+    @Override
     public final Map<String, Object> serialize() {
         final Map<String, Object> result = new HashMap<>();
         result.put("pattern", Objects.requireNonNull(pattern));

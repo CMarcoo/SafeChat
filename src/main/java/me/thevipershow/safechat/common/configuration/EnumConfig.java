@@ -21,6 +21,7 @@ package me.thevipershow.safechat.common.configuration;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import me.thevipershow.safechat.common.configuration.objects.ExecutableObject;
 import me.thevipershow.safechat.common.configuration.objects.WordsMatcher;
 import org.bukkit.configuration.Configuration;
 
@@ -71,19 +72,21 @@ public enum EnumConfig {
         return configuration.getStringList(value);
     }
 
-    public List<?> get(Configuration configuration) {
-        return configuration.getList(value);
+    public Object get(Configuration configuration) {
+        return configuration.get(value);
     }
 
-//    public final List<WordsMatcher> getWordsMatcherList(final Configuration configuration) {
-//        return configuration.getMapList(value).stream().map(map -> WordsMatcher.deserialize((Map<String, Object>) map)).collect(Collectors.toList());
-//    }
-//
-//    public final List<ExecutableObject> getExecutableObject(final Configuration configuration) {
-//        return configuration.getMapList(value).stream()
-//                .map(map -> ExecutableObject.deserialize((Map<String, Object>) map)).
-//                        collect(Collectors.toList());
-//    }
+    public final List<WordsMatcher> getWordsMatcherList(final Configuration configuration) {
+        return configuration.getMapList(value).parallelStream()
+                .map(map -> WordsMatcher.deserialize((Map<String, Object>) map))
+                .collect(Collectors.toList());
+    }
+
+    public final List<ExecutableObject> getExecutableObject(final Configuration configuration) {
+        return configuration.getMapList(value).parallelStream()
+                .map(map -> ExecutableObject.deserialize((Map<String, Object>) map))
+                .collect(Collectors.toList());
+    }
 
     EnumConfig(final String value) {
         this.value = value;

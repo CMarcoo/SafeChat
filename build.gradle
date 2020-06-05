@@ -51,15 +51,17 @@ dependencies {
     }                                                                                                //
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // Minecraft: here below you can find all the imported dependencies regarding minecraft          //
-    // By Aikar: [IDB, ACF]                                                                          //
-    // By kashike: [Text]                                                                            //
+    // By Aikar: [IDB, ACF, TaskChain]                                                               //
+    // By kashike: [Text, Text-Adapter-Bukkit]                                                       //
     compile 'co.aikar:acf-paper:0.5.0-SNAPSHOT'                                                      //
     compile 'net.kyori:text-api:3.0.3'                                                               //
-    compile "co.aikar:idb-core:1.0.0-SNAPSHOT"                                                       //
+    compile 'co.aikar:idb-core:1.0.0-SNAPSHOT'                                                       //
+    compile('net.kyori:text-adapter-bukkit:3.0.3') {                                                 //
+        exclude module: 'gson'                                                            //
+    }                                                                                                //
     compileOnly group: 'com.destroystokyo.paper', name: 'paper-api', version: '1.15.2-R0.1-SNAPSHOT' //
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // Utilities: Lombok                                                                             //
-    //providedCompile group: 'org.projectlombok', name: 'lombok', version: '1.18.12'                 //
     compileOnly group: 'org.jetbrains', name: 'annotations', version: '19.0.0'                       //
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 }

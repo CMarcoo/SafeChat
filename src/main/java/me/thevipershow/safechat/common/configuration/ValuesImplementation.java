@@ -26,7 +26,7 @@ public final class ValuesImplementation extends AbstractValues {
 
     private static ValuesImplementation instance;
 
-    public static ValuesImplementation getInstance(Configuration configuration, JavaPlugin plugin) {
+    public static synchronized ValuesImplementation getInstance(Configuration configuration, JavaPlugin plugin) {
         return instance != null ? instance : (instance = new ValuesImplementation(configuration, plugin));
     }
 
@@ -36,7 +36,7 @@ public final class ValuesImplementation extends AbstractValues {
     }
 
     @Override
-    public void updateAll() {
+    public void updateAll() throws IllegalArgumentException {
         plugin.reloadConfig();
         super.updateConfigValues();
     }

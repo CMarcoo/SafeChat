@@ -19,20 +19,27 @@
 package me.thevipershow.safechat.common.configuration;
 
 import java.util.List;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import me.thevipershow.safechat.common.configuration.objects.ExecutableObject;
 import me.thevipershow.safechat.common.configuration.objects.WordsMatcher;
+import me.thevipershow.safechat.common.configuration.validator.ValuesValidator;
+import net.kyori.text.TextComponent;
+import net.kyori.text.event.HoverEvent;
+import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.configuration.Configuration;
 
 @Getter
 @RequiredArgsConstructor
 public abstract class AbstractValues {
-    private final @Getter(AccessLevel.PROTECTED) Configuration configuration;
+    private final @Getter(AccessLevel.PROTECTED)
+    Configuration configuration;
 
     /**
      * Update all the config values
      */
-    protected void updateConfigValues() {
+    protected void updateConfigValues() throws IllegalArgumentException {
         enableConsoleLogging = EnumConfig.ENABLE_CONSOLE_LOGGING.getBool(configuration);
         serialUID = EnumConfig.SERIAL_UID.getInt(configuration);
         dbType = EnumConfig.DB_TYPE.getString(configuration);
@@ -46,23 +53,43 @@ public abstract class AbstractValues {
         domainEnabled = EnumConfig.DOMAIN_ENABLED.getBool(configuration);
         domainRegex = EnumConfig.DOMAIN_REGEX.getString(configuration);
         domainWhitelist = EnumConfig.DOMAIN_WHITELIST.getString(configuration);
-        domainWarning = EnumConfig.DOMAIN_WARNING.getStringList(configuration);
-        domainHover = EnumConfig.DOMAIN_HOVER.getStringList(configuration);
-        domainExecutables = (List<ExecutableObject>) EnumConfig.DOMAIN_EXECUTABLES.get(configuration);
+        domainExecutables = EnumConfig.DOMAIN_EXECUTABLES.getExecutableObject(configuration);
         ipv4Enabled = EnumConfig.IPV4_ENABLED.getBool(configuration);
         ipv4Regex = EnumConfig.IPV4_REGEX.getString(configuration);
         ipv4Whitelist = EnumConfig.IPV4_WHITELIST.getString(configuration);
-        ipv4Warning = EnumConfig.IPV4_WARNING.getStringList(configuration);
-        ipv4Hover = EnumConfig.IPV4_HOVER.getStringList(configuration);
-        ipv4Executables = (List<ExecutableObject>) EnumConfig.IPV4_EXECUTABLES.get(configuration);
+        ipv4Executables = EnumConfig.IPV4_EXECUTABLES.getExecutableObject(configuration);
         wordsEnabled = EnumConfig.WORDS_ENABLED.getBool(configuration);
-        blacklistWords = (List<WordsMatcher>) EnumConfig.WORDS_BLACKLIST.get(configuration);
-        wordsWarning = EnumConfig.WORDS_WARNING.getStringList(configuration);
-        wordsHover = EnumConfig.WORDS_HOVER.getStringList(configuration);
-        wordsExecutables = (List<ExecutableObject>) EnumConfig.WORDS_EXECUTABLES.get(configuration);
+        blacklistWords = EnumConfig.WORDS_BLACKLIST.getWordsMatcherList(configuration);
+        wordsExecutables = EnumConfig.WORDS_EXECUTABLES.getExecutableObject(configuration);
+
+        domainsComponent = buildKashikeComponent(EnumConfig.DOMAIN_WARNING.getStringList(configuration), EnumConfig.DOMAIN_HOVER.getStringList(configuration));
+        ipv4Component = domainsComponent = buildKashikeComponent(EnumConfig.IPV4_WARNING.getStringList(configuration), EnumConfig.IPV4_HOVER.getStringList(configuration));
+        wordsComponent = domainsComponent = buildKashikeComponent(EnumConfig.WORDS_WARNING.getStringList(configuration), EnumConfig.WORDS_HOVER.getStringList(configuration));
+
+        verifyAll();
     }
 
-    public abstract void updateAll();
+    private TextComponent buildKashikeComponent(List<String> strings, List<String> hoverString) {
+        if (strings.isEmpty())
+            return TextComponent.empty();
+        TextComponent.Builder builder = TextComponent.builder();
+        TextComponent message = LegacyComponentSerializer.INSTANCE.deserialize(String.join("\n", strings), '&');
+        if (!hoverString.isEmpty())
+            message.hoverEvent(HoverEvent.showText(LegacyComponentSerializer.INSTANCE.deserialize(String.join("\n", hoverString), '&')));
+        builder.append(message);
+        return builder.build();
+    }
+
+    public void verifyAll() throws IllegalArgumentException {
+        ValuesValidator.validateDatabasePort(this);
+        ValuesValidator.validateDatabaseType(this);
+    }
+
+    public abstract void updateAll() throws IllegalArgumentException;
+
+    TextComponent domainsComponent;
+    TextComponent ipv4Component;
+    TextComponent wordsComponent;
 
     protected int serialUID;
     protected boolean enableConsoleLogging;
@@ -77,18 +104,12 @@ public abstract class AbstractValues {
     protected boolean domainEnabled;
     protected String domainRegex;
     protected String domainWhitelist;
-    protected List<String> domainWarning;
-    protected List<String> domainHover;
     protected List<ExecutableObject> domainExecutables;
     protected boolean ipv4Enabled;
     protected String ipv4Regex;
     protected String ipv4Whitelist;
-    protected List<String> ipv4Warning;
-    protected List<String> ipv4Hover;
     protected List<ExecutableObject> ipv4Executables;
     protected boolean wordsEnabled;
     protected List<WordsMatcher> blacklistWords;
-    protected List<String> wordsWarning;
-    protected List<String> wordsHover;
     protected List<ExecutableObject> wordsExecutables;
 }
