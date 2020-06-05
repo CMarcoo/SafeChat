@@ -29,7 +29,6 @@ import me.thevipershow.safechat.common.configuration.AbstractValues;
 import net.kyori.text.adapter.bukkit.TextAdapter;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
-import sun.awt.UNIXToolkit;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @CommandAlias("safechat")

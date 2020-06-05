@@ -19,7 +19,9 @@
 package me.thevipershow.safechat.plugin;
 
 import co.aikar.commands.PaperCommandManager;
+import co.aikar.idb.*;
 import com.google.common.collect.ImmutableList;
+import java.util.Locale;
 import me.thevipershow.safechat.common.commands.SafeChatCommand;
 import me.thevipershow.safechat.common.checks.CheckManager;
 import me.thevipershow.safechat.common.configuration.AbstractValues;
@@ -29,6 +31,7 @@ import me.thevipershow.safechat.common.configuration.objects.WordsMatcher;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.postgresql.Driver;
 
 public final class SafeChatPlugin extends JavaPlugin {
 
@@ -59,6 +62,25 @@ public final class SafeChatPlugin extends JavaPlugin {
         return values;
     }
 
+    private DatabaseOptions createDatabaseOptions(AbstractValues values) {
+        DatabaseOptions.DatabaseOptionsBuilder databaseOptions = DatabaseOptions.builder();
+        switch (values.getDbType().toLowerCase(Locale.ROOT)) {
+            case "sqlite":
+                return databaseOptions.sqlite("safechat_data.sqlite")
+                        .useOptimizations(true)
+                        .logger(getLogger())
+                        .build();
+            case "mysql":
+                return databaseOptions.mysql(values.getUsername(), values.getPassword(), values.getDatabase(), values.getAddress() + ":" + values.getPort())
+                        .useOptimizations(true)
+                        .logger(getLogger())
+                        .build();
+            default:
+                onDisable(); // the plugin yeets itself if an unknown database type has been chosen.
+                throw new IllegalArgumentException("Unknown or invalid database type, disabling plugin.");
+        }
+    }
+
     @Override
     public final void onEnable() { // startup logic:
         registerConfigurationSerializer();
@@ -68,5 +90,8 @@ public final class SafeChatPlugin extends JavaPlugin {
         PaperCommandManager commandManager = new PaperCommandManager(this);
         commandManager.getCommandCompletions().registerStaticCompletion("checks", ImmutableList.of("domains", "words", "ipv4"));
         commandManager.registerCommand(SafeChatCommand.getInstance(values));
+        DatabaseOptions databaseOptions = createDatabaseOptions(values);
+        Database database = PooledDatabaseOptions.builder().options(databaseOptions).createHikariDatabase();
+        DB.setGlobalDatabase(database);
     }
 }
