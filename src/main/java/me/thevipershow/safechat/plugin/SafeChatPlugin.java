@@ -18,6 +18,9 @@
 
 package me.thevipershow.safechat.plugin;
 
+import co.aikar.commands.PaperCommandManager;
+import com.google.common.collect.ImmutableList;
+import me.thevipershow.safechat.common.commands.SafeChatCommand;
 import me.thevipershow.safechat.common.checks.CheckManager;
 import me.thevipershow.safechat.common.configuration.AbstractValues;
 import me.thevipershow.safechat.common.configuration.ValuesImplementation;
@@ -62,5 +65,8 @@ public final class SafeChatPlugin extends JavaPlugin {
         saveDefaultConfig();
         AbstractValues values = getAndUpdate();
         CheckManager checkManager = CheckManager.getInstance(this, values);
+        PaperCommandManager commandManager = new PaperCommandManager(this);
+        commandManager.getCommandCompletions().registerStaticCompletion("checks", ImmutableList.of("domains", "words", "ipv4"));
+        commandManager.registerCommand(SafeChatCommand.getInstance(values));
     }
 }

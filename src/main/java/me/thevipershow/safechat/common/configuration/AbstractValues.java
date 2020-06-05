@@ -29,6 +29,7 @@ import net.kyori.text.TextComponent;
 import net.kyori.text.event.HoverEvent;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.configuration.Configuration;
+import org.jetbrains.annotations.NotNull;
 
 @Getter
 @RequiredArgsConstructor
@@ -61,7 +62,6 @@ public abstract class AbstractValues {
         wordsEnabled = EnumConfig.WORDS_ENABLED.getBool(configuration);
         blacklistWords = EnumConfig.WORDS_BLACKLIST.getWordsMatcherList(configuration);
         wordsExecutables = EnumConfig.WORDS_EXECUTABLES.getExecutableObject(configuration);
-
         domainsComponent = buildKashikeComponent(EnumConfig.DOMAIN_WARNING.getStringList(configuration), EnumConfig.DOMAIN_HOVER.getStringList(configuration));
         ipv4Component = domainsComponent = buildKashikeComponent(EnumConfig.IPV4_WARNING.getStringList(configuration), EnumConfig.IPV4_HOVER.getStringList(configuration));
         wordsComponent = domainsComponent = buildKashikeComponent(EnumConfig.WORDS_WARNING.getStringList(configuration), EnumConfig.WORDS_HOVER.getStringList(configuration));
@@ -69,14 +69,13 @@ public abstract class AbstractValues {
         verifyAll();
     }
 
-    private TextComponent buildKashikeComponent(List<String> strings, List<String> hoverString) {
+    @NotNull
+    protected static TextComponent buildKashikeComponent(@NotNull List<String> strings, @NotNull List<String> hoverString) {
         if (strings.isEmpty())
             return TextComponent.empty();
-        TextComponent.Builder builder = TextComponent.builder();
-        TextComponent message = LegacyComponentSerializer.INSTANCE.deserialize(String.join("\n", strings), '&');
+        TextComponent.Builder builder = TextComponent.builder().append(LegacyComponentSerializer.INSTANCE.deserialize(String.join("\n", strings), '&'));
         if (!hoverString.isEmpty())
-            message.hoverEvent(HoverEvent.showText(LegacyComponentSerializer.INSTANCE.deserialize(String.join("\n", hoverString), '&')));
-        builder.append(message);
+            builder.hoverEvent(HoverEvent.showText(LegacyComponentSerializer.INSTANCE.deserialize(String.join("\n", hoverString), '&')));
         return builder.build();
     }
 
@@ -87,9 +86,9 @@ public abstract class AbstractValues {
 
     public abstract void updateAll() throws IllegalArgumentException;
 
-    TextComponent domainsComponent;
-    TextComponent ipv4Component;
-    TextComponent wordsComponent;
+    protected TextComponent domainsComponent;
+    protected TextComponent ipv4Component;
+    protected TextComponent wordsComponent;
 
     protected int serialUID;
     protected boolean enableConsoleLogging;

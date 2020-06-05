@@ -46,7 +46,7 @@ public final class CheckManager implements Listener {
 
     public static void sendIfNotEmptyComponent(TextComponent component, Player player) {
         if (!component.isEmpty())
-            TextAdapter.sendComponent(player, component);
+            TextAdapter.sendMessage(player, component);
     }
 
     @EventHandler(ignoreCancelled = true)

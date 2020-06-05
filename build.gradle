@@ -34,7 +34,7 @@ shadowJar {
     relocate 'org.postgresql', 'me.thevipershow.safechat.libs.org.postgresql'                        //
     relocate 'co.aikar.commands', 'me.thevipershow.safechat.libs.acf'                                //
     relocate 'co.aikar.locales', 'me.thevipershow.safechat.libs.locales'                             //
-    relocate 'net.kyori', 'me.thevipershow.safechat.libs.net.kyori'                                  //
+   // relocate 'net.kyori', 'me.thevipershow.safechat.libs.net.kyori'                                  //
     relocate 'co.aikar.idb', 'me.thevipershow.safechat.libs.idb'                                     //
     relocate 'org.checkerframework', 'me.thevipershow.safechat.libs.checkerframework'                //
     ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,13 +52,18 @@ dependencies {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // Minecraft: here below you can find all the imported dependencies regarding minecraft          //
     // By Aikar: [IDB, ACF, TaskChain]                                                               //
-    // By kashike: [Text, Text-Adapter-Bukkit]                                                       //
+    // By kashike: [Text-Adapter-Bukkit]                                                             //
     compile 'co.aikar:acf-paper:0.5.0-SNAPSHOT'                                                      //
-    compile 'net.kyori:text-api:3.0.3'                                                               //
     compile 'co.aikar:idb-core:1.0.0-SNAPSHOT'                                                       //
-    compile('net.kyori:text-adapter-bukkit:3.0.3') {                                                 //
-        exclude module: 'gson'                                                            //
-    }                                                                                                //
+    compile 'net.kyori:text-api:3.0.3'
+    compile ("net.kyori:text-serializer-gson:3.0.3") {
+        exclude module: 'gson'
+    }
+    compile('net.kyori:text-adapter-bukkit:3.0.4-SNAPSHOT') {
+        exclude module: 'gson'
+        exclude module: 'text-api'
+        exclude module: 'text-serializer-gson'
+    }                                                                                              //
     compileOnly group: 'com.destroystokyo.paper', name: 'paper-api', version: '1.15.2-R0.1-SNAPSHOT' //
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // Utilities: Lombok                                                                             //
