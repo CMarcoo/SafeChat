@@ -25,17 +25,16 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
-import org.jetbrains.annotations.NotNull;
+
 
 @SerializableAs("ExecutableObject")
 @RequiredArgsConstructor
 @Getter
 public final class ExecutableObject implements ConfigurationSerializable, Cloneable {
-    private final @NotNull List<String> commands;
+    private final List<String> commands;
     private final int flags;
 
     @Override
-    @NotNull
     public final Map<String, Object> serialize() {
         final Map<String, Object> result = new HashMap<>();
         result.put("commands", commands);
@@ -43,7 +42,6 @@ public final class ExecutableObject implements ConfigurationSerializable, Clonea
         return result;
     }
 
-    @NotNull
     public static ExecutableObject deserialize(Map<String, Object> map) {
         return new ExecutableObject(
                 (List<String>) map.get("commands"),

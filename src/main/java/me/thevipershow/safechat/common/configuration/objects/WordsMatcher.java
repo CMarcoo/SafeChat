@@ -25,16 +25,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
-import org.jetbrains.annotations.NotNull;
 
 @SerializableAs("WordsMatcher")
 @RequiredArgsConstructor
 @Getter
 public final class WordsMatcher implements ConfigurationSerializable, Cloneable {
-    private final @NotNull String pattern;
-    private final @NotNull String replace;
+    private final  String pattern;
+    private final  String replace;
 
-    @NotNull
     @Override
     public final Map<String, Object> serialize() {
         final Map<String, Object> result = new HashMap<>();
@@ -43,7 +41,6 @@ public final class WordsMatcher implements ConfigurationSerializable, Cloneable 
         return result;
     }
 
-    @NotNull
     public static WordsMatcher deserialize(Map<String, Object> map) {
         return new WordsMatcher(
                 (String) map.get("pattern"),

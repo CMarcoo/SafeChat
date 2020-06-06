@@ -42,18 +42,39 @@ public final class PlayerData {
         flags.computeIfPresent(flag, (k, v) -> v = newValue);
     }
 
+    /**
+     * This method takes a {@link Flag} and increases it by 1.
+     * @param flag The Flag whose value should be increased.
+     */
     public void increaseFlag(Flag flag) {
         flags.computeIfPresent(flag, (k, v) -> v + 1);
     }
 
+    /**
+     * This method takes a {@link Flag} and set its value to 0.
+     * @param flag The flag whose value should be changed.
+     */
     public void resetFlag(Flag flag) {
         flags.computeIfPresent(flag, (k, v) -> v = 0);
     }
 
+    /**
+     * This methods sets every flag value to 0.
+     */
     public void resetAllFlags() {
         flags.forEach((k, v) -> v = 0);
     }
 
+    /**
+     * This method creates a new instance of PlayerData from a Flag, a unique identifier, and a username.
+     * It is a really useful method to create a new PlayerData from a {@link Flag}.
+     *
+     * @param flag     The flag.
+     * @param uuid     The unique identifier of the player.
+     * @param username The username of the player.
+     * @return Returns a new instance of the class with every flag value set to 0
+     * except the one corresponding to the passed flag.
+     */
     public static PlayerData initializeFromFlag(Flag flag, UUID uuid, String username) {
         switch (flag) {
             case IPV4:

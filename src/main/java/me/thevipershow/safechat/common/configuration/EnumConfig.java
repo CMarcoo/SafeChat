@@ -76,12 +76,24 @@ public enum EnumConfig {
         return configuration.get(value);
     }
 
+    /**
+     * This method is used to deserialize a list of {@link WordsMatcher} from a yaml configuration.
+     *
+     * @param configuration The YAML configuration that will provide the values.
+     * @return A list of WordsMatcher.
+     */
     public final List<WordsMatcher> getWordsMatcherList(final Configuration configuration) {
         return configuration.getMapList(value).parallelStream()
                 .map(map -> WordsMatcher.deserialize((Map<String, Object>) map))
                 .collect(Collectors.toList());
     }
 
+    /**
+     * This method is used to deserialize a list of {@link ExecutableObject} from a yaml configuration.
+     *
+     * @param configuration The YAML configuration that will provide the values.
+     * @return A list of ExecutableObject.
+     */
     public final List<ExecutableObject> getExecutableObject(final Configuration configuration) {
         return configuration.getMapList(value).parallelStream()
                 .map(map -> ExecutableObject.deserialize((Map<String, Object>) map))

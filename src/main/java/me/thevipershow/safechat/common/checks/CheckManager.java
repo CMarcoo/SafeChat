@@ -21,6 +21,7 @@ package me.thevipershow.safechat.common.checks;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.thevipershow.safechat.common.configuration.AbstractValues;
+import me.thevipershow.safechat.common.sql.DataManager;
 import net.kyori.text.TextComponent;
 import net.kyori.text.adapter.bukkit.TextAdapter;
 import org.bukkit.entity.Player;
@@ -34,16 +35,23 @@ public final class CheckManager implements Listener {
     private static CheckManager instance = null;
     private final JavaPlugin plugin;
     private final AbstractValues values;
+    private final DataManager dataManager;
 
-    public static synchronized CheckManager getInstance(JavaPlugin plugin, AbstractValues values) {
+    public static synchronized CheckManager getInstance(JavaPlugin plugin, AbstractValues values, DataManager manager) {
         if (instance == null) {
-            CheckManager checkManager = new CheckManager(plugin, values);
+            CheckManager checkManager = new CheckManager(plugin, values, manager);
             plugin.getServer().getPluginManager().registerEvents(checkManager, plugin);
             instance = checkManager;
         }
         return instance;
     }
 
+    /**
+     * This method should send a message to an online player if the component isn't empty.
+     *
+     * @param component The {@link TextComponent} that should be sent.
+     * @param player    The Player who will recieve the message.
+     */
     public static void sendIfNotEmptyComponent(TextComponent component, Player player) {
         if (!component.isEmpty())
             TextAdapter.sendMessage(player, component);

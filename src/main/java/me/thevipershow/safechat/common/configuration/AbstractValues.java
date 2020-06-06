@@ -25,11 +25,11 @@ import lombok.RequiredArgsConstructor;
 import me.thevipershow.safechat.common.configuration.objects.ExecutableObject;
 import me.thevipershow.safechat.common.configuration.objects.WordsMatcher;
 import me.thevipershow.safechat.common.configuration.validator.ValuesValidator;
+import me.thevipershow.safechat.common.sql.data.Flag;
 import net.kyori.text.TextComponent;
 import net.kyori.text.event.HoverEvent;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.configuration.Configuration;
-import org.jetbrains.annotations.NotNull;
 
 @Getter
 @RequiredArgsConstructor
@@ -69,8 +69,16 @@ public abstract class AbstractValues {
         verifyAll();
     }
 
-    @NotNull
-    protected static TextComponent buildKashikeComponent(@NotNull List<String> strings, @NotNull List<String> hoverString) {
+    /**
+     * This method builds a component with a mouse hover event.
+     *
+     * @param strings     The Strings that will be displayed in the chat.
+     *                    Each string will represent a new line.
+     * @param hoverString The Strings that will be displayed in the hover message.
+     *                    Each string will represent a new line.
+     * @return a TextComponent with the message and hover if {@code strings} wasn't empty, otherwise an empty TextComponent.
+     */
+    protected static TextComponent buildKashikeComponent(List<String> strings, List<String> hoverString) {
         if (strings.isEmpty())
             return TextComponent.empty();
         TextComponent.Builder builder = TextComponent.builder().append(LegacyComponentSerializer.INSTANCE.deserialize(String.join("\n", strings), '&'));
@@ -79,6 +87,10 @@ public abstract class AbstractValues {
         return builder.build();
     }
 
+    /**
+     * Verifies some values
+     * @throws IllegalArgumentException If values are illegal.
+     */
     public void verifyAll() throws IllegalArgumentException {
         ValuesValidator.validateDatabasePort(this);
         ValuesValidator.validateDatabaseType(this);
@@ -111,4 +123,24 @@ public abstract class AbstractValues {
     protected boolean wordsEnabled;
     protected List<WordsMatcher> blacklistWords;
     protected List<ExecutableObject> wordsExecutables;
+
+    /**
+     * This method returns the executable list that matches a flag.
+     *
+     * @param flag The flag.
+     * @return A list of {@link ExecutableObject}.
+     * @throws RuntimeException if the flag was of unknown type.
+     */
+    public List<ExecutableObject> getExecutableOf(Flag flag) {
+        switch (flag) {
+            case DOMAINS:
+                return domainExecutables;
+            case WORDS:
+                return wordsExecutables;
+            case IPV4:
+                return ipv4Executables;
+            default:
+                throw new RuntimeException("bruh");
+        }
+    }
 }

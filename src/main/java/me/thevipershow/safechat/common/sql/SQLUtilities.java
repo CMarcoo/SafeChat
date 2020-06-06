@@ -30,6 +30,13 @@ import me.thevipershow.safechat.common.sql.data.PlayerData;
 @SuppressWarnings("LanguageMismatch")
 @UtilityClass
 public class SQLUtilities {
+    /**
+     * This method is used to load all data into a {@link DataManager} from a Database
+     *
+     * @param database    The database the data will be achieved from.
+     * @param dataManager The DatabaseManager where the data will be stored.
+     * @param SQL         The SQL statement to execute in order to perform this action.
+     */
     public void loadData(Database database, DataManager dataManager, String SQL) {
         try {
             List<DbRow> dbRows = database.getResults(SQL);
@@ -46,6 +53,14 @@ public class SQLUtilities {
         }
     }
 
+    /**
+     * This method is used to transfre all of the data from a {@link DataManager}
+     * to a database.
+     *
+     * @param database    The database that will recieve the data.
+     * @param dataManager The DataManager that currently holds the data.
+     * @param SQL         The SQL statement to execute in order to perform this action.
+     */
     public void sendData(Database database, DataManager dataManager, String SQL) {
         for (PlayerData data : dataManager.getPlayerData()) {
             int domains = data.getFlags().get(Flag.DOMAINS);
@@ -68,6 +83,14 @@ public class SQLUtilities {
         }
     }
 
+    /**
+     * Create a table if it doesn't already exist.
+     *
+     * @param database The database the table will be created into.
+     * @param SQL      The SQL statement that will be executed to create a table.
+     *                 NOTE: this statement must check that the table does not exist
+     *                 before creating a new one inside the database.
+     */
     public void createTable(Database database, String SQL) {
         try {
             database.executeUpdate(SQL);

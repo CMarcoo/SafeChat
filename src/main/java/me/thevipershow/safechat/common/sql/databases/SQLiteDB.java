@@ -16,15 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.thevipershow.safechat.common.sql;
+package me.thevipershow.safechat.common.sql.databases;
 
 import co.aikar.idb.DB;
+import me.thevipershow.safechat.common.sql.DBManager;
+import me.thevipershow.safechat.common.sql.SQLUtilities;
 
 public final class SQLiteDB extends DBManager {
-    private final String LOAD_ALL = "SELECT player_uuid, player_name, flags_domains, flags_ipv4, flags_words FROM safechat_data;";
-    private final String SAVE_ALL = "INSERT INTO safechat_data (player_uuid, player_name, flags_domains, flags_ipv4, flags_words) VALUES (?,?,?,?,?)" +
+    public static final String LOAD_ALL = "SELECT player_uuid, player_name, flags_domains, flags_ipv4, flags_words FROM safechat_data;";
+    public static final String SAVE_ALL = "INSERT INTO safechat_data (player_uuid, player_name, flags_domains, flags_ipv4, flags_words) VALUES (?,?,?,?,?)" +
             " ON CONFLICT (player_uuid) DO UPDATE SET player_name = ?, flags_domains = ?, flags_ipv4 = ?, flags_words = ?;";
-    private final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS safechat_data\n"
+    public static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS safechat_data\n"
             + "(\n"
             + "\tplayer_uuid CHARACTER(36) NOT NULL UNIQUE PRIMARY KEY ,\n"
             + "\tplayer_name CHARACTER(16) NOT NULL ,\n"

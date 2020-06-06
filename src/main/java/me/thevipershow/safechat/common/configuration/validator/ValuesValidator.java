@@ -25,11 +25,23 @@ import me.thevipershow.safechat.common.configuration.AbstractValues;
 @UtilityClass
 public class ValuesValidator {
 
+    /**
+     * This method validates a port.
+     *
+     * @param values An implementation {@link AbstractValues}
+     * @throws IllegalArgumentException If the port was either less than 1 or greater than 65535.
+     */
     public void validateDatabasePort(AbstractValues values) throws IllegalArgumentException {
         if (values.getPort() > 65535 || values.getPort() < 1)
             throw new IllegalArgumentException("A database port must be in range 1-65535.");
     }
 
+    /**
+     * This methods validates a database type string.
+     *
+     * @param values An implementation of {@link AbstractValues}
+     * @throws IllegalArgumentException If the database type was unknown.
+     */
     public void validateDatabaseType(AbstractValues values) throws IllegalArgumentException {
         switch (values.getDbType().toLowerCase(Locale.ROOT)) {
             case "sqlite":

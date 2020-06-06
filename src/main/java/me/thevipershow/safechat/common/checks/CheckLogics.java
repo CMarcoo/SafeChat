@@ -22,14 +22,13 @@ import lombok.experimental.UtilityClass;
 import me.thevipershow.safechat.common.configuration.AbstractValues;
 import me.thevipershow.safechat.common.configuration.objects.WordsMatcher;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.jetbrains.annotations.NotNull;
 
 @UtilityClass
 public class CheckLogics {
     final String SPLIT_REGEX = "\\s+";
     final String NONE_MATCHER = "CANCEL_EVENT";
 
-    public boolean domainCheck(@NotNull AsyncPlayerChatEvent event, @NotNull AbstractValues values) {
+    public boolean domainCheck(AsyncPlayerChatEvent event, AbstractValues values) {
         if (!event.isCancelled() && values.isDomainEnabled()) {
             String text = event.getMessage();
             if (text.length() <= 4)
@@ -54,7 +53,7 @@ public class CheckLogics {
      * @param values An AbstractValues implementation
      * @return returns true if the message was considered 'safe', returns false and cancels the event otherwise.
      */
-    public boolean addressCheck(@NotNull AsyncPlayerChatEvent event, @NotNull AbstractValues values) {
+    public boolean addressCheck(AsyncPlayerChatEvent event, AbstractValues values) {
         if (!event.isCancelled() && values.isIpv4Enabled()) {
             String text = event.getMessage();
             if (text.length() < 7) // Save performance, no IPv4s shorter than 7 chars exist
@@ -80,7 +79,7 @@ public class CheckLogics {
      * @return returns true if the message was considered safe, or has been modified, false if the message was
      * not safe and the event has been cancelled.
      */
-    public boolean wordsCheck(@NotNull AsyncPlayerChatEvent event, @NotNull AbstractValues values) {
+    public boolean wordsCheck(AsyncPlayerChatEvent event, AbstractValues values) {
         if (!event.isCancelled() && values.isWordsEnabled()) {
             final String[] splitText = event.getMessage().split(SPLIT_REGEX);
             boolean foundAnyMatches = false;
