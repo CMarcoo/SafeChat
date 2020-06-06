@@ -18,14 +18,12 @@
 
 package me.thevipershow.safechat.common.sql;
 
-import co.aikar.idb.Database;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
 public abstract class DBManager {
-    private static DBManager instance;
-    private @Getter final Database database;
+    protected final DataManager dataManager;
+
+    protected DBManager() {
+        this.dataManager = DataManager.getInstance();
+    }
 
     /**
      * This method should save all of the data from the database.
@@ -36,4 +34,9 @@ public abstract class DBManager {
      * This method should transfer all the saved data onto the database.
      */
     public abstract void sendAllData();
+
+    /**
+     * This method should create a table if id doesn't exist.
+     */
+    public abstract void createTable();
 }

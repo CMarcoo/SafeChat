@@ -18,12 +18,14 @@
 
 package me.thevipershow.safechat.common.sql;
 
+import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import lombok.Getter;
 import me.thevipershow.safechat.common.sql.data.PlayerData;
 
 public class DataManager {
-    private Set<PlayerData> playerData = ConcurrentHashMap.newKeySet();
+    @Getter
+    private final Set<PlayerData> playerData = new HashSet<>();
     private static DataManager instance;
 
     private DataManager() {
@@ -35,5 +37,7 @@ public class DataManager {
         return instance;
     }
 
-
+    public boolean addPlayerData(PlayerData data) {
+        return playerData.add(data);
+    }
 }

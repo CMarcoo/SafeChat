@@ -21,6 +21,9 @@ package me.thevipershow.safechat.plugin;
 import co.aikar.commands.PaperCommandManager;
 import co.aikar.idb.*;
 import com.google.common.collect.ImmutableList;
+import java.io.File;
+import java.io.IOException;
+import java.sql.DatabaseMetaData;
 import java.util.Locale;
 import me.thevipershow.safechat.common.commands.SafeChatCommand;
 import me.thevipershow.safechat.common.checks.CheckManager;
@@ -28,6 +31,8 @@ import me.thevipershow.safechat.common.configuration.AbstractValues;
 import me.thevipershow.safechat.common.configuration.ValuesImplementation;
 import me.thevipershow.safechat.common.configuration.objects.ExecutableObject;
 import me.thevipershow.safechat.common.configuration.objects.WordsMatcher;
+import me.thevipershow.safechat.common.sql.DBManager;
+import me.thevipershow.safechat.common.sql.SQLiteDB;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -66,20 +71,38 @@ public final class SafeChatPlugin extends JavaPlugin {
         DatabaseOptions.DatabaseOptionsBuilder databaseOptions = DatabaseOptions.builder();
         switch (values.getDbType().toLowerCase(Locale.ROOT)) {
             case "sqlite":
-                return databaseOptions.sqlite("safechat_data.sqlite")
-                        .useOptimizations(true)
-                        .logger(getLogger())
-                        .build();
+                return databaseOptions.sqlite("safechat_data.sqlite").build();
             case "mysql":
-                return databaseOptions.mysql(values.getUsername(), values.getPassword(), values.getDatabase(), values.getAddress() + ":" + values.getPort())
-                        .useOptimizations(true)
-                        .logger(getLogger())
-                        .build();
+                return databaseOptions.mysql(values.getUsername(), values.getPassword(), values.getDatabase(), values.getAddress() + ":" + values.getPort()).build();
             default:
                 onDisable(); // the plugin yeets itself if an unknown database type has been chosen.
                 throw new IllegalArgumentException("Unknown or invalid database type, disabling plugin.");
         }
     }
+
+    private DBManager createDatabaseManager(AbstractValues values) {
+        switch (values.getDbType().toLowerCase(Locale.ROOT)) {
+            case "sqlite":
+                createNewFileDatabase();
+                return new SQLiteDB();
+            default:
+                onDisable();
+                throw new IllegalArgumentException("Unknown or invalid database type, disabling plugin.");
+        }
+    }
+
+    private void createNewFileDatabase() {
+        File db = new File(getDataFolder(), "safechat_data.sqlite");
+        if (!db.exists()) {
+            try {
+                db.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private DBManager dbManager;
 
     @Override
     public final void onEnable() { // startup logic:
@@ -93,5 +116,13 @@ public final class SafeChatPlugin extends JavaPlugin {
         DatabaseOptions databaseOptions = createDatabaseOptions(values);
         Database database = PooledDatabaseOptions.builder().options(databaseOptions).createHikariDatabase();
         DB.setGlobalDatabase(database);
+        dbManager = createDatabaseManager(values);
+        dbManager.createTable();
+        dbManager.loadAllData();
+    }
+
+    @Override
+    public void onDisable() {
+        dbManager.sendAllData();
     }
 }

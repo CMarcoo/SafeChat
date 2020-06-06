@@ -21,7 +21,9 @@ package me.thevipershow.safechat.common.sql.data;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
+import lombok.Data;
 
+@Data
 public final class PlayerData {
     private final UUID uuid;
     private String username;
