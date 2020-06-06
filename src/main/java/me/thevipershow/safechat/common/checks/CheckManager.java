@@ -18,12 +18,16 @@
 
 package me.thevipershow.safechat.common.checks;
 
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.thevipershow.safechat.common.configuration.AbstractValues;
 import me.thevipershow.safechat.common.sql.DataManager;
+import me.thevipershow.safechat.common.sql.data.Flag;
+import me.thevipershow.safechat.plugin.events.FlagEvent;
 import net.kyori.text.TextComponent;
 import net.kyori.text.adapter.bukkit.TextAdapter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -59,12 +63,18 @@ public final class CheckManager implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void check(AsyncPlayerChatEvent event) {
+        final Player player = event.getPlayer();
+        final UUID uuid = player.getUniqueId();
+        final String username = player.getName();
         if (!CheckLogics.domainCheck(event, values)) { //when a check fails, we'll proceed to the next one.
-            sendIfNotEmptyComponent(values.getDomainsComponent(), event.getPlayer());
+            sendIfNotEmptyComponent(values.getDomainsComponent(), player);
+            Bukkit.getPluginManager().callEvent(new FlagEvent(Flag.DOMAINS, uuid, username)); // if a check succeeds a FlagEvent will be called
         } else if (!CheckLogics.addressCheck(event, values)) {
-            sendIfNotEmptyComponent(values.getIpv4Component(), event.getPlayer());
+            sendIfNotEmptyComponent(values.getIpv4Component(), player);
+            Bukkit.getPluginManager().callEvent(new FlagEvent(Flag.IPV4, uuid, username));
         } else if (!CheckLogics.wordsCheck(event, values)) {
-            sendIfNotEmptyComponent(values.getWordsComponent(), event.getPlayer());
+            sendIfNotEmptyComponent(values.getWordsComponent(), player);
+            Bukkit.getPluginManager().callEvent(new FlagEvent(Flag.WORDS, uuid, username));
         }
     }
 }

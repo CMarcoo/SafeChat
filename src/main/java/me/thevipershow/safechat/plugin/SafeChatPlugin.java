@@ -34,6 +34,7 @@ import me.thevipershow.safechat.common.sql.DBManager;
 import me.thevipershow.safechat.common.sql.DataManager;
 import me.thevipershow.safechat.common.sql.databases.MysqlDB;
 import me.thevipershow.safechat.common.sql.databases.SQLiteDB;
+import me.thevipershow.safechat.plugin.events.FlagEventListener;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -117,7 +118,8 @@ public final class SafeChatPlugin extends JavaPlugin {
         registerConfigurationSerializer();
         saveDefaultConfig();
         AbstractValues values = getAndUpdate();
-        CheckManager checkManager = CheckManager.getInstance(this, values, DataManager.getInstance());
+        DataManager dataManager = DataManager.getInstance();
+        CheckManager checkManager = CheckManager.getInstance(this, values, dataManager);
         PaperCommandManager commandManager = new PaperCommandManager(this);
         commandManager.getCommandCompletions().registerStaticCompletion("checks", ImmutableList.of("domains", "words", "ipv4"));
         commandManager.registerCommand(SafeChatCommand.getInstance(values));
@@ -127,6 +129,7 @@ public final class SafeChatPlugin extends JavaPlugin {
         dbManager = createDatabaseManager(values);
         dbManager.createTable();
         dbManager.loadAllData();
+        getServer().getPluginManager().registerEvents(FlagEventListener.getInstance(this, dataManager), this);
     }
 
     @Override
