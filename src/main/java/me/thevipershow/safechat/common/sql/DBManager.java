@@ -19,11 +19,6 @@
 package me.thevipershow.safechat.common.sql;
 
 public abstract class DBManager {
-    protected final DataManager dataManager;
-
-    protected DBManager() {
-        this.dataManager = DataManager.getInstance();
-    }
 
     /**
      * This method should save all of the data from the database.

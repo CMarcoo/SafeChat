@@ -18,8 +18,14 @@
 
 package me.thevipershow.safechat.common.sql.data;
 
+import java.util.Locale;
+
 public enum Flag {
     IPV4,
     DOMAINS,
-    WORDS
+    WORDS;
+
+    public final String getRowName() {
+        return "flags_" + name().toLowerCase(Locale.ROOT);
+    }
 }

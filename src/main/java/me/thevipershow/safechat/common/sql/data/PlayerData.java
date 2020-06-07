@@ -19,19 +19,15 @@
 package me.thevipershow.safechat.common.sql.data;
 
 import java.util.EnumMap;
-import java.util.Map;
-import java.util.UUID;
 import lombok.Data;
 
 @Data
-public final class PlayerData {
-    private final UUID uuid;
+public final class PlayerData  {
     private String username;
-    private final Map<Flag, Integer> flags;
+    private final EnumMap<Flag, Integer> flags;
 
-    public PlayerData(UUID uuid, String username, int ipv4Flags, int domainsFlags, int wordsFlags) {
-        this.uuid = uuid;
-        Map<Flag, Integer> map = new EnumMap<>(Flag.class);
+    public PlayerData(String username, int ipv4Flags, int domainsFlags, int wordsFlags) {
+        EnumMap<Flag, Integer> map = new EnumMap<>(Flag.class);
         map.put(Flag.WORDS, wordsFlags);
         map.put(Flag.DOMAINS, domainsFlags);
         map.put(Flag.IPV4, ipv4Flags);
@@ -44,6 +40,7 @@ public final class PlayerData {
 
     /**
      * This method takes a {@link Flag} and increases it by 1.
+     *
      * @param flag The Flag whose value should be increased.
      */
     public void increaseFlag(Flag flag) {
@@ -52,6 +49,7 @@ public final class PlayerData {
 
     /**
      * This method takes a {@link Flag} and set its value to 0.
+     *
      * @param flag The flag whose value should be changed.
      */
     public void resetFlag(Flag flag) {
@@ -75,14 +73,14 @@ public final class PlayerData {
      * @return Returns a new instance of the class with every flag value set to 0
      * except the one corresponding to the passed flag.
      */
-    public static PlayerData initializeFromFlag(Flag flag, UUID uuid, String username) {
+    public static PlayerData initializeFromFlag(Flag flag, String username) {
         switch (flag) {
             case IPV4:
-                return new PlayerData(uuid, username, 1, 0, 0);
+                return new PlayerData(username, 1, 0, 0);
             case DOMAINS:
-                return new PlayerData(uuid, username, 0, 1, 0);
+                return new PlayerData(username, 0, 1, 0);
             case WORDS:
-                return new PlayerData(uuid, username, 0, 0, 1);
+                return new PlayerData(username, 0, 0, 1);
             default:
                 throw new RuntimeException("bruh");
         }

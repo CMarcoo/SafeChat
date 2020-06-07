@@ -31,9 +31,6 @@ import me.thevipershow.safechat.common.configuration.ValuesImplementation;
 import me.thevipershow.safechat.common.configuration.objects.ExecutableObject;
 import me.thevipershow.safechat.common.configuration.objects.WordsMatcher;
 import me.thevipershow.safechat.common.sql.DBManager;
-import me.thevipershow.safechat.common.sql.DataManager;
-import me.thevipershow.safechat.common.sql.databases.MysqlDB;
-import me.thevipershow.safechat.common.sql.databases.SQLiteDB;
 import me.thevipershow.safechat.plugin.events.FlagEventListener;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -122,7 +119,7 @@ public final class SafeChatPlugin extends JavaPlugin {
         CheckManager checkManager = CheckManager.getInstance(this, values, dataManager);
         PaperCommandManager commandManager = new PaperCommandManager(this);
         commandManager.getCommandCompletions().registerStaticCompletion("checks", ImmutableList.of("domains", "words", "ipv4"));
-        commandManager.registerCommand(SafeChatCommand.getInstance(values));
+        commandManager.registerCommand(SafeChatCommand.getInstance(values, dataManager));
         DatabaseOptions databaseOptions = createDatabaseOptions(values);
         Database database = PooledDatabaseOptions.builder().options(databaseOptions).createHikariDatabase();
         DB.setGlobalDatabase(database);

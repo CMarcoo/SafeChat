@@ -20,7 +20,6 @@ package me.thevipershow.safechat.plugin.events;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import me.thevipershow.safechat.common.sql.DataManager;
 import me.thevipershow.safechat.common.sql.data.PlayerData;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

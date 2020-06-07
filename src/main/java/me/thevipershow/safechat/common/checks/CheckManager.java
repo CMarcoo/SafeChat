@@ -22,7 +22,6 @@ import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.thevipershow.safechat.common.configuration.AbstractValues;
-import me.thevipershow.safechat.common.sql.DataManager;
 import me.thevipershow.safechat.common.sql.data.Flag;
 import me.thevipershow.safechat.plugin.events.FlagEvent;
 import net.kyori.text.TextComponent;
