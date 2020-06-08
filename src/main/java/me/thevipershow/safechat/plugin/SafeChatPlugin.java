@@ -80,33 +80,33 @@ public final class SafeChatPlugin extends JavaPlugin {
      * This method creates a new database manager later used to handle all the
      * data of this plugin.
      */
-    private DBManager createDatabaseManager(AbstractValues values) {
-        switch (values.getDbType().toLowerCase(Locale.ROOT)) {
-            case "sqlite":
-                createNewFileDatabase();
-                return new SQLiteDB();
-            case "mysql":
-                return new MysqlDB();
-            default:
-                onDisable();
-                throw new IllegalArgumentException("Unknown or invalid database type, disabling plugin.");
-        }
-    }
+//    private DBManager createDatabaseManager(AbstractValues values) {
+//        switch (values.getDbType().toLowerCase(Locale.ROOT)) {
+//            case "sqlite":
+////                createNewFileDatabase();
+//                return new SQLiteDB();
+//            case "mysql":
+//                return new MysqlDB();
+//            default:
+//                onDisable();
+//                throw new IllegalArgumentException("Unknown or invalid database type, disabling plugin.");
+//        }
+//    }
 
     /**
      * This method is only used by the SQLite database
      * It creates a database file if missing.
      */
-    private void createNewFileDatabase() {
-        File db = new File(getDataFolder(), "safechat_data.sqlite");
-        if (!db.exists()) {
-            try {
-                db.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    private void createNewFileDatabase() {
+//        File db = new File(getDataFolder(), "safechat_data.sqlite");
+//        if (!db.exists()) {
+//            try {
+//                db.createNewFile();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     private DBManager dbManager;
 
@@ -115,7 +115,7 @@ public final class SafeChatPlugin extends JavaPlugin {
         registerConfigurationSerializer();
         saveDefaultConfig();
         AbstractValues values = getAndUpdate();
-        DataManager dataManager = DataManager.getInstance();
+//        DataManager dataManager = DataManager.getInstance();
         CheckManager checkManager = CheckManager.getInstance(this, values, dataManager);
         PaperCommandManager commandManager = new PaperCommandManager(this);
         commandManager.getCommandCompletions().registerStaticCompletion("checks", ImmutableList.of("domains", "words", "ipv4"));
@@ -123,9 +123,9 @@ public final class SafeChatPlugin extends JavaPlugin {
         DatabaseOptions databaseOptions = createDatabaseOptions(values);
         Database database = PooledDatabaseOptions.builder().options(databaseOptions).createHikariDatabase();
         DB.setGlobalDatabase(database);
-        dbManager = createDatabaseManager(values);
-        dbManager.createTable();
-        dbManager.loadAllData();
+//        dbManager = createDatabaseManager(values);
+//        dbManager.createTable();
+//        dbManager.loadAllData();
         getServer().getPluginManager().registerEvents(FlagEventListener.getInstance(this, dataManager), this);
     }
 

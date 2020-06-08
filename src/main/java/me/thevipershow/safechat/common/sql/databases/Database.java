@@ -28,6 +28,13 @@ import me.thevipershow.safechat.common.sql.data.PlayerData;
 
 public interface Database {
     /**
+     * Create a table for the database.
+     *
+     * @return A CompletableFuture of Void type, to indicate the operation has been completed.
+     */
+    CompletableFuture<Void> createTable();
+
+    /**
      * This method should be implemented this way:
      * It will search through a database and if a UUID was found, its
      * flag should be increased. However if no UUID is found a new row
@@ -37,8 +44,11 @@ public interface Database {
      * @param uuid     The UUID of the player.
      * @param username The username of the player.
      * @param flag     The flag which should be incremented.
+     * @return A completableFuture of Integer type,
+     * to indicate the operation has been completed and how
+     * many rows have been affected.
      */
-    void doUpdateOrInsert(UUID uuid, String username, Flag flag);
+    CompletableFuture<Integer> doUpdateOrInsert(UUID uuid, String username, Flag flag);
 
     /**
      * This method is used to clean EVERY row that has a given username
@@ -62,14 +72,15 @@ public interface Database {
      * a Set of {@link PlayerData}
      *
      * @param username The username.
-     * @return A Set with usually 1 PlayerData or more if found, an Empty set if no data was found.
+     * @return A List with usually 1 PlayerData or more if found, an Empty set if no data was found.
      */
     CompletableFuture<Set<PlayerData>> searchData(String username);
 
     /**
      * This method is used to retrieve the top PlayerData sorted from highest to low
      * of a given flag.
-     * @param flag A flag to search for in the database.
+     *
+     * @param flag  A flag to search for in the database.
      * @param count the number of rows to get.
      * @return A Set of PlayerData ordered
      */
