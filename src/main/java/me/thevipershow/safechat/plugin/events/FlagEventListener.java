@@ -20,7 +20,6 @@ package me.thevipershow.safechat.plugin.events;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import me.thevipershow.safechat.common.sql.data.PlayerData;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,20 +28,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class FlagEventListener implements Listener {
     private static FlagEventListener instance = null;
     private final JavaPlugin plugin;
-    private final DataManager dataManager;
 
-    public static synchronized FlagEventListener getInstance(JavaPlugin plugin, DataManager dataManager) {
-        return instance != null ? instance : (new FlagEventListener(plugin, dataManager));
+
+    public static synchronized FlagEventListener getInstance(JavaPlugin plugin) {
+        return instance != null ? instance : (new FlagEventListener(plugin));
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onFlag(FlagEvent event) {
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (dataManager.getPlayerData().parallelStream().noneMatch(data -> data.getUuid().equals(event.getUuid()))) {
-                dataManager.addPlayerData(PlayerData.initializeFromFlag(event.getFlag(), event.getUuid(), event.getUsername()));
-                return;
-            }
-            dataManager.increasePlayerData(event.getFlag(), event.getUuid());
-        });
+
     }
 }

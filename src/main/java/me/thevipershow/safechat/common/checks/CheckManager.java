@@ -38,11 +38,10 @@ public final class CheckManager implements Listener {
     private static CheckManager instance = null;
     private final JavaPlugin plugin;
     private final AbstractValues values;
-    private final DataManager dataManager;
 
-    public static synchronized CheckManager getInstance(JavaPlugin plugin, AbstractValues values, DataManager manager) {
+    public static synchronized CheckManager getInstance(JavaPlugin plugin, AbstractValues values) {
         if (instance == null) {
-            CheckManager checkManager = new CheckManager(plugin, values, manager);
+            CheckManager checkManager = new CheckManager(plugin, values);
             plugin.getServer().getPluginManager().registerEvents(checkManager, plugin);
             instance = checkManager;
         }

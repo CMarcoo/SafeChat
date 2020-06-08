@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import me.thevipershow.safechat.common.configuration.AbstractValues;
 import me.thevipershow.safechat.common.sql.data.Flag;
 import me.thevipershow.safechat.common.sql.data.PlayerData;
+import me.thevipershow.safechat.common.sql.databases.Database;
 import net.kyori.text.adapter.bukkit.TextAdapter;
 import net.kyori.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
@@ -35,11 +36,13 @@ import org.bukkit.command.CommandSender;
 @Description("&7Main command of the SafeChat plugin")
 public final class SafeChatCommand extends BaseCommand {
     private final AbstractValues values;
+    private final Database database;
+
     private static SafeChatCommand instance = null;
     private final static String PREFIX = "&8[&6SafeChat&8]&f: ";
 
-    public static synchronized SafeChatCommand getInstance(AbstractValues values) {
-        return instance != null ? instance : (instance = new SafeChatCommand(values));
+    public static synchronized SafeChatCommand getInstance(AbstractValues values, Database database) {
+        return instance != null ? instance : (instance = new SafeChatCommand(values, database));
     }
 
     /**

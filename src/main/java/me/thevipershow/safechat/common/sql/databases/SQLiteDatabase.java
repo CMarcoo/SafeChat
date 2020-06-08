@@ -22,10 +22,17 @@ import co.aikar.idb.DB;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import me.thevipershow.safechat.common.sql.data.Flag;
 import me.thevipershow.safechat.common.sql.data.PlayerData;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SQLiteDatabase implements Database {
+    private static SQLiteDatabase instance;
+    public static SQLiteDatabase getInstance() {return instance != null ? instance : (instance = new SQLiteDatabase());}
+
+
     public final static String SQLITE_UPDATE_OR_INSERT_DOMAINS = "INSERT INTO safechat_data(player_uuid, player_name, flags_domains, flags_ipv4, flags_words)\n" +
             "VALUES ('uuid-here', 'username', ?, ?, ?)\n" +
             "ON CONFLICT(player_uuid)\n" +
