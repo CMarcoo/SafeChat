@@ -20,8 +20,10 @@ package me.thevipershow.safechat.common.commands;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
-import co.aikar.commands.annotation.Optional;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.function.Consumer;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -165,6 +167,31 @@ public final class SafeChatCommand extends BaseCommand {
             }
             Flag f = Flag.valueOf(flag.toUpperCase(Locale.ROOT));
             databaseX.topData(f, number).thenAccept(list -> sendTopList(sender, list, f));
+        } catch (IllegalArgumentException e) {
+            sendMessage(sender, PREFIX + "&7Invalid flag type.");
+        }
+    }
+
+    public static void sendCleanedStatus(boolean bool, CommandSender sender) {
+        if (bool) {
+            sendMessage(sender, PREFIX + "&7The data has been cleaned successfully!");
+            return;
+        }
+        sendMessage(sender, PREFIX + "&7Could not find such user.");
+    }
+
+    @Subcommand("clear")
+    @Syntax("&8<&6player&8> &8[&6ipv4&7|&6domains&7|&6words&8] &7- Clean user data.")
+    @CommandPermission("safechat.commands.clear")
+    @CommandCompletion("@nothing @checks")
+    public void onClear(CommandSender sender, String username, @Optional String flag) {
+        if (flag == null) {
+            databaseX.cleanUserData(username).thenAccept(b -> sendCleanedStatus(b, sender));
+            return;
+        }
+        try {
+            Flag f = Flag.valueOf(flag.toUpperCase(Locale.ROOT));
+            databaseX.cleanUserData(username, f).thenAccept(b -> sendCleanedStatus(b, sender));
         } catch (IllegalArgumentException e) {
             sendMessage(sender, PREFIX + "&7Invalid flag type.");
         }

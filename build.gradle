@@ -37,6 +37,7 @@ shadowJar {
     relocate 'co.aikar.idb', 'me.thevipershow.safechat.libs.idb'                                     //
     relocate 'org.checkerframework', 'me.thevipershow.safechat.libs.checkerframework'                //
     relocate 'net.kyori', 'me.thevipershow.safechat.libs.kyori'                                      //
+    relocate 'org.slf4j', 'me.thevipershow.safechat.libs.slf4j'                                      //
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
@@ -49,7 +50,7 @@ dependencies {
     compile('com.zaxxer:HikariCP:2.7.9')                                                             //
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // Minecraft: here below you can find all the imported dependencies regarding minecraft          //
-    // By Aikar: [IDB, ACF, TaskChain]                                            //
+    // By Aikar: [IDB, ACF, TaskChain]                                                               //
     // By kashike: [Text-Adapter-Bukkit]                                                             //
     compile 'co.aikar:acf-paper:0.5.0-SNAPSHOT'                                                      //
     compile 'co.aikar:idb-bukkit:1.0.0-SNAPSHOT'                                                     //
