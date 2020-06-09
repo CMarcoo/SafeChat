@@ -85,14 +85,14 @@ public final class SafeChatCommand extends BaseCommand {
             final long then = System.nanoTime();
             this.values.updateAll();
             final long difference = (System.nanoTime() - then) / 1_000_000;
-            sendMessage(sender, PREFIX + String.format("&7Configuration has been reloaded correctly in &6%d&7(ms)", difference));
+            sendMessage(sender, PREFIX + String.format("&7Configuration has been reloaded in &6%d&7(ms)", difference));
         } catch (IllegalArgumentException e) {
             sendMessage(sender, PREFIX + "&7Configuration could not be updated correctly, issue below:");
             sendMessage(sender, PREFIX + "&c" + e.getMessage());
         }
     }
 
-    private void sendData(Set<PlayerData> set, CommandSender sender, String name, Flag f) {
+    private static void sendData(Set<PlayerData> set, CommandSender sender, String name, Flag f) {
         if (!set.isEmpty()) {
             set.forEach(data -> sendMessage(sender, PREFIX + "&7Player &6" + name + "&7has &6" + data.getFlags().get(f) + " &7flags"));
         } else {
@@ -100,16 +100,16 @@ public final class SafeChatCommand extends BaseCommand {
         }
     }
 
-    private void sendFlagMessage(PlayerData data, Flag flag, CommandSender sender) {
+    private static void sendFlagMessage(PlayerData data, Flag flag, CommandSender sender) {
         int flags = data.getFlags().get(flag);
-        sendMessage(sender, "&7has &6" + flags + " &7" + flag.name().toLowerCase(Locale.ROOT) + " flags");
+        sendMessage(sender, "&7→  &6" + flags + " &7" + flag.name().toLowerCase(Locale.ROOT) + " flags");
     }
 
     private void dataSearchConsumer(CommandSender sender, String username, Consumer<? super PlayerData> consumer) {
         databaseX.searchData(username).thenAccept(
                 set -> {
                     if (set.isEmpty()) {
-                        sendMessage(sender, "&7No data was found for this player.");
+                        sendMessage(sender, PREFIX + "&7No data was found for this player.");
                         return;
                     }
                     set.forEach(consumer);
@@ -117,23 +117,56 @@ public final class SafeChatCommand extends BaseCommand {
         );
     }
 
+    private static String buildPaddedRow(PlayerData data, Flag flag) {
+        final StringBuilder builder = new StringBuilder();
+        final String username = data.getUsername();
+        builder.append("&7").append(username);
+        for (int i = 0; i <= 17 - username.length(); i++)
+            builder.append(' ');
+        builder.append("&6").append(data.getFlags().get(flag));
+        return builder.toString();
+    }
+
+    private static void sendTopList(CommandSender sender, List<PlayerData> data, Flag flag) {
+        sendMessage(sender, "&8[&6NAME&8]               &8[&6FLAGS&8]");
+        data.forEach(d ->
+                sendMessage(sender, buildPaddedRow(d, flag)));
+    }
+
     @Subcommand("search")
     @Syntax("&8<&6player&8> &8[&6ipv4&7|&6domains&7|&6words&8] &7- Search data of a player.")
     @CommandPermission("safechat.commands.reload")
-    @CommandCompletion("@players @checks")
+    @CommandCompletion("@nothing @checks")
     public void onSearch(CommandSender sender, String name, @Optional String flag) {
         if (flag == null) {
             dataSearchConsumer(sender, name, data -> {
-                sendMessage(sender, "&7Player &6" + data.getUsername() + "&7 has:");
+                sendMessage(sender, PREFIX + "&7Player &6" + data.getUsername() + "&7 has:");
                 Arrays.stream(Flag.values()).forEach(f -> sendFlagMessage(data, f, sender));
             });
         } else {
             try {
                 Flag f = Flag.valueOf(flag.toUpperCase(Locale.ROOT));
-                dataSearchConsumer(sender, name, data -> sendMessage(sender, "&7Player &6" + data.getUsername() + " &7has &6" + data.getFlags().get(f) + " &7flags."));
+                dataSearchConsumer(sender, name, data -> sendMessage(sender, PREFIX + "&7Player &6" + data.getUsername() + " &7has &6" + data.getFlags().get(f) + " &7flags."));
             } catch (IllegalArgumentException e) {
-                sendMessage(sender, "&7Invalid flag type.");
+                sendMessage(sender, PREFIX + "&7Invalid flag type.");
             }
+        }
+    }
+
+    @Subcommand("top")
+    @Syntax("&8<&6number&8> &8[&6ipv4&7|&6domains&7|&6words&8] &7- Search the top data.")
+    @CommandPermission("safechat.commands.top")
+    @CommandCompletion("@range:1-100 @checks")
+    public void onTop(CommandSender sender, int number, String flag) {
+        try {
+            if (number < 1 || number > 100) {
+                sendMessage(sender, PREFIX + "&7The number is invalid.");
+                return;
+            }
+            Flag f = Flag.valueOf(flag.toUpperCase(Locale.ROOT));
+            databaseX.topData(f, number).thenAccept(list -> sendTopList(sender, list, f));
+        } catch (IllegalArgumentException e) {
+            sendMessage(sender, PREFIX + "&7Invalid flag type.");
         }
     }
 }
