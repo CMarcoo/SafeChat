@@ -25,6 +25,7 @@ import co.aikar.idb.DatabaseOptions;
 import co.aikar.idb.PooledDatabaseOptions;
 import com.google.common.collect.ImmutableList;
 import java.io.File;
+import java.sql.SQLException;
 import java.util.Locale;
 import me.thevipershow.safechat.common.checks.CheckManager;
 import me.thevipershow.safechat.common.commands.SafeChatCommand;
@@ -32,8 +33,8 @@ import me.thevipershow.safechat.common.configuration.AbstractValues;
 import me.thevipershow.safechat.common.configuration.ValuesImplementation;
 import me.thevipershow.safechat.common.configuration.objects.ExecutableObject;
 import me.thevipershow.safechat.common.configuration.objects.WordsMatcher;
-import me.thevipershow.safechat.common.sql.DBManager;
-import me.thevipershow.safechat.common.sql.databases.SQLiteDatabase;
+import me.thevipershow.safechat.common.sql.databases.DatabaseX;
+import me.thevipershow.safechat.common.sql.databases.SQLiteDatabaseX;
 import me.thevipershow.safechat.plugin.events.FlagEventListener;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -85,16 +86,32 @@ public final class SafeChatPlugin extends JavaPlugin {
         }
     }
 
-    private me.thevipershow.safechat.common.sql.databases.Database loadDatabase(String dbType) {
+    /**
+     * Load a {@link Database} from the string name
+     *
+     * @param dbType The name of the database.
+     * @return The Database
+     * @throws IllegalArgumentException If the database name is invalid.
+     */
+    private DatabaseX loadDatabase(String dbType) {
         switch (dbType.toLowerCase(Locale.ROOT)) {
             case "sqlite":
-                return SQLiteDatabase.getInstance();
+                return SQLiteDatabaseX.getInstance();
             default:
                 onDisable();
-                throw new IllegalArgumentException("Unkown or invalid database type, disabling plugin.");
+                throw new IllegalArgumentException("Unknown or invalid database type, disabling plugin.");
         }
     }
 
+    private void createTableInfo(DatabaseX databaseX) {
+        try {
+            if (databaseX.createTable())
+                getLogger().info("The table has been successfully created.");
+        } catch (SQLException e) {
+            getLogger().warning("Something has went wrong while creating the table.");
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public final void onEnable() { // startup logic:
@@ -107,9 +124,12 @@ public final class SafeChatPlugin extends JavaPlugin {
         DatabaseOptions databaseOptions = createDatabaseOptions(values);
         Database database = PooledDatabaseOptions.builder().options(databaseOptions).createHikariDatabase();
         DB.setGlobalDatabase(database);
-        getServer().getPluginManager().registerEvents(FlagEventListener.getInstance(this), this);
 
-        me.thevipershow.safechat.common.sql.databases.Database databaseLoaded = loadDatabase(values.getDbType());
-        commandManager.registerCommand(SafeChatCommand.getInstance(values, databaseLoaded));
+        DatabaseX databaseX = loadDatabase(values.getDbType());
+
+        getServer().getPluginManager().registerEvents(FlagEventListener.getInstance(this, databaseX), this);
+        commandManager.registerCommand(SafeChatCommand.getInstance(values, databaseX));
+
+        createTableInfo(databaseX);
     }
 }

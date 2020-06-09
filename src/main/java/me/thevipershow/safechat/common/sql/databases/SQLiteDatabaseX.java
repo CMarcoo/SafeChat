@@ -28,21 +28,24 @@ import me.thevipershow.safechat.common.sql.data.Flag;
 import me.thevipershow.safechat.common.sql.data.PlayerData;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SQLiteDatabase implements Database {
-    private static SQLiteDatabase instance;
-    public static SQLiteDatabase getInstance() {return instance != null ? instance : (instance = new SQLiteDatabase());}
+public class SQLiteDatabaseX implements DatabaseX {
+    private static SQLiteDatabaseX instance;
+
+    public static SQLiteDatabaseX getInstance() {
+        return instance != null ? instance : (instance = new SQLiteDatabaseX());
+    }
 
 
     public final static String SQLITE_UPDATE_OR_INSERT_DOMAINS = "INSERT INTO safechat_data(player_uuid, player_name, flags_domains, flags_ipv4, flags_words)\n" +
-            "VALUES ('uuid-here', 'username', ?, ?, ?)\n" +
+            "VALUES (?, ?, ?, ?, ?)\n" +
             "ON CONFLICT(player_uuid)\n" +
             "    DO UPDATE SET flags_domains = flags_domains + 1;";
     public final static String SQLITE_UPDATE_OR_INSERT_IPV4 = "INSERT INTO safechat_data(player_uuid, player_name, flags_domains, flags_ipv4, flags_words)\n" +
-            "VALUES ('uuid-here', 'username', ?, ?, ?)\n" +
+            "VALUES (?, ?, ?, ?, ?)\n" +
             "ON CONFLICT(player_uuid)\n" +
             "    DO UPDATE SET flags_ipv4 = flags_ipv4 + 1;";
     public final static String SQLITE_UPDATE_OR_INSERT_WORDS = "INSERT INTO safechat_data(player_uuid, player_name, flags_domains, flags_ipv4, flags_words)\n" +
-            "VALUES ('uuid-here', 'username', ?, ?, ?)\n" +
+            "VALUES (?, ?, ?, ?, ?)\n" +
             "ON CONFLICT(player_uuid)\n" +
             "    DO UPDATE SET flags_words = flags_words + 1;";
 
@@ -88,10 +91,11 @@ public class SQLiteDatabase implements Database {
 
     /**
      * This is an inner utility method used to return a statement depending on the flag that will be used
-     * @param flag The flag which will be used in the statement.
-     * @param words The statement with the words flag.
+     *
+     * @param flag    The flag which will be used in the statement.
+     * @param words   The statement with the words flag.
      * @param domains The statement with the domains flag.
-     * @param ipv4 The statement with the ipv4 flag.
+     * @param ipv4    The statement with the ipv4 flag.
      * @return The statement for the corresponding flag.
      * @throws RuntimeException if an unknown flag type was passed.
      */
@@ -112,16 +116,11 @@ public class SQLiteDatabase implements Database {
      * Create a table for the database.
      *
      * @return A CompletableFuture of Void type, to indicate the operation has been completed.
+     * @throws SQLException If something went wrong while trying to create the table.
      */
     @Override
-    public CompletableFuture<Void> createTable() {
-        return CompletableFuture.runAsync(() -> {
-            try {
-                DB.executeUpdate(SQLITE_CREATE_TABLE);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+    public boolean createTable() throws SQLException {
+        return DB.executeUpdate(SQLITE_CREATE_TABLE) == 1;
     }
 
     /**
@@ -140,6 +139,8 @@ public class SQLiteDatabase implements Database {
         PlayerData data = PlayerData.initializeFromFlag(flag, username);
         return DB.executeUpdateAsync(
                 getUpdateOrInsertStatement(flag),
+                uuid.toString(),
+                username,
                 data.getFlags().get(Flag.DOMAINS),
                 data.getFlags().get(Flag.IPV4),
                 data.getFlags().get(Flag.WORDS)

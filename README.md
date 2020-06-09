@@ -68,8 +68,8 @@ You can specify the number of flags required to trigger the commands in the `exe
 ![executables](https://i.imgur.com/r8y34gS.png)
 
 # Databases Support
-At the beginning of the config.yml file, you will find a `database` section, which is really important, because it allows you to specify your preferred database type.
-This plugin uses databases in order to store player flags, the default one is **SQLite** which will generate a local database into the plugin's folder.
+At the beginning of the config.yml file, you will find a `databaseX` section, which is really important, because it allows you to specify your preferred databaseX type.
+This plugin uses databases in order to store player flags, the default one is **SQLite** which will generate a local databaseX into the plugin's folder.
 
 There also is support for other databases, such as:
 - MySQL
@@ -77,13 +77,13 @@ There also is support for other databases, such as:
 - MariaDB
 - MongoDB (coming soon)
 
-In order to properly use any of these you'll need to configure the database access and credentials sections.
-You'll need first to specify the preferred DB type , then you need to edit the username, password, port, address, and database fields, and you will be ready to go!
+In order to properly use any of these you'll need to configure the databaseX access and credentials sections.
+You'll need first to specify the preferred DB type , then you need to edit the username, password, port, address, and databaseX fields, and you will be ready to go!
 
 # Auto-Save feature
-This plugin has a smart feature that makes you able to automatically save your data onto the database with a given interval.
+This plugin has a smart feature that makes you able to automatically save your data onto the databaseX with a given interval.
 This is mainly to avoid data loss in case of eventual system\server crashes.
-You can find this section at `database.auto-save`, note that this interval is in minutes.
+You can find this section at `databaseX.auto-save`, note that this interval is in minutes.
 
 # Real-time reloading
 

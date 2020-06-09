@@ -20,6 +20,7 @@ package me.thevipershow.safechat.plugin.events;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import me.thevipershow.safechat.common.sql.databases.DatabaseX;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,14 +29,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class FlagEventListener implements Listener {
     private static FlagEventListener instance = null;
     private final JavaPlugin plugin;
+    private final DatabaseX databaseX;
 
 
-    public static synchronized FlagEventListener getInstance(JavaPlugin plugin) {
-        return instance != null ? instance : (new FlagEventListener(plugin));
+    public static synchronized FlagEventListener getInstance(JavaPlugin plugin, DatabaseX databaseX) {
+        return instance != null ? instance : (new FlagEventListener(plugin, databaseX));
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onFlag(FlagEvent event) {
-
+        databaseX.doUpdateOrInsert(event.getUuid(), event.getUsername(), event.getFlag());
     }
 }

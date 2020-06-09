@@ -20,25 +20,30 @@ package me.thevipershow.safechat.plugin.events;
 
 import java.util.UUID;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import me.thevipershow.safechat.common.sql.data.Flag;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @Getter
-@RequiredArgsConstructor
 public final class FlagEvent extends Event {
     private final static HandlerList handlers = new HandlerList();
     private final Flag flag;
     private final UUID uuid;
     private final String username;
 
+    public FlagEvent(Flag flag, UUID uuid, String username) {
+        super(true);
+        this.flag = flag;
+        this.uuid = uuid;
+        this.username = username;
+    }
+
     @Override
     public HandlerList getHandlers() {
         return handlers;
     }
 
-    public static HandlerList getHandlersList() {
+    public static HandlerList getHandlerList() {
         return handlers;
     }
 }

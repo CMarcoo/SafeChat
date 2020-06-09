@@ -18,6 +18,7 @@
 
 package me.thevipershow.safechat.common.sql.databases;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -26,13 +27,14 @@ import java.util.concurrent.CompletableFuture;
 import me.thevipershow.safechat.common.sql.data.Flag;
 import me.thevipershow.safechat.common.sql.data.PlayerData;
 
-public interface Database {
+public interface DatabaseX {
     /**
      * Create a table for the database.
      *
      * @return A CompletableFuture of Void type, to indicate the operation has been completed.
+     * @throws SQLException If something went wrong while trying to create the table.
      */
-    CompletableFuture<Void> createTable();
+    boolean createTable() throws SQLException;
 
     /**
      * This method should be implemented this way:
