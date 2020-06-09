@@ -18,6 +18,8 @@
 
 package me.thevipershow.safechat.common.checks;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.experimental.UtilityClass;
 import me.thevipershow.safechat.common.configuration.AbstractValues;
 import me.thevipershow.safechat.common.configuration.objects.WordsMatcher;
@@ -25,21 +27,29 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 @UtilityClass
 public class CheckLogics {
-    final String SPLIT_REGEX = "\\s+";
-    final String NONE_MATCHER = "CANCEL_EVENT";
+    public final String SPLIT_REGEX = "\\s+";
+    public final String NONE_MATCHER = "CANCEL_EVENT";
 
+    /**
+     * The domains check:
+     * This check is used to find out if a message from an {@link AsyncPlayerChatEvent}
+     * contains one or more domains.
+     *
+     * @param event  This is the chat event.
+     * @param values An AbstractValues implementation.
+     * @return Returns true if the message was considered 'safe', returns false
+     * and cancels the chat event otherwise.
+     */
     public boolean domainCheck(AsyncPlayerChatEvent event, AbstractValues values) {
         if (!event.isCancelled() && values.isDomainEnabled()) {
-            String text = event.getMessage();
-            if (text.length() <= 4)
-                return true;
-            text = text.replaceAll(values.getDomainWhitelist(), "");
-            final String[] splitText = text.split(SPLIT_REGEX);
-            for (String s : splitText)
-                if (s.matches(values.getDomainRegex())) {
-                    event.setCancelled(true);
+            final String text = event.getMessage();
+            if (text.length() <= 4) return true;// no domains shorter than 4 chars should exist.
+            final Matcher matcher = Pattern.compile(values.getDomainRegex()).matcher(text);
+            while (matcher.find()) {
+                final String group = matcher.group();
+                if (!group.matches(values.getDomainWhitelist()))
                     return false;
-                }
+            }
         }
         return true;
     }
@@ -55,16 +65,15 @@ public class CheckLogics {
      */
     public boolean addressCheck(AsyncPlayerChatEvent event, AbstractValues values) {
         if (!event.isCancelled() && values.isIpv4Enabled()) {
-            String text = event.getMessage();
+            final String text = event.getMessage();
             if (text.length() < 7) // Save performance, no IPv4s shorter than 7 chars exist
                 return true;
-            text = text.replaceAll(values.getIpv4Whitelist(), "");
-            final String[] splitText = text.split(SPLIT_REGEX);
-            for (String s : splitText)
-                if (s.matches(values.getIpv4Regex())) {
-                    event.setCancelled(true);
+            final Matcher matcher = Pattern.compile(values.getIpv4Regex()).matcher(text);
+            while (matcher.find()) {
+                final String group = matcher.group();
+                if (!group.matches(values.getDomainWhitelist()))
                     return false;
-                }
+            }
         }
         return true;
     }
@@ -81,23 +90,9 @@ public class CheckLogics {
      */
     public boolean wordsCheck(AsyncPlayerChatEvent event, AbstractValues values) {
         if (!event.isCancelled() && values.isWordsEnabled()) {
-            final String[] splitText = event.getMessage().split(SPLIT_REGEX);
-            boolean foundAnyMatches = false;
-            for (int i = 0; i < splitText.length; i++) {
-                final String s = splitText[i];
-                for (WordsMatcher matcher : values.getBlacklistWords()) {
-                    if (s.matches(matcher.getPattern())) {
-                        if (matcher.getReplace().equals(NONE_MATCHER)) {
-                            event.setCancelled(true); // If the matcher has pattern "CANCEL_EVENT" we will be immediatly
-                            return false;             // returning false and cancelling the event.
-                        }
-                        splitText[i] = s.replaceAll(matcher.getPattern(), matcher.getReplace());
-                        foundAnyMatches = true;
-                    }
-                }
+            for (final WordsMatcher wm : values.getBlacklistWords()) {
+            
             }
-            event.setMessage(String.join(" ", splitText)); // TODO: 05/06/2020 This could cause some issues with unknown spaces between words
-            return !foundAnyMatches;
         }
         return true;
     }
