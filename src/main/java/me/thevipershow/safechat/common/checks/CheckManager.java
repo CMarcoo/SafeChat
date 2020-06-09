@@ -42,12 +42,7 @@ public final class CheckManager implements Listener {
     private final AbstractValues values;
 
     public static synchronized CheckManager getInstance(JavaPlugin plugin, AbstractValues values) {
-        if (instance == null) {
-            CheckManager checkManager = new CheckManager(plugin, values);
-            plugin.getServer().getPluginManager().registerEvents(checkManager, plugin);
-            instance = checkManager;
-        }
-        return instance;
+        return instance != null ? instance : (instance = new CheckManager(plugin, values));
     }
 
     /**

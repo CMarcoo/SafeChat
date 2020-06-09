@@ -21,6 +21,7 @@ package me.thevipershow.safechat.common.configuration.objects;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -30,8 +31,8 @@ import org.bukkit.configuration.serialization.SerializableAs;
 @RequiredArgsConstructor
 @Getter
 public final class WordsMatcher implements ConfigurationSerializable, Cloneable {
-    private final  String pattern;
-    private final  String replace;
+    private final Pattern pattern;
+    private final String replace;
 
     @Override
     public final Map<String, Object> serialize() {
@@ -43,7 +44,7 @@ public final class WordsMatcher implements ConfigurationSerializable, Cloneable 
 
     public static WordsMatcher deserialize(Map<String, Object> map) {
         return new WordsMatcher(
-                (String) map.get("pattern"),
+                Pattern.compile((String) map.get("pattern")),
                 (String) map.get("replace")
         );
     }

@@ -127,6 +127,7 @@ public final class SafeChatPlugin extends JavaPlugin {
 
         DatabaseX databaseX = loadDatabase(values.getDbType());
 
+        getServer().getPluginManager().registerEvents(checkManager, this);
         getServer().getPluginManager().registerEvents(FlagEventListener.getInstance(this, databaseX, values), this);
         commandManager.registerCommand(SafeChatCommand.getInstance(values, databaseX));
 

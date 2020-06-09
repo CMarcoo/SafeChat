@@ -43,10 +43,11 @@ public final class FlagEventListener implements Listener {
     private void checkFlag(Flag flag, PlayerData data) {
         values.getExecutableOf(flag)
                 .forEach(exec -> {
-                    if (exec.getFlags() == data.getFlags().get(flag))
+                    if (exec.getFlags() == data.getFlags().get(flag)) {
                         exec.getCommands().stream()
                                 .map(str -> str.replaceAll("%PLAYER%", data.getUsername()))
-                                .forEach(str -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), str));
+                                .forEach(str -> plugin.getServer().getScheduler().runTask(plugin, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), str)));
+                    }
                 });
     }
 
@@ -54,8 +55,7 @@ public final class FlagEventListener implements Listener {
     public void onFlag(FlagEvent event) {
         databaseX.doUpdateOrInsert(event.getUuid(), event.getUsername(), event.getFlag()).thenRun(
                 () -> databaseX.searchData(event.getUuid()).thenAccept(opt ->
-                                opt.ifPresent(data ->
-                                        checkFlag(event.getFlag(), data)))
-        );
+                        opt.ifPresent(data ->
+                                checkFlag(event.getFlag(), data))));
     }
 }

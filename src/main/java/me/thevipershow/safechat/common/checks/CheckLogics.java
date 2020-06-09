@@ -19,7 +19,6 @@
 package me.thevipershow.safechat.common.checks;
 
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.experimental.UtilityClass;
 import me.thevipershow.safechat.common.configuration.AbstractValues;
 import me.thevipershow.safechat.common.configuration.objects.WordsMatcher;
@@ -42,14 +41,16 @@ public class CheckLogics {
      */
     public boolean domainCheck(AsyncPlayerChatEvent event, AbstractValues values) {
         if (event.getPlayer().hasPermission("safechat.bypasses.domains")) return true;
-        if (!values.isIpv4Enabled() || event.isCancelled()) return true;
+        if (!values.isDomainEnabled() || event.isCancelled()) return true;
         final String text = event.getMessage();
         if (text.length() <= 4) return true;// no domains shorter than 4 chars should exist.
-        final Matcher matcher = Pattern.compile(values.getDomainRegex()).matcher(text);
+        final Matcher matcher = values.getDomainRegex().matcher(text);
         while (matcher.find()) {
             final String group = matcher.group();
-            if (!group.matches(values.getDomainWhitelist()))
+            if (!group.matches(values.getDomainWhitelist())) {
+                event.setCancelled(true);
                 return false;
+            }
         }
         return true;
     }
@@ -69,11 +70,13 @@ public class CheckLogics {
         final String text = event.getMessage();
         if (text.length() < 7) // Save performance, no IPv4s shorter than 7 chars exist
             return true;
-        final Matcher matcher = Pattern.compile(values.getIpv4Regex()).matcher(text);
+        final Matcher matcher = values.getIpv4Regex().matcher(text);
         while (matcher.find()) {
             final String group = matcher.group();
-            if (!group.matches(values.getDomainWhitelist()))
+            if (!group.matches(values.getDomainWhitelist())) {
+                event.setCancelled(true);
                 return false;
+            }
         }
         return true;
     }
@@ -90,14 +93,16 @@ public class CheckLogics {
      */
     public boolean wordsCheck(AsyncPlayerChatEvent event, AbstractValues values) {
         if (event.getPlayer().hasPermission("safechat.bypasses.words")) return true;
-        if (!values.isIpv4Enabled() || event.isCancelled()) return true;
+        if (!values.isWordsEnabled() || event.isCancelled()) return true;
         String text = event.getMessage();
         for (final WordsMatcher wm : values.getBlacklistWords()) {
-            final Matcher matcher = Pattern.compile(wm.getPattern()).matcher(text);
-            if (matcher.find()) {
-                if (wm.getReplace().equals("CANCEL_EVENT")) return false;
-                text = matcher.replaceAll(wm.getReplace());
+            final Matcher matcher = wm.getPattern().matcher(text);
+            if (!matcher.find()) continue;
+            if (wm.getReplace().equals("CANCEL_EVENT")) {
+                event.setCancelled(true);
+                return false;
             }
+            text = matcher.replaceAll(wm.getReplace());
         }
         event.setMessage(text);
         return true;

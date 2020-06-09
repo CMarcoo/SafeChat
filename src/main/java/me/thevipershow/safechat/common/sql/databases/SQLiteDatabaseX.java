@@ -78,7 +78,7 @@ public class SQLiteDatabaseX implements DatabaseX {
 
     public final static String SQLITE_RESET_FLAG_DATA_WORDS = "UPDATE safechat_data SET flags_words = 0 WHERE player_name = ?";
 
-    public final static String SQLITE_GET_UUID_DATA = "SELECT flags_domains, flags_ipv4, flags_words" +
+    public final static String SQLITE_GET_UUID_DATA = "SELECT flags_domains, flags_ipv4, flags_words, player_name" +
             " FROM safechat_data WHERE player_uuid = ?;";
 
     private static String getUpdateOrInsertStatement(Flag flag) {
