@@ -19,10 +19,7 @@
 package me.thevipershow.safechat.common.sql.databases;
 
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import me.thevipershow.safechat.common.sql.data.Flag;
 import me.thevipershow.safechat.common.sql.data.PlayerData;
@@ -77,6 +74,13 @@ public interface DatabaseX {
      * @return A List with usually 1 PlayerData or more if found, an Empty set if no data was found.
      */
     CompletableFuture<Set<PlayerData>> searchData(String username);
+
+    /**
+     * Return the exact PlayerData of a UUID.
+     * @param uuid The uuid to search for.
+     * @return The PlayerData Optional.
+     */
+    CompletableFuture<Optional<PlayerData>> searchData(UUID uuid);
 
     /**
      * This method is used to retrieve the top PlayerData sorted from highest to low

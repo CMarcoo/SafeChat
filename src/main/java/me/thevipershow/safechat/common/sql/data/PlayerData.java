@@ -27,6 +27,7 @@ public final class PlayerData  {
     private final EnumMap<Flag, Integer> flags;
 
     public PlayerData(String username, int ipv4Flags, int domainsFlags, int wordsFlags) {
+        this.username = username;
         EnumMap<Flag, Integer> map = new EnumMap<>(Flag.class);
         map.put(Flag.WORDS, wordsFlags);
         map.put(Flag.DOMAINS, domainsFlags);

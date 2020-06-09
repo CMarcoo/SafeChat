@@ -22,6 +22,7 @@ import co.aikar.idb.DB;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import javax.swing.text.html.Option;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import me.thevipershow.safechat.common.sql.data.Flag;
@@ -77,6 +78,9 @@ public class SQLiteDatabaseX implements DatabaseX {
 
     public final static String SQLITE_RESET_FLAG_DATA_WORDS = "UPDATE safechat_data SET flags_words = 0 WHERE player_name = ?";
 
+    public final static String SQLITE_GET_UUID_DATA = "SELECT flags_domains, flags_ipv4, flags_words" +
+            " FROM safechat_data WHERE player_uuid = ?;";
+
     private static String getUpdateOrInsertStatement(Flag flag) {
         return getString(flag, SQLITE_UPDATE_OR_INSERT_WORDS, SQLITE_UPDATE_OR_INSERT_DOMAINS, SQLITE_UPDATE_OR_INSERT_IPV4);
     }
@@ -121,6 +125,25 @@ public class SQLiteDatabaseX implements DatabaseX {
     @Override
     public boolean createTable() throws SQLException {
         return DB.executeUpdate(SQLITE_CREATE_TABLE) == 1;
+    }
+
+    /**
+     * Return the exact PlayerData of a UUID.
+     *
+     * @param uuid The uuid to search for.
+     * @return The PlayerData Optional.
+     */
+    @Override
+    public CompletableFuture<Optional<PlayerData>> searchData(UUID uuid) {
+        return DB.getFirstRowAsync(SQLITE_GET_UUID_DATA, uuid.toString())
+                .thenApply(dbRow -> {
+                    if (dbRow.isEmpty()) return Optional.empty();
+                    final int flagsIpv4 = dbRow.getInt(Flag.IPV4.getRowName());
+                    final int flagsDomains = dbRow.getInt(Flag.DOMAINS.getRowName());
+                    final int flagsWords = dbRow.getInt(Flag.WORDS.getRowName());
+                    final String username = dbRow.getString("player_name");
+                    return Optional.of(new PlayerData(username, flagsIpv4, flagsDomains, flagsWords));
+                });
     }
 
     /**
@@ -189,9 +212,9 @@ public class SQLiteDatabaseX implements DatabaseX {
                 .thenApplyAsync(list -> {
                     final Set<PlayerData> playerData = new HashSet<>();
                     list.forEach(dbRow -> {
-                        int flagsIpv4 = dbRow.getInt(Flag.IPV4.getRowName());
-                        int flagsDomains = dbRow.getInt(Flag.DOMAINS.getRowName());
-                        int flagsWords = dbRow.getInt(Flag.WORDS.getRowName());
+                        final int flagsIpv4 = dbRow.getInt(Flag.IPV4.getRowName());
+                        final int flagsDomains = dbRow.getInt(Flag.DOMAINS.getRowName());
+                        final int flagsWords = dbRow.getInt(Flag.WORDS.getRowName());
                         playerData.add(new PlayerData(username, flagsIpv4, flagsDomains, flagsWords));
                     });
                     return playerData;
@@ -212,9 +235,9 @@ public class SQLiteDatabaseX implements DatabaseX {
                 .thenApplyAsync(list -> {
                     final LinkedList<PlayerData> playerData = new LinkedList<>();
                     list.forEach(dbRow -> {
-                        int flagsIpv4 = dbRow.getInt(Flag.IPV4.getRowName());
-                        int flagsDomains = dbRow.getInt(Flag.DOMAINS.getRowName());
-                        int flagsWords = dbRow.getInt(Flag.WORDS.getRowName());
+                        final int flagsIpv4 = dbRow.getInt(Flag.IPV4.getRowName());
+                        final int flagsDomains = dbRow.getInt(Flag.DOMAINS.getRowName());
+                        final int flagsWords = dbRow.getInt(Flag.WORDS.getRowName());
                         String username = dbRow.getString("player_name");
                         playerData.offer(new PlayerData(username, flagsIpv4, flagsDomains, flagsWords));
                     });

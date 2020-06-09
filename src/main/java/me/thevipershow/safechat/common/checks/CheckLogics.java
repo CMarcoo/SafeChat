@@ -41,15 +41,15 @@ public class CheckLogics {
      * and cancels the chat event otherwise.
      */
     public boolean domainCheck(AsyncPlayerChatEvent event, AbstractValues values) {
-        if (!event.isCancelled() && values.isDomainEnabled()) {
-            final String text = event.getMessage();
-            if (text.length() <= 4) return true;// no domains shorter than 4 chars should exist.
-            final Matcher matcher = Pattern.compile(values.getDomainRegex()).matcher(text);
-            while (matcher.find()) {
-                final String group = matcher.group();
-                if (!group.matches(values.getDomainWhitelist()))
-                    return false;
-            }
+        if (event.getPlayer().hasPermission("safechat.bypasses.domains")) return true;
+        if (!values.isIpv4Enabled() || event.isCancelled()) return true;
+        final String text = event.getMessage();
+        if (text.length() <= 4) return true;// no domains shorter than 4 chars should exist.
+        final Matcher matcher = Pattern.compile(values.getDomainRegex()).matcher(text);
+        while (matcher.find()) {
+            final String group = matcher.group();
+            if (!group.matches(values.getDomainWhitelist()))
+                return false;
         }
         return true;
     }
@@ -64,16 +64,16 @@ public class CheckLogics {
      * @return returns true if the message was considered 'safe', returns false and cancels the event otherwise.
      */
     public boolean addressCheck(AsyncPlayerChatEvent event, AbstractValues values) {
-        if (!event.isCancelled() && values.isIpv4Enabled()) {
-            final String text = event.getMessage();
-            if (text.length() < 7) // Save performance, no IPv4s shorter than 7 chars exist
-                return true;
-            final Matcher matcher = Pattern.compile(values.getIpv4Regex()).matcher(text);
-            while (matcher.find()) {
-                final String group = matcher.group();
-                if (!group.matches(values.getDomainWhitelist()))
-                    return false;
-            }
+        if (event.getPlayer().hasPermission("safechat.bypasses.ipv4")) return true;
+        if (!values.isIpv4Enabled() || event.isCancelled()) return true;
+        final String text = event.getMessage();
+        if (text.length() < 7) // Save performance, no IPv4s shorter than 7 chars exist
+            return true;
+        final Matcher matcher = Pattern.compile(values.getIpv4Regex()).matcher(text);
+        while (matcher.find()) {
+            final String group = matcher.group();
+            if (!group.matches(values.getDomainWhitelist()))
+                return false;
         }
         return true;
     }
@@ -89,11 +89,17 @@ public class CheckLogics {
      * not safe and the event has been cancelled.
      */
     public boolean wordsCheck(AsyncPlayerChatEvent event, AbstractValues values) {
-        if (!event.isCancelled() && values.isWordsEnabled()) {
-            for (final WordsMatcher wm : values.getBlacklistWords()) {
-            
+        if (event.getPlayer().hasPermission("safechat.bypasses.words")) return true;
+        if (!values.isIpv4Enabled() || event.isCancelled()) return true;
+        String text = event.getMessage();
+        for (final WordsMatcher wm : values.getBlacklistWords()) {
+            final Matcher matcher = Pattern.compile(wm.getPattern()).matcher(text);
+            if (matcher.find()) {
+                if (wm.getReplace().equals("CANCEL_EVENT")) return false;
+                text = matcher.replaceAll(wm.getReplace());
             }
         }
+        event.setMessage(text);
         return true;
     }
 }

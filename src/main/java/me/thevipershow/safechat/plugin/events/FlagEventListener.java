@@ -20,7 +20,11 @@ package me.thevipershow.safechat.plugin.events;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import me.thevipershow.safechat.common.configuration.AbstractValues;
+import me.thevipershow.safechat.common.sql.data.Flag;
+import me.thevipershow.safechat.common.sql.data.PlayerData;
 import me.thevipershow.safechat.common.sql.databases.DatabaseX;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,15 +33,29 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class FlagEventListener implements Listener {
     private static FlagEventListener instance = null;
     private final JavaPlugin plugin;
+    private final AbstractValues values;
     private final DatabaseX databaseX;
 
+    public static synchronized FlagEventListener getInstance(JavaPlugin plugin, DatabaseX databaseX, AbstractValues values) {
+        return instance != null ? instance : (new FlagEventListener(plugin, values, databaseX));
+    }
 
-    public static synchronized FlagEventListener getInstance(JavaPlugin plugin, DatabaseX databaseX) {
-        return instance != null ? instance : (new FlagEventListener(plugin, databaseX));
+    private void checkFlag(Flag flag, PlayerData data) {
+        values.getExecutableOf(flag)
+                .forEach(exec -> {
+                    if (exec.getFlags() == data.getFlags().get(flag))
+                        exec.getCommands().stream()
+                                .map(str -> str.replaceAll("%PLAYER%", data.getUsername()))
+                                .forEach(str -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), str));
+                });
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onFlag(FlagEvent event) {
-        databaseX.doUpdateOrInsert(event.getUuid(), event.getUsername(), event.getFlag());
+        databaseX.doUpdateOrInsert(event.getUuid(), event.getUsername(), event.getFlag()).thenRun(
+                () -> databaseX.searchData(event.getUuid()).thenAccept(opt ->
+                                opt.ifPresent(data ->
+                                        checkFlag(event.getFlag(), data)))
+        );
     }
 }

@@ -23,7 +23,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.thevipershow.safechat.common.configuration.AbstractValues;
 import me.thevipershow.safechat.common.sql.data.Flag;
+import me.thevipershow.safechat.common.sql.data.PlayerData;
 import me.thevipershow.safechat.plugin.events.FlagEvent;
+import net.kyori.text.Component;
 import net.kyori.text.TextComponent;
 import net.kyori.text.adapter.bukkit.TextAdapter;
 import org.bukkit.Bukkit;
@@ -59,20 +61,19 @@ public final class CheckManager implements Listener {
             TextAdapter.sendMessage(player, component);
     }
 
+    public static void doCheck(TextComponent component, Player player, Flag flag) {
+        sendIfNotEmptyComponent(component, player);
+        Bukkit.getPluginManager().callEvent(new FlagEvent(flag, player.getUniqueId(), player.getName()));
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void check(AsyncPlayerChatEvent event) {
         final Player player = event.getPlayer();
-        final UUID uuid = player.getUniqueId();
-        final String username = player.getName();
-        if (!CheckLogics.domainCheck(event, values)) { //when a check fails, we'll proceed to the next one.
-            sendIfNotEmptyComponent(values.getDomainsComponent(), player);
-            Bukkit.getPluginManager().callEvent(new FlagEvent(Flag.DOMAINS, uuid, username)); // if a check succeeds a FlagEvent will be called
-        } else if (!CheckLogics.addressCheck(event, values)) {
-            sendIfNotEmptyComponent(values.getIpv4Component(), player);
-            Bukkit.getPluginManager().callEvent(new FlagEvent(Flag.IPV4, uuid, username));
-        } else if (!CheckLogics.wordsCheck(event, values)) {
-            sendIfNotEmptyComponent(values.getWordsComponent(), player);
-            Bukkit.getPluginManager().callEvent(new FlagEvent(Flag.WORDS, uuid, username));
-        }
+        if (!CheckLogics.domainCheck(event, values))
+            doCheck(values.getDomainsComponent(), player, Flag.DOMAINS);
+        else if (!CheckLogics.addressCheck(event, values))
+            doCheck(values.getIpv4Component(), player, Flag.IPV4);
+        else if (!CheckLogics.wordsCheck(event, values))
+            doCheck(values.getWordsComponent(), player, Flag.WORDS);
     }
 }
