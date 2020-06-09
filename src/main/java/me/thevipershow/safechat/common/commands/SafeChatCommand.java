@@ -20,7 +20,9 @@ package me.thevipershow.safechat.common.commands;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
-import java.util.Set;
+import co.aikar.commands.annotation.Optional;
+import java.util.*;
+import java.util.function.Consumer;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.thevipershow.safechat.common.configuration.AbstractValues;
@@ -98,26 +100,40 @@ public final class SafeChatCommand extends BaseCommand {
         }
     }
 
-//    private void allFlagsSearch(CommandSender sender, String username) {
-//        dataManager.getPlayerDataMatchingName(username)
-//                .thenAcceptAsync(d -> {
-//                    if (d.isEmpty())
-//                        sendMessage(sender, PREFIX + "&7No users with that name were found.");
-//                    else
-//                        d.forEach(data -> {
-//
-//                        });
-//                });
-//    }
+    private void sendFlagMessage(PlayerData data, Flag flag, CommandSender sender) {
+        int flags = data.getFlags().get(flag);
+        sendMessage(sender, "&7has &6" + flags + " &7" + flag.name().toLowerCase(Locale.ROOT) + " flags");
+    }
+
+    private void dataSearchConsumer(CommandSender sender, String username, Consumer<? super PlayerData> consumer) {
+        databaseX.searchData(username).thenAccept(
+                set -> {
+                    if (set.isEmpty()) {
+                        sendMessage(sender, "&7No data was found for this player.");
+                        return;
+                    }
+                    set.forEach(consumer);
+                }
+        );
+    }
 
     @Subcommand("search")
     @Syntax("&8<&6player&8> &8[&6ipv4&7|&6domains&7|&6words&8] &7- Search data of a player.")
     @CommandPermission("safechat.commands.reload")
-    @CommandCompletion("@checks")
+    @CommandCompletion("@players @checks")
     public void onSearch(CommandSender sender, String name, @Optional String flag) {
-        if (flag == null)
-            return;
-        else
-            return;
+        if (flag == null) {
+            dataSearchConsumer(sender, name, data -> {
+                sendMessage(sender, "&7Player &6" + data.getUsername() + "&7 has:");
+                Arrays.stream(Flag.values()).forEach(f -> sendFlagMessage(data, f, sender));
+            });
+        } else {
+            try {
+                Flag f = Flag.valueOf(flag.toUpperCase(Locale.ROOT));
+                dataSearchConsumer(sender, name, data -> sendMessage(sender, "&7Player &6" + data.getUsername() + " &7has &6" + data.getFlags().get(f) + " &7flags."));
+            } catch (IllegalArgumentException e) {
+                sendMessage(sender, "&7Invalid flag type.");
+            }
+        }
     }
 }
