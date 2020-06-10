@@ -95,6 +95,7 @@ public class CheckLogics {
         if (event.getPlayer().hasPermission("safechat.bypasses.words")) return true;
         if (!values.isWordsEnabled() || event.isCancelled()) return true;
         String text = event.getMessage();
+        boolean noMatches = true;
         for (final WordsMatcher wm : values.getBlacklistWords()) {
             final Matcher matcher = wm.getPattern().matcher(text);
             if (!matcher.find()) continue;
@@ -103,8 +104,9 @@ public class CheckLogics {
                 return false;
             }
             text = matcher.replaceAll(wm.getReplace());
+            noMatches = false;
         }
         event.setMessage(text);
-        return true;
+        return noMatches;
     }
 }
