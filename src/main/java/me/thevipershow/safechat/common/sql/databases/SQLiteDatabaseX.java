@@ -20,9 +20,11 @@ package me.thevipershow.safechat.common.sql.databases;
 
 import co.aikar.idb.DB;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import javax.swing.text.html.Option;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import me.thevipershow.safechat.common.sql.data.Flag;
@@ -40,15 +42,15 @@ public class SQLiteDatabaseX implements DatabaseX {
     public final static String SQLITE_UPDATE_OR_INSERT_DOMAINS = "INSERT INTO safechat_data(player_uuid, player_name, flags_domains, flags_ipv4, flags_words)\n" +
             "VALUES (?, ?, ?, ?, ?)\n" +
             "ON CONFLICT(player_uuid)\n" +
-            "    DO UPDATE SET flags_domains = flags_domains + 1;";
+            "    DO UPDATE SET flags_domains = flags_domains + 1, player_name = ?;";
     public final static String SQLITE_UPDATE_OR_INSERT_IPV4 = "INSERT INTO safechat_data(player_uuid, player_name, flags_domains, flags_ipv4, flags_words)\n" +
             "VALUES (?, ?, ?, ?, ?)\n" +
             "ON CONFLICT(player_uuid)\n" +
-            "    DO UPDATE SET flags_ipv4 = flags_ipv4 + 1;";
+            "    DO UPDATE SET flags_ipv4 = flags_ipv4 + 1, player_name = ?;";
     public final static String SQLITE_UPDATE_OR_INSERT_WORDS = "INSERT INTO safechat_data(player_uuid, player_name, flags_domains, flags_ipv4, flags_words)\n" +
             "VALUES (?, ?, ?, ?, ?)\n" +
             "ON CONFLICT(player_uuid)\n" +
-            "    DO UPDATE SET flags_words = flags_words + 1;";
+            "    DO UPDATE SET flags_words = flags_words + 1, player_name = ?;";
 
     public final static String SQLITE_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS safechat_data\n" +
             "(\n" +
@@ -81,39 +83,16 @@ public class SQLiteDatabaseX implements DatabaseX {
     public final static String SQLITE_GET_UUID_DATA = "SELECT flags_domains, flags_ipv4, flags_words, player_name" +
             " FROM safechat_data WHERE player_uuid = ?;";
 
-    private static String getUpdateOrInsertStatement(Flag flag) {
-        return getString(flag, SQLITE_UPDATE_OR_INSERT_WORDS, SQLITE_UPDATE_OR_INSERT_DOMAINS, SQLITE_UPDATE_OR_INSERT_IPV4);
+    public static String getUpdateOrInsertStatement(Flag flag) {
+        return DatabaseXUtils.getString(flag, SQLITE_UPDATE_OR_INSERT_WORDS, SQLITE_UPDATE_OR_INSERT_DOMAINS, SQLITE_UPDATE_OR_INSERT_IPV4);
     }
 
-    private static String getResetFlagDataStatement(Flag flag) {
-        return getString(flag, SQLITE_RESET_FLAG_DATA_WORDS, SQLITE_RESET_FLAG_DATA_DOMAINS, SQLITE_RESET_FLAG_DATA_IPV4);
+    public static String getResetFlagDataStatement(Flag flag) {
+        return DatabaseXUtils.getString(flag, SQLITE_RESET_FLAG_DATA_WORDS, SQLITE_RESET_FLAG_DATA_DOMAINS, SQLITE_RESET_FLAG_DATA_IPV4);
     }
 
-    private static String getTopDataStatement(Flag flag) {
-        return getString(flag, SQLITE_GET_TOP_DATA_WORDS, SQLITE_GET_TOP_DATA_DOMAINS, SQLITE_GET_TOP_DATA_IPV4);
-    }
-
-    /**
-     * This is an inner utility method used to return a statement depending on the flag that will be used
-     *
-     * @param flag    The flag which will be used in the statement.
-     * @param words   The statement with the words flag.
-     * @param domains The statement with the domains flag.
-     * @param ipv4    The statement with the ipv4 flag.
-     * @return The statement for the corresponding flag.
-     * @throws RuntimeException if an unknown flag type was passed.
-     */
-    private static String getString(Flag flag, String words, String domains, String ipv4) {
-        switch (flag) {
-            case WORDS:
-                return words;
-            case DOMAINS:
-                return domains;
-            case IPV4:
-                return ipv4;
-            default:
-                throw new RuntimeException("bruh");
-        }
+    public static String getTopDataStatement(Flag flag) {
+        return DatabaseXUtils.getString(flag, SQLITE_GET_TOP_DATA_WORDS, SQLITE_GET_TOP_DATA_DOMAINS, SQLITE_GET_TOP_DATA_IPV4);
     }
 
     /**
@@ -135,15 +114,7 @@ public class SQLiteDatabaseX implements DatabaseX {
      */
     @Override
     public CompletableFuture<Optional<PlayerData>> searchData(UUID uuid) {
-        return DB.getFirstRowAsync(SQLITE_GET_UUID_DATA, uuid.toString())
-                .thenApply(dbRow -> {
-                    if (dbRow.isEmpty()) return Optional.empty();
-                    final int flagsIpv4 = dbRow.getInt(Flag.IPV4.getRowName());
-                    final int flagsDomains = dbRow.getInt(Flag.DOMAINS.getRowName());
-                    final int flagsWords = dbRow.getInt(Flag.WORDS.getRowName());
-                    final String username = dbRow.getString("player_name");
-                    return Optional.of(new PlayerData(username, flagsIpv4, flagsDomains, flagsWords));
-                });
+        return DatabaseXUtils.searchData(SQLITE_GET_UUID_DATA, uuid);
     }
 
     /**
@@ -159,15 +130,7 @@ public class SQLiteDatabaseX implements DatabaseX {
      */
     @Override
     public CompletableFuture<Integer> doUpdateOrInsert(UUID uuid, String username, Flag flag) {
-        PlayerData data = PlayerData.initializeFromFlag(flag, username);
-        return DB.executeUpdateAsync(
-                getUpdateOrInsertStatement(flag),
-                uuid.toString(),
-                username,
-                data.getFlags().get(Flag.DOMAINS),
-                data.getFlags().get(Flag.IPV4),
-                data.getFlags().get(Flag.WORDS)
-        );
+        return DatabaseXUtils.doUpdateOrInsert(uuid, username, flag, getUpdateOrInsertStatement(flag));
     }
 
     /**
@@ -178,10 +141,7 @@ public class SQLiteDatabaseX implements DatabaseX {
      */
     @Override
     public CompletableFuture<Boolean> cleanUserData(String username) {
-        return DB.executeUpdateAsync(
-                SQLITE_DELETE_ALL_DATA,
-                username
-        ).thenApplyAsync(number -> number != 0);
+        return DatabaseXUtils.cleanUserData(username, SQLITE_DELETE_ALL_DATA);
     }
 
     /**
@@ -193,10 +153,7 @@ public class SQLiteDatabaseX implements DatabaseX {
      */
     @Override
     public CompletableFuture<Boolean> cleanUserData(String username, Flag flag) {
-        return DB.executeUpdateAsync(
-                getResetFlagDataStatement(flag),
-                username
-        ).thenApplyAsync(number -> number != 0);
+        return DatabaseXUtils.cleanUserData(username, getResetFlagDataStatement(flag));
     }
 
     /**
@@ -208,17 +165,7 @@ public class SQLiteDatabaseX implements DatabaseX {
      */
     @Override
     public CompletableFuture<Set<PlayerData>> searchData(String username) {
-        return DB.getResultsAsync(SQLITE_GET_USERNAME_DATA, username)
-                .thenApplyAsync(list -> {
-                    final Set<PlayerData> playerData = new HashSet<>();
-                    list.forEach(dbRow -> {
-                        final int flagsIpv4 = dbRow.getInt(Flag.IPV4.getRowName());
-                        final int flagsDomains = dbRow.getInt(Flag.DOMAINS.getRowName());
-                        final int flagsWords = dbRow.getInt(Flag.WORDS.getRowName());
-                        playerData.add(new PlayerData(username, flagsIpv4, flagsDomains, flagsWords));
-                    });
-                    return playerData;
-                });
+        return DatabaseXUtils.searchData(username, SQLITE_GET_USERNAME_DATA);
     }
 
     /**
@@ -231,17 +178,6 @@ public class SQLiteDatabaseX implements DatabaseX {
      */
     @Override
     public CompletableFuture<List<PlayerData>> topData(Flag flag, int count) {
-        return DB.getResultsAsync(getTopDataStatement(flag), count)
-                .thenApplyAsync(list -> {
-                    final LinkedList<PlayerData> playerData = new LinkedList<>();
-                    list.forEach(dbRow -> {
-                        final int flagsIpv4 = dbRow.getInt(Flag.IPV4.getRowName());
-                        final int flagsDomains = dbRow.getInt(Flag.DOMAINS.getRowName());
-                        final int flagsWords = dbRow.getInt(Flag.WORDS.getRowName());
-                        String username = dbRow.getString("player_name");
-                        playerData.offer(new PlayerData(username, flagsIpv4, flagsDomains, flagsWords));
-                    });
-                    return playerData;
-                });
+        return DatabaseXUtils.topData(count, getTopDataStatement(flag));
     }
 }

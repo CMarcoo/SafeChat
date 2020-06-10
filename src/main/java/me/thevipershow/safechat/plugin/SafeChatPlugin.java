@@ -76,6 +76,7 @@ public final class SafeChatPlugin extends JavaPlugin {
                         .logger(getLogger())
                         .build();
             case "mysql":
+            case "mariadb":
                 return databaseOptions.mysql(values.getUsername(), values.getPassword(), values.getDatabase(), values.getAddress() + ":" + values.getPort())
                         .useOptimizations(true)
                         .logger(getLogger())
@@ -96,6 +97,8 @@ public final class SafeChatPlugin extends JavaPlugin {
     private DatabaseX loadDatabase(String dbType) {
         switch (dbType.toLowerCase(Locale.ROOT)) {
             case "sqlite":
+            case "mysql":
+            case "mariadb":
                 return SQLiteDatabaseX.getInstance();
             default:
                 onDisable();
