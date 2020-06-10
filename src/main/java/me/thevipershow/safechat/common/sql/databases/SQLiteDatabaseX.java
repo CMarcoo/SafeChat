@@ -83,15 +83,15 @@ public class SQLiteDatabaseX implements DatabaseX {
     public final static String SQLITE_GET_UUID_DATA = "SELECT flags_domains, flags_ipv4, flags_words, player_name" +
             " FROM safechat_data WHERE player_uuid = ?;";
 
-    public static String getUpdateOrInsertStatement(Flag flag) {
+    public static String getUpdateOrInsertStatement(final Flag flag) {
         return DatabaseXUtils.getString(flag, SQLITE_UPDATE_OR_INSERT_WORDS, SQLITE_UPDATE_OR_INSERT_DOMAINS, SQLITE_UPDATE_OR_INSERT_IPV4);
     }
 
-    public static String getResetFlagDataStatement(Flag flag) {
+    public static String getResetFlagDataStatement(final Flag flag) {
         return DatabaseXUtils.getString(flag, SQLITE_RESET_FLAG_DATA_WORDS, SQLITE_RESET_FLAG_DATA_DOMAINS, SQLITE_RESET_FLAG_DATA_IPV4);
     }
 
-    public static String getTopDataStatement(Flag flag) {
+    public static String getTopDataStatement(final Flag flag) {
         return DatabaseXUtils.getString(flag, SQLITE_GET_TOP_DATA_WORDS, SQLITE_GET_TOP_DATA_DOMAINS, SQLITE_GET_TOP_DATA_IPV4);
     }
 

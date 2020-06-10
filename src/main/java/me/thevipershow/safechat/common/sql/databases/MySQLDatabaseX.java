@@ -25,29 +25,32 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import me.thevipershow.safechat.common.sql.data.Flag;
 import me.thevipershow.safechat.common.sql.data.PlayerData;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLDatabaseX implements DatabaseX {
+    private static MySQLDatabaseX instance;
+
+    public static MySQLDatabaseX getInstance() {
+        return instance != null ? instance : (instance = new MySQLDatabaseX());
+    }
+
     public final static String MYSQL_GET_TOP_DATA_WORDS = "INSERT INTO safechat_data(player_uuid, player_name, flags_domains, flags_ipv4, flags_words)\n" +
             "VALUES (?, ?, ?, ?, ?)\n" +
-            "ON DUPLICATE KEY\n" +
-            "    UPDATE flags_words = flags_words + 1,\n" +
-            "           player_name   = ?;";
+            "ON DUPLICATE KEY UPDATE flags_words = flags_words + 1, player_name = ?;";
 
     public final static String MYSQL_GET_TOP_DATA_DOMAINS = "INSERT INTO safechat_data(player_uuid, player_name, flags_domains, flags_ipv4, flags_words)\n" +
             "VALUES (?, ?, ?, ?, ?)\n" +
-            "ON DUPLICATE KEY\n" +
-            "    UPDATE flags_domains = flags_domains + 1,\n" +
-            "           player_name   = ?;";
+            "ON DUPLICATE KEY UPDATE flags_domains = flags_domains + 1, player_name = ?;";
 
     public final static String MYSQL_GET_TOP_DATA_IPV4 = "INSERT INTO safechat_data(player_uuid, player_name, flags_domains, flags_ipv4, flags_words)\n" +
             "VALUES (?, ?, ?, ?, ?)\n" +
-            "ON DUPLICATE KEY\n" +
-            "    UPDATE flags_ipv4 = flags_ipv4 + 1,\n" +
-            "           player_name   = ?;";
+            "ON DUPLICATE KEY UPDATE flags_ipv4 = flags_ipv4 + 1, player_name = ?;";
 
-    public static String getUpdateOrInsertStatement(Flag flag) {
+    public static String getUpdateOrInsertStatement(final Flag flag) {
         return DatabaseXUtils.getString(flag, MYSQL_GET_TOP_DATA_WORDS, MYSQL_GET_TOP_DATA_DOMAINS, MYSQL_GET_TOP_DATA_IPV4);
     }
 

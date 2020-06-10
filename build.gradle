@@ -31,7 +31,6 @@ shadowJar {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // Relocations to avoid conflicts at runtime:                                                    //
     relocate 'com.zaxxer.hikari', 'me.thevipershow.safechat.libs.com.zaxxer.hikari'                  //
-//    relocate 'org.postgresql', 'me.thevipershow.safechat.libs.org.postgresql'                        //
     relocate 'co.aikar.commands', 'me.thevipershow.safechat.libs.acf'                                //
     relocate 'co.aikar.locales', 'me.thevipershow.safechat.libs.locales'                             //
     relocate 'co.aikar.idb', 'me.thevipershow.safechat.libs.idb'                                     //
@@ -46,8 +45,7 @@ dependencies {
     // Here below you can find all the dependencies regarding databases                              //
     // Drivers: [PostgreSQL]                                                                         //
     // Connection Pool: [HikariCP]                                                                   //
-//    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.8'                           //
-    compile('com.zaxxer:HikariCP:2.7.9')                                                             //
+    compile('com.zaxxer:HikariCP:3.4.5')                                                             //
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     // Minecraft: here below you can find all the imported dependencies regarding minecraft          //
     // By Aikar: [IDB, ACF, TaskChain]                                                               //

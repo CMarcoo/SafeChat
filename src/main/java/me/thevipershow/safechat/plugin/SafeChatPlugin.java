@@ -34,6 +34,7 @@ import me.thevipershow.safechat.common.configuration.ValuesImplementation;
 import me.thevipershow.safechat.common.configuration.objects.ExecutableObject;
 import me.thevipershow.safechat.common.configuration.objects.WordsMatcher;
 import me.thevipershow.safechat.common.sql.databases.DatabaseX;
+import me.thevipershow.safechat.common.sql.databases.MySQLDatabaseX;
 import me.thevipershow.safechat.common.sql.databases.SQLiteDatabaseX;
 import me.thevipershow.safechat.plugin.events.FlagEventListener;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -97,9 +98,10 @@ public final class SafeChatPlugin extends JavaPlugin {
     private DatabaseX loadDatabase(String dbType) {
         switch (dbType.toLowerCase(Locale.ROOT)) {
             case "sqlite":
+                return SQLiteDatabaseX.getInstance();
             case "mysql":
             case "mariadb":
-                return SQLiteDatabaseX.getInstance();
+                return MySQLDatabaseX.getInstance();
             default:
                 onDisable();
                 throw new IllegalArgumentException("Unknown or invalid database type, disabling plugin.");
@@ -127,9 +129,7 @@ public final class SafeChatPlugin extends JavaPlugin {
         DatabaseOptions databaseOptions = createDatabaseOptions(values);
         Database database = PooledDatabaseOptions.builder().options(databaseOptions).createHikariDatabase();
         DB.setGlobalDatabase(database);
-
         DatabaseX databaseX = loadDatabase(values.getDbType());
-
         getServer().getPluginManager().registerEvents(checkManager, this);
         getServer().getPluginManager().registerEvents(FlagEventListener.getInstance(this, databaseX, values), this);
         commandManager.registerCommand(SafeChatCommand.getInstance(values, databaseX));
