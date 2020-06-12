@@ -14,9 +14,9 @@ safechat:
   enable-console-logging: false
   database:
     # Allowed types are currently:
-    # Values: [POSTGRESQL | MYSQL | MARIADB | SQLITE ]
+    # Values: [ MYSQL | MARIADB | SQLITE ]
     # SQLITE database type will use '.sqlite' files to locally store data, so filling the database info fields,
-    # such as username, host and passwords will not be required. However if you decide to use PostgreSQL database
+    # such as username, host and passwords will not be required. However if you decide to use a remote database
     # those fields will be required in order for the plugin to properly connect to the remote\local database!
     type: "SQLITE"
     # The username that will be used when attempting to authenticate into the specified database
@@ -57,7 +57,6 @@ safechat:
     # A list of messages that will be sent to the player upon triggering the domain check
     # Available placeholders:
     # %PLAYER% , the player name
-
     # leave empty if none should be sent
     warning:
       - " &7[&eServer&7]&f: &7Your previous message has been deleted,"
@@ -86,13 +85,12 @@ safechat:
   addresses:
     enabled: true
     # This regex is used to blacklist all domains
-    regex: "^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$"
+    regex: "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
     # These are the addresses that will not be blocked
     whitelisted: "127.0.0.1|0.0.0.0"
     # A list of messages that will be sent to the player upon triggering the ip check
     # Available placeholders:
     # %PLAYER% , the player name
-
     # leave empty if none should be sent
     warning:
       - " &7[&eServer&7]&f: &7Your previous message has been deleted,"
@@ -100,7 +98,6 @@ safechat:
     # A list of messages that will be sent as hover message to the message above,
     # Available placeholders:
     # %PLAYER% , the player name
-
     # leave empty if none should be generated
     hover-warning:
       - "&7  [&eServer&7]"
@@ -122,7 +119,8 @@ safechat:
     # you can set the matcher using a RegEx , and the replace string, which will
     # be replaced into matched zone if found in the messages.
     # "What if I don't want to replace the messages?":
-    # You can set the 'replace' parameter to "NONE"
+    # You can set the 'replace' parameter to "CANCEL_EVENT" to cancel the message instead of
+    # sending a modified one.
     blacklisted:
       - pattern: "(?i)f(?=u(?=c(?=k)))"
         replace: 'd'

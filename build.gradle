@@ -1,62 +1,82 @@
-plugins { id 'com.github.johnrengelman.shadow' version '5.2.0' }
-
-apply plugin: 'java'
+plugins {
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id "io.freefair.lombok" version "5.1.0"
+    id 'java'
+}
 
 group = pluginGroup
 version = pluginVersion
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()
+    maven { url = 'https://jitpack.io' }
+    maven { url = "https://repo.aikar.co/content/groups/aikar/" }
     maven {
-        name = 'spigotmc-repo'
-        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+        url = 'https://papermc.io/repo/repository/maven-public/'
+        name = 'papermc'
     }
-    maven {
-        name = 'sonatype'
-        url = 'https://oss.sonatype.org/content/groups/public/'
-    }
-    maven {
-        url = 'https://jitpack.io'
-    }
-    maven {
-        name = 'minecraft-repo'
-        url = 'https://libraries.minecraft.net/'
-    }
-    maven {
-        name = 'bungeecord-repo'
-        url = 'https://oss.sonatype.org/content/repositories/snapshots'
-    }
+}
+
+compileJava {
+    options.compilerArgs += ["-parameters"]
+    options.fork = true
+    options.forkOptions.executable = 'javac'
 }
 
 shadowJar {
-    archiveName = 'SafeChat-'+ version + '.jar'
-    dependencies {
-        exclude(dependency("com.mojang:brigadier:.*"))
-        exclude(dependency("org.slf4j:.*"))
-    }
-    relocate 'com.zaxxer.hikari','me.thevipershow.safechat.libs.com.zaxxer.hikari'
-    relocate 'me.lucko.commodore', 'me.thevipershow.safechat.libs.lucko.commodore'
-    relocate 'org.postgresql','me.thevipershow.safechat.libs.org.postgresql'
-    relocate 'me.thevipershow.spigotchatlib', 'me.thevipershow.safechat.libs.spigotchatlib'
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    setArchiveName('SafeChat-' + this.version + '.jar')                                              //
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    // Relocations to avoid conflicts at runtime:                                                    //
+    relocate 'com.zaxxer.hikari', 'me.thevipershow.safechat.libs.com.zaxxer.hikari'                  //
+    relocate 'co.aikar.commands', 'me.thevipershow.safechat.libs.acf'                                //
+    relocate 'co.aikar.locales', 'me.thevipershow.safechat.libs.locales'                             //
+    relocate 'co.aikar.idb', 'me.thevipershow.safechat.libs.idb'                                     //
+    relocate 'org.checkerframework', 'me.thevipershow.safechat.libs.checkerframework'                //
+    relocate 'net.kyori', 'me.thevipershow.safechat.libs.kyori'                                      //
+    relocate 'org.slf4j', 'me.thevipershow.safechat.libs.slf4j'                                      //
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    compileOnly 'org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT'
-    compileOnly 'net.md-5:bungeecord-api:1.15-SNAPSHOT'
-    compile group: 'me.lucko', name: 'commodore', version: '1.8'
-    compile group: 'com.github.TheViperShow', name: 'SpigotChatLib', version: '0ce7b2b706'
-    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.8'
-    compile group: 'com.zaxxer', name: 'HikariCP', version: '3.4.2'
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    // Here below you can find all the dependencies regarding databases                              //
+    // Drivers: [PostgreSQL]                                                                         //
+    // Connection Pool: [HikariCP]                                                                   //
+    compile('com.zaxxer:HikariCP:3.4.5')                                                             //
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    // Minecraft: here below you can find all the imported dependencies regarding minecraft          //
+    // By Aikar: [IDB, ACF, TaskChain]                                                               //
+    // By kashike: [Text-Adapter-Bukkit]                                                             //
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'                              //
+    compile 'co.aikar:acf-paper:0.5.0-SNAPSHOT'                                                      //
+    compile 'co.aikar:idb-bukkit:1.0.0-SNAPSHOT'                                                     //
+    compile 'net.kyori:text-api:3.0.3'                                                               //
+    compile ("net.kyori:text-serializer-gson:3.0.3") {                                               //
+        exclude module: 'gson'                                                                       //
+    }                                                                                                //
+    compile('net.kyori:text-adapter-bukkit:3.0.4-SNAPSHOT') {                                        //
+        exclude module: 'gson'                                                                       //
+        exclude module: 'text-api'                                                                   //
+        exclude module: 'text-serializer-gson'                                                       //
+    }                                                                                                //
+    compileOnly group: 'com.destroystokyo.paper', name: 'paper-api', version: '1.15.2-R0.1-SNAPSHOT' //
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
 
+/**
+ * This allows the plugin to find placeholders @version@
+ * and replace it with the current plugin's version
+ * especially useful for Bukkit's plugin.yaml
+ */
 processResources {
     from(sourceSets.main.resources.srcDirs) {
         filter ReplaceTokens, tokens: [version: version]
     }
 }
+
+build.dependsOn shadowJar
