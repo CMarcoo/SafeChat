@@ -16,7 +16,7 @@ repositories {
 dependencies {
     testCompile("junit", "junit", "4.12")
     compileOnly(project(":SafeChat-Plugin"))
-    compileOnly(project(":SafeChat-Core"))
+    implementation(project(":SafeChat-Core"))
     compileOnly(group = "com.destroystokyo.paper", name = "paper-api", version = "1.15.2-R0.1-SNAPSHOT")
 }
 
