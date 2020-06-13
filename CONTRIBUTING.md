@@ -11,6 +11,8 @@ please first discuss the change you're going to make via a GitHub issue or email
 
 **Java Specifications**<br>
 When contributing you must enforce Java 8 standards, any attempt to use Java 9 and above features will not be accepted.<br>
+**Lombok**<br>
+When contributing to this project, you must make proper use of Lombok and adapt your code style to it: avoid writing anything that could be obtained with Lombok features.
 **Code flow**<br>
 Avoid any use of nested blocks when possible, they make the code harder to read , hence we want to avoid them.<br>
 Also avoid unnecessary long conditions, when possible save a reference instead of using multiple getters in a condition.<br>
@@ -43,4 +45,7 @@ public class MyClass {
 }
 ````
 
-<br>Avoid at any cost nested classes.
+**Other notices**:
+<br>Avoid at any cost nested classes, They make reading a file harder.
+If you do not find a proper package where the class could be put, you're allowed to make a properly named package (remember to follow Java naming conventions).
+<br>You must follow the min-dif rule, don't make unnecessary changes and if not absolutely required. Anything that doesn't respect this will be rejected.
