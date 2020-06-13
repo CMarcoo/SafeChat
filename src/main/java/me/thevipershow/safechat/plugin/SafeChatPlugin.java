@@ -27,6 +27,7 @@ import com.google.common.collect.ImmutableList;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.Locale;
+import lombok.Getter;
 import me.thevipershow.safechat.common.checks.CheckManager;
 import me.thevipershow.safechat.common.commands.SafeChatCommand;
 import me.thevipershow.safechat.common.configuration.AbstractValues;
@@ -118,6 +119,9 @@ public final class SafeChatPlugin extends JavaPlugin {
         }
     }
 
+    @Getter
+    DatabaseX databaseX;
+
     @Override
     public final void onEnable() { // startup logic:
         registerConfigurationSerializer();
@@ -129,7 +133,7 @@ public final class SafeChatPlugin extends JavaPlugin {
         DatabaseOptions databaseOptions = createDatabaseOptions(values);
         Database database = PooledDatabaseOptions.builder().options(databaseOptions).createHikariDatabase();
         DB.setGlobalDatabase(database);
-        DatabaseX databaseX = loadDatabase(values.getDbType());
+        databaseX = loadDatabase(values.getDbType());
         getServer().getPluginManager().registerEvents(checkManager, this);
         getServer().getPluginManager().registerEvents(FlagEventListener.getInstance(this, databaseX, values), this);
         commandManager.registerCommand(SafeChatCommand.getInstance(values, databaseX));
