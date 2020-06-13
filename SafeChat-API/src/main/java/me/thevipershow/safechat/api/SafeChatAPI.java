@@ -32,7 +32,7 @@ public final class SafeChatAPI {
     }
 
     /**
-     * Get the an interface that allows to interact with the same database used by the SafeChat plugin.
+     * Gets the interface that allows to interact with the same database used by the SafeChat plugin.
      *
      * @return The DatabaseX.
      * @throws RuntimeException If either the plugin wasn't still enabled, or the database hasn't been created
