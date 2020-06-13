@@ -1,4 +1,17 @@
 .gradle
 .idea
 build
+.DS_Store
 src/main/java/me/.DS_Store
+
+SafeChat-API/gradle
+SafeChat-API/build
+SafeChat-API/.gradle
+
+SafeChat-Core/build
+SafeChat-Core/gradle
+SafeChat-Core/.gradle
+
+SafeChat-Plugin/build
+SafeChat-Plugin/gradle
+SafeChat-Plugin/.gradle
