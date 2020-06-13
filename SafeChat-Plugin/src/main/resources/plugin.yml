@@ -1,0 +1,6 @@
+name: 'SafeChat'
+version: @version@
+main: me.thevipershow.safechat.plugin.SafeChatPlugin
+author: 'TheViperShow'
+description: 'Keep your chat safe!'
+api-version: '1.13'
