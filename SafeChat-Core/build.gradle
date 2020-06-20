@@ -18,20 +18,20 @@ repositories {
 
 dependencies {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
-    // Here below you can find all the dependencies regarding databases                               //
+    // Here below you can find all the dependencies regarding databases                              //
     // Drivers: [PostgreSQL]                                                                         //
     // Connection Pool: [HikariCP]                                                                   //
     compileOnly('com.zaxxer:HikariCP:3.4.5')                                                         //
     ///////////////////////////////////////////////////////////////////////////////////////////////////
-    // Minecraft: here below you can find all the imported dependencies regarding minecraft           //
+    // Minecraft: here below you can find all the imported dependencies regarding minecraft          //
     // By Aikar: [IDB, ACF, TaskChain]                                                               //
     // By kashike: [Text-Adapter-Bukkit]                                                             //
     compileOnly group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'                          //
     compileOnly 'co.aikar:acf-paper:0.5.0-SNAPSHOT'                                                  //
     compileOnly 'co.aikar:idb-bukkit:1.0.0-SNAPSHOT'                                                 //
     compileOnly 'net.kyori:text-api:3.0.3'                                                           //
-    compileOnly("net.kyori:text-serializer-gson:3.0.3")                                              //                                             //
-    compileOnly('net.kyori:text-adapter-bukkit:3.0.4-SNAPSHOT')                                      //                                                       //
+    compileOnly("net.kyori:text-serializer-gson:3.0.3")                                              //
+    compileOnly('net.kyori:text-adapter-bukkit:3.0.4-SNAPSHOT')                                      //
     compileOnly group: 'com.destroystokyo.paper', name: 'paper-api', version: '1.15.2-R0.1-SNAPSHOT' //
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 }

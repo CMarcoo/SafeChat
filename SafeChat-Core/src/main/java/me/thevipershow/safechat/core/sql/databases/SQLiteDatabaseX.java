@@ -38,7 +38,6 @@ public class SQLiteDatabaseX implements DatabaseX {
         return instance != null ? instance : (instance = new SQLiteDatabaseX());
     }
 
-
     public final static String SQLITE_UPDATE_OR_INSERT_DOMAINS = "INSERT INTO safechat_data(player_uuid, player_name, flags_domains, flags_ipv4, flags_words)\n" +
             "VALUES (?, ?, ?, ?, ?)\n" +
             "ON CONFLICT(player_uuid)\n" +

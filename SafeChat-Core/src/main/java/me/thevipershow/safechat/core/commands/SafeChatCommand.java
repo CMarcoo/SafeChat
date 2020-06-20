@@ -104,7 +104,7 @@ public final class SafeChatCommand extends BaseCommand {
 
     private static void sendFlagMessage(PlayerData data, Flag flag, CommandSender sender) {
         int flags = data.getFlags().get(flag);
-        sendMessage(sender, "&7→  &6" + flags + " &7" + flag.name().toLowerCase(Locale.ROOT) + " flags");
+        sendMessage(sender, "&7->  &6" + flags + " &7" + flag.name().toLowerCase(Locale.ROOT) + " flags");
     }
 
     private void dataSearchConsumer(CommandSender sender, String username, Consumer<? super PlayerData> consumer) {

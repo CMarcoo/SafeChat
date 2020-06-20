@@ -30,6 +30,13 @@ import me.thevipershow.safechat.core.sql.data.PlayerData;
 public class DatabaseXUtils {
     public final static String COLUMN_PLAYER_NAME = "player_name";
 
+    /**
+     * Return the exact PlayerData of a UUID.
+     *
+     * @param uuid  The uuid to search for.
+     * @param query The query to execute.
+     * @return The PlayerData Optional.
+     */
     public CompletableFuture<Optional<PlayerData>> searchData(final String query, final UUID uuid) {
         return DB.getFirstRowAsync(query, uuid.toString()).thenApplyAsync(dbRow -> {
             if (dbRow.isEmpty()) return Optional.empty();
@@ -41,6 +48,21 @@ public class DatabaseXUtils {
         });
     }
 
+    /**
+     * This method should be implemented this way:
+     * It will search through a database and if a UUID was found, its
+     * flag should be increased. However if no UUID is found a new row
+     * should be added into the database using the values from this method and
+     * creating a PlayerData using the static method {@link PlayerData#initializeFromFlag(Flag, String)}
+     *
+     * @param uuid     The UUID of the player.
+     * @param username The username of the player.
+     * @param flag     The flag which should be incremented.
+     * @param query    The query that will be executed.
+     * @return A completableFuture of Integer type,
+     * to indicate the operation has been completed and how
+     * many rows have been affected.
+     */
     public CompletableFuture<Integer> doUpdateOrInsert(final UUID uuid, final String username, final Flag flag, final String query) {
         final PlayerData playerData = PlayerData.initializeFromFlag(flag, username);
         return DB.executeUpdateAsync(query,
@@ -52,10 +74,24 @@ public class DatabaseXUtils {
                 username);
     }
 
+    /**
+     * Clean the data of every player that has that username.
+     *
+     * @param username The username of the target player(s).
+     * @param query    The statement to execute.
+     * @return True if something has change, false otherwise.
+     */
     public CompletableFuture<Boolean> cleanUserData(final String username, final String query) {
         return DB.executeUpdateAsync(query, username).thenApplyAsync(n -> n != 0);
     }
 
+    /**
+     * This method is used to retrieve EVERY row that matches the given username as
+     * a Set of {@link PlayerData}
+     *
+     * @param username The username.
+     * @return A List with usually 1 PlayerData or more if found, an Empty set if no data was found.
+     */
     public CompletableFuture<Set<PlayerData>> searchData(final String username, final String query) {
         return DB.getResultsAsync(query, username).thenApplyAsync(list -> {
             final Set<PlayerData> playerData = new HashSet<>();
@@ -68,6 +104,14 @@ public class DatabaseXUtils {
         });
     }
 
+    /**
+     * This method is used to retrieve the top PlayerData sorted from highest to low
+     * of a given flag.
+     *
+     * @param query A The statement to execute
+     * @param count the number of rows to get.
+     * @return A Set of PlayerData ordered
+     */
     public CompletableFuture<List<PlayerData>> topData(final int count, final String query) {
         return DB.getResultsAsync(query, count).thenApplyAsync(list -> {
             final LinkedList<PlayerData> playerData = new LinkedList<>();

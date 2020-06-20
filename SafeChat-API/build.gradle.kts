@@ -24,6 +24,12 @@ dependencies {
 
 tasks {
     named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+        exclude("me/thevipershow/safechat/core/commands/*")
+        exclude("me/thevipershow/safechat/core/configuration/**")
+        exclude("me/thevipershow/safechat/core/events/FlagEventListener.class")
+        exclude("me/thevipershow/safechat/core/checks/*")
+        exclude("me/thevipershow/safechat/core/sql/databases/MySQLDatabaseX.class")
+        exclude("me/thevipershow/safechat/core/sql/databases/SQLiteDatabaseX.class")
         archiveClassifier.set("")
     }
 }

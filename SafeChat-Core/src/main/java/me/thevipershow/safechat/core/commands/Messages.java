@@ -23,9 +23,9 @@ import lombok.Getter;
 public enum Messages {
     HELP_MSG("&8[&6SafeChat&8]&7: syntax:",
             "&8Open this help page&7:",
-            "&f- &7/safechat",
+            "&f- &7/safechat help",
             "&8Get all stored data of a certain player&7:",
-            "&f- &7/safechat search &8[&6ipv4&7|&6domains&7|&6words&8] &8<&6player&8>",
+            "&f- &7/safechat search &8<&6player&8> &8[&6ipv4&7|&6domains&7|&6words&8]",
             "&8Get flag count of a certain player&7:",
             "&f- &7/safechat search &8<&6player&8>",
             "&8Get &o&nX&r &8players with the highest flags count&7:",
