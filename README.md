@@ -97,7 +97,7 @@ What this does is enabling a basic logging info for failed checks. Every check ,
 
 This plugin comes with in-game or console commands in order to help the users read their data.
 Every command starts with `safechat` and can be used from both console and in-game.
-<br> ![commands](https://i.imgur.com/Qc7zafL.png)
+<br> ![commands](https://i.imgur.com/s3l8zzo.png)
 * sql search
 <br> - This command allows you to search for a specific player and get his current flags.
 <br> You can use this syntax in order to retrieve a specific flag count from the player
