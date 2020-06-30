@@ -14,8 +14,8 @@ repositories {
     maven { url = 'https://jitpack.io' }
     maven { url = "https://repo.aikar.co/content/groups/aikar/" }
     maven {
-        url = 'https://papermc.io/repo/repository/maven-public/'
-        name = 'papermc'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+        name = 'spigot-repo'
     }
 }
 
@@ -29,7 +29,7 @@ shadowJar {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     setArchiveName('SafeChat-' + this.version + '.jar')                                              //
     ///////////////////////////////////////////////////////////////////////////////////////////////////
-    // Relocations to avoid conflicts at runtime:                                                     //
+    // Relocations to avoid conflicts at runtime:                                                    //
     relocate 'com.zaxxer.hikari', 'me.thevipershow.safechat.core.libs.com.zaxxer.hikari'             //
     relocate 'co.aikar.commands', 'me.thevipershow.safechat.core.libs.acf'                           //
     relocate 'co.aikar.locales', 'me.thevipershow.safechat.core.libs.locales'                        //
@@ -42,12 +42,12 @@ shadowJar {
 
 dependencies {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
-    // Here below you can find all the dependencies regarding databases                               //
+    // Here below you can find all the dependencies regarding databases                              //
     // Drivers: [PostgreSQL]                                                                         //
     // Connection Pool: [HikariCP]                                                                   //
     compile('com.zaxxer:HikariCP:3.4.5')                                                             //
     ///////////////////////////////////////////////////////////////////////////////////////////////////
-    // Minecraft: here below you can find all the imported dependencies regarding minecraft           //
+    // Minecraft: here below you can find all the imported dependencies regarding minecraft          //
     // By Aikar: [IDB, ACF, TaskChain]                                                               //
     // By kashike: [Text-Adapter-Bukkit]                                                             //
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'                              //
@@ -57,13 +57,14 @@ dependencies {
     compile ("net.kyori:text-serializer-gson:3.0.3") {                                               //
         exclude module: 'gson'                                                                       //
     }                                                                                                //
-    compile('net.kyori:text-adapter-bukkit:3.0.4-SNAPSHOT') {                                        //
+    compile('net.kyori:text-adapter-bukkit:3.0.5') {                                                 //
         exclude module: 'gson'                                                                       //
         exclude module: 'text-api'                                                                   //
         exclude module: 'text-serializer-gson'                                                       //
     }                                                                                                //
-    compileOnly group: 'com.destroystokyo.paper', name: 'paper-api', version: '1.15.2-R0.1-SNAPSHOT' //
+    compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.16.1-R0.1-SNAPSHOT'           //
     compile project(':SafeChat-Core')                                                                //
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens

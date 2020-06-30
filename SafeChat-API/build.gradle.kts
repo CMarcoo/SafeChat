@@ -5,21 +5,21 @@ plugins {
 }
 
 group = "me.thevipershow"
-version = "1.1.1"
+version = "1.1.2"
 
 repositories {
     jcenter()
     mavenCentral()
     maven(url = "https://jitpack.io")
     maven(url = "https://repo.aikar.co/content/groups/aikar/")
-    maven(url = "https://papermc.io/repo/repository/maven-public/")
+    maven(url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
 }
 
 dependencies {
     testCompile("junit", "junit", "4.12")
     compileOnly(project(":SafeChat-Plugin"))
     implementation(project(":SafeChat-Core"))
-    compileOnly(group = "com.destroystokyo.paper", name = "paper-api", version = "1.15.2-R0.1-SNAPSHOT")
+    compileOnly(group = "org.spigotmc", name = "spigot-api", version = "1.16.1-R0.1-SNAPSHOT")
 }
 
 tasks {
