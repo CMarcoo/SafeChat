@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package me.thevipershow.safechat.plugin.updater;
 
 import com.google.gson.JsonObject;
@@ -80,15 +79,11 @@ public final class UpdateChecker {
         String[] currentBuildStr = currentVersion.split(SPLIT_REGEX);
         String[] latestBuildStr;
         try {
-            for (int i = 0; i < 3; i++) {
-                currentBuildInt[i] = Integer.parseInt(currentBuildStr[i]);
-            }
             String latestVersion = getLatestVersion();
             latestBuildStr = latestVersion.split(SPLIT_REGEX);
             for (int i = 0; i < 3; i++) {
+                currentBuildInt[i] = Integer.parseInt(currentBuildStr[i]);
                 latestBuildInt[i] = Integer.parseInt(latestBuildStr[i]);
-            }
-            for (int i = 0; i < 3; i++) {
                 if (latestBuildInt[i] > currentBuildInt[i]) {
                     return true;
                 }
@@ -104,23 +99,6 @@ public final class UpdateChecker {
     public void registerUpdatersIfOutdated() {
         if (hasNewerVersion()) {
             plugin.getLogger().info("The plugin has found a newer version available on Spigot, please update it!");
-            class OutdatedNotifier implements Listener {
-
-                private final HashSet<UUID> alreadyNotified = new HashSet<>();
-
-                @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-                public void onPlayerJoin(PlayerJoinEvent event) {
-                    UUID uuid = event.getPlayer().getUniqueId();
-                    if (!event.getPlayer().isOp() || !event.getPlayer().hasPermission("safechat.updates")) {
-                        return;
-                    }
-                    if (alreadyNotified.contains(uuid)) {
-                        return;
-                    }
-                    event.getPlayer().sendMessage("§8[§6SafeChat§8]§7: §aThere are new updates for SafeChat, please install them!");
-                    alreadyNotified.add(uuid);
-                }
-            }
             Bukkit.getPluginManager().registerEvents(new OutdatedNotifier(), plugin);
         }
     }
