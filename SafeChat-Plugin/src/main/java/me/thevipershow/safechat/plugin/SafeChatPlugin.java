@@ -24,9 +24,11 @@ import co.aikar.idb.Database;
 import co.aikar.idb.DatabaseOptions;
 import co.aikar.idb.PooledDatabaseOptions;
 import com.google.common.collect.ImmutableList;
+
 import java.io.File;
 import java.sql.SQLException;
 import java.util.Locale;
+
 import lombok.Getter;
 import me.thevipershow.safechat.core.checks.CheckManager;
 import me.thevipershow.safechat.core.commands.SafeChatCommand;
@@ -38,6 +40,7 @@ import me.thevipershow.safechat.core.events.FlagEventListener;
 import me.thevipershow.safechat.core.sql.databases.DatabaseX;
 import me.thevipershow.safechat.core.sql.databases.MySQLDatabaseX;
 import me.thevipershow.safechat.core.sql.databases.SQLiteDatabaseX;
+import me.thevipershow.safechat.plugin.updater.UpdateChecker;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -130,6 +133,7 @@ public final class SafeChatPlugin extends JavaPlugin {
         registerConfigurationSerializer();
         saveDefaultConfig();
         AbstractValues values = getAndUpdate();
+        if (values.isUpdatesWarning()) UpdateChecker.getInstance(this).registerUpdatersIfOutdated();
         CheckManager checkManager = CheckManager.getInstance(this, values);
         PaperCommandManager commandManager = new PaperCommandManager(this);
         commandManager.getCommandCompletions().registerStaticCompletion("checks", ImmutableList.of("domains", "words", "ipv4"));

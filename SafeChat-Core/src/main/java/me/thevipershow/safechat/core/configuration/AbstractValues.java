@@ -43,6 +43,7 @@ public abstract class AbstractValues {
      */
     protected void updateConfigValues() throws IllegalArgumentException {
         enableConsoleLogging = EnumConfig.ENABLE_CONSOLE_LOGGING.getBool(configuration);
+        updatesWarning = EnumConfig.UPDATES_WARNING.getBool(configuration);
         serialUID = EnumConfig.SERIAL_UID.getInt(configuration);
         dbType = EnumConfig.DB_TYPE.getString(configuration);
         username = EnumConfig.USERNAME.getString(configuration);
@@ -112,6 +113,7 @@ public abstract class AbstractValues {
     protected int autoSave;
 
     protected boolean enableConsoleLogging;
+    protected boolean updatesWarning;
     protected boolean domainEnabled;
     protected boolean ipv4Enabled;
     protected boolean wordsEnabled;

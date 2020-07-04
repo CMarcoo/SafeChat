@@ -45,7 +45,7 @@ public final class FlagEventListener implements Listener {
                 .forEach(exec -> {
                     if (exec.getFlags() == data.getFlags().get(flag)) {
                         exec.getCommands().stream()
-                                .map(str -> str.replaceAll("%PLAYER%", data.getUsername()))
+                                .map(str -> str.replace("%PLAYER%", data.getUsername()))
                                 .forEach(str -> plugin.getServer().getScheduler().runTask(plugin, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), str)));
                     }
                 });

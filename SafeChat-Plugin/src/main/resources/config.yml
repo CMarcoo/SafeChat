@@ -8,10 +8,11 @@
 # Plugin by TheViperShow.
 # Config.yml
 # Do not touch serialUID unless you know what you're doing!
-serialUID: 1
+serialUID: 2
 safechat:
   # Send a message to the console whenever one of the checks is verified
   enable-console-logging: false
+  updates-warning: true
   database:
     # Allowed types are currently:
     # Values: [ MYSQL | MARIADB | SQLITE ]
