@@ -30,6 +30,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -53,19 +54,21 @@ public final class CheckManager implements Listener {
             TextAdapter.sendMessage(player, component);
     }
 
-    public static void doCheck(TextComponent component, Player player, Flag flag) {
+    public static void doCheck(TextComponent component, Player player, Flag flag, Plugin plugin) {
         sendIfNotEmptyComponent(component, player);
-        Bukkit.getPluginManager().callEvent(new FlagEvent(flag, player.getUniqueId(), player.getName()));
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            Bukkit.getPluginManager().callEvent(new FlagEvent(flag, player.getUniqueId(), player.getName()));
+        });
     }
 
     @EventHandler(ignoreCancelled = true)
     public void check(AsyncPlayerChatEvent event) {
         final Player player = event.getPlayer();
         if (!CheckLogics.domainCheck(event, values))
-            doCheck(values.getDomainsComponent(), player, Flag.DOMAINS);
+            doCheck(values.getDomainsComponent(), player, Flag.DOMAINS, plugin);
         else if (!CheckLogics.addressCheck(event, values))
-            doCheck(values.getIpv4Component(), player, Flag.IPV4);
+            doCheck(values.getIpv4Component(), player, Flag.IPV4, plugin);
         else if (!CheckLogics.wordsCheck(event, values))
-            doCheck(values.getWordsComponent(), player, Flag.WORDS);
+            doCheck(values.getWordsComponent(), player, Flag.WORDS, plugin);
     }
 }
