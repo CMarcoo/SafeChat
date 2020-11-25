@@ -1,5 +1,7 @@
 ## SafeChat
 
+![](https://img.shields.io/tokei/lines/github/TheViperShow/SafeChat?style=for-the-badge) ![](https://img.shields.io/github/languages/code-size/TheViperShow/SafeChat) ![](https://img.shields.io/spiget/tested-versions/79115) ![](https://img.shields.io/codefactor/grade/github/TheViperShow/SafeChat) ![](https://img.shields.io/github/license/TheViperShow/SafeChat) 
+
 "Keep your chat safe!"
 
 ![Imgur](https://i.imgur.com/L2PvTdP.png)
