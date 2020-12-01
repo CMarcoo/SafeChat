@@ -14,8 +14,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <properties>
         <kotlin.version>1.4.20</kotlin.version>
-        <java.target>11</java.target>
-        <java.version>11</java.version>
+        <java.target>1.8</java.target>
+        <java.version>1.8</java.version>
         <mainClass>me.thevipershow.safechat.SafeChatPlugin</mainClass>
     </properties>
 
@@ -119,11 +119,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <version>1.16.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <!-- EBean -->
+        <!-- https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core -->
         <dependency>
-            <groupId>io.ebean</groupId>
-            <artifactId>ebean</artifactId>
-            <version>12.6.1</version>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.0.0.Alpha6</version>
             <scope>compile</scope>
         </dependency>
         <!-- Kotlin -->
@@ -132,6 +132,20 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <artifactId>kotlin-stdlib</artifactId>
             <version>${kotlin.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <!-- TOML -->
+        <dependency>
+            <groupId>com.moandjiezana.toml</groupId>
+            <artifactId>toml4j</artifactId>
+            <version>0.7.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Unit testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.7.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
