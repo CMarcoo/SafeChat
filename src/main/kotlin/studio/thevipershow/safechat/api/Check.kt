@@ -1,4 +1,4 @@
-package me.thevipershow.safechat.api
+package studio.thevipershow.safechat.api
 
 /**
  * These are all of the checks that this plugin is able

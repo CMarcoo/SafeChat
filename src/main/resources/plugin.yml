@@ -1,5 +1,5 @@
 name: ${project.name}
-main: 'me.thevipershow.safechat.SafeChatPlugin'
+main: 'studio.thevipershow.safechat.SafeChatPlugin'
 version: ${project.version}
 description: ${project.description}
 author: 'TheViperShow'
