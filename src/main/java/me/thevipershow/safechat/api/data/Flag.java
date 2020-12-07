@@ -1,33 +1,36 @@
-package studio.thevipershow.safechat.api
+package me.thevipershow.safechat.api.data;
 
-/**
- * These are all of the checks that this plugin is able
- * to recognize.
- */
-enum class Check {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
+public enum Flag {
 
     /**
      * A word that is not allowed by SafeChat.
      */
-    WORDS,
+    WORDS("Words"),
 
     /**
      * A domain that is not allowed by SafeChat.
      */
-    DOMAIN,
+    DOMAIN("Domain"),
 
     /**
      * An IPv4\IPv6 address that is not allowed by SafeChat.
      */
-    ADDRESS,
+    ADDRESS("Address"),
 
     /**
      * A repetition of messages that are too similar.
      */
-    REPETITION,
+    REPETITION("Repetition"),
 
     /**
      * Messages sent too fast.
      */
-    FLOOD;
+    FLOOD("Flood");
+
+    private final String name;
 }
